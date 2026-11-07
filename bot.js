@@ -270,6 +270,8 @@ async function startPolling() {
             handleMessage(update.message).catch(e => console.error("Message handling error:", e));
           }
         }
+      } else {
+        await new Promise(r => setTimeout(r, 3000));
       }
     } catch (err) {
       console.error("Polling loop error:", err.message);
