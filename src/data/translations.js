@@ -100,6 +100,10 @@ export const translations = {
     comingSoon: 'Tez kunda',
     cashOnlyNotice: 'Ushbu to‘lov usuli tez kunda ishga tushadi! Hozircha faqat naqd pul orqali to‘lov mavjud.',
     confirmOrder: 'Buyurtmani yuborish',
+    phoneRequiredTitle: 'Telefon raqam tasdiqlanmagan',
+    phoneRequiredDesc: 'Faiza Cafe\'dan buyurtma berish va yetkazib berish xizmatidan foydalanish uchun, iltimos, avval Telegram botimizda telefon raqamingizni tasdiqlang!',
+    phoneRequiredBtn: 'Botga qaytib raqamni yuborish',
+    phoneRequiredSub: 'Bu sizning buyurtmangizni tez va aniq yetkazib berish uchun kerak 🚖',
 
     // Success Screen
     orderSuccessTitle: 'Buyurtmangiz qabul qilindi!',
@@ -253,6 +257,10 @@ export const translations = {
     comingSoon: 'Скоро',
     cashOnlyNotice: 'Этот способ оплаты скоро станет доступен! Пока оплата только наличными.',
     confirmOrder: 'Подтвердить заказ',
+    phoneRequiredTitle: 'Номер телефона не подтвержден',
+    phoneRequiredDesc: 'Для оформления заказов и доставки в Faiza Cafe, пожалуйста, сначала подтвердите номер телефона в нашем Telegram-боте!',
+    phoneRequiredBtn: 'Вернуться в бот и отправить номер',
+    phoneRequiredSub: 'Это необходимо для быстрой и точной доставки вашего заказа 🚖',
 
     // Success Screen
     orderSuccessTitle: 'Заказ успешно принят!',
@@ -406,6 +414,10 @@ export const translations = {
     comingSoon: 'Soon',
     cashOnlyNotice: 'This payment method is coming soon! Only cash payment is available for now.',
     confirmOrder: 'Place Order',
+    phoneRequiredTitle: 'Phone number not verified',
+    phoneRequiredDesc: 'To place orders and use delivery services at Faiza Cafe, please verify your phone number in our Telegram bot first!',
+    phoneRequiredBtn: 'Return to bot and send phone',
+    phoneRequiredSub: 'This is required for fast and accurate order delivery 🚖',
 
     // Success Screen
     orderSuccessTitle: 'Order Received!',

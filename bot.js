@@ -425,6 +425,17 @@ Barcha yangi buyurtmalar, GPS lokatsiyalar va boshqaruv tugmalari shu guruhga yu
       }).catch(() => {});
     } catch (e) {}
 
+    // Endi Telegram chat menyu tugmasini WebApp menyu qilib sozlaymiz
+    const userAppUrl = `${webAppUrl}?phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}`;
+    tg('setChatMenuButton', {
+      chat_id: chatId,
+      menu_button: {
+        type: 'web_app',
+        text: '🍽 Menyu',
+        web_app: { url: userAppUrl }
+      }
+    }).catch(() => {});
+
     const successRegText = `✅ *Raqamingiz muvaffaqiyatli saqlandi!*
 
 👤 *Mijoz:* ${name}
@@ -469,49 +480,55 @@ Oshpazlarimiz taomni tayyorlashni boshlashdi. Rahmat! 🍔✨`;
     return;
   }
 
-  // 3. /start
+  const user = getUserFromDb(chatId);
+  const hasPhone = Boolean(
+    user &&
+    user.phone &&
+    user.phone !== '+998 90 377 30 00' &&
+    user.phone !== '+998903773000'
+  );
+
+  // AGAR TELEFON RAQAM YUBORILMAGAN BO'LSA - BUTUNLAY TO'SIQ (GATE)
+  if (!hasPhone) {
+    // 1. Telegram pastki Menu tugmasini oddiy holatga o'tkazamiz (Mini App ochilmasligi uchun)
+    tg('setChatMenuButton', {
+      chat_id: chatId,
+      menu_button: { type: 'default' }
+    }).catch(() => {});
+
+    const askPhoneText = `Assalomu alaykum, *${firstName}*! 👋
+
+Xush kelibsiz **"FAIZA CAFE"**ning rasmiy buyurtma botiga! ✨🍽️
+
+Buyurtma berish, menyuni ko‘rish va bepul yetkazib berish xizmatidan foydalanish uchun, iltimos, pastdagi **"📱 Telefon raqamimni yuborish"** tugmasini bosing:`;
+
+    await tg('sendMessage', {
+      chat_id: chatId,
+      text: askPhoneText,
+      parse_mode: 'Markdown',
+      reply_markup: {
+        keyboard: [
+          [
+            {
+              text: '📱 Telefon raqamimni yuborish',
+              request_contact: true
+            }
+          ]
+        ],
+        resize_keyboard: true,
+        is_persistent: true
+      }
+    });
+    return;
+  }
+
+  // 3. /start (Faqat raqami saqlangan mijozlar uchun)
   if (text.startsWith('/start')) {
-    const user = getUserFromDb(chatId);
+    const phoneInfo = `\n📱 *Sizning raqamingiz:* \`${user.phone}\``;
 
-    // Agar foydalanuvchi hali telefon raqamini yubormagan bo'lsa (va admin bo'lmasa)
-    if ((!user || !user.phone) && !isAdmin(chatId)) {
-      const askPhoneText = `Assalomu alaykum, *${firstName}*! 👋
+    const welcomeText = `Assalomu alaykum, *${user.name || firstName}*! 👋
 
-Xush kelibsiz **"FAIZA CAFE"**ning rasmiy buyurtma botiga! ✨🍽️
-
-Buyurtma berish va bepul yetkazib berish xizmatidan foydalanish uchun, iltimos, pastdagi **"📱 Telefon raqamimni yuborish"** tugmasini bosing:`;
-
-      await tg('sendMessage', {
-        chat_id: chatId,
-        text: askPhoneText,
-        parse_mode: 'Markdown',
-        reply_markup: {
-          keyboard: [
-            [
-              {
-                text: '📱 Telefon raqamimni yuborish',
-                request_contact: true
-              }
-            ]
-          ],
-          resize_keyboard: true,
-          one_time_keyboard: true
-        }
-      });
-      return;
-    }
-
-    // Foydalanuvchi avval ro'yxatdan o'tgan bo'lsa (yoki admin bo'lsa):
-    const adminGreeting = isAdmin(chatId)
-      ? `\n\n⭐ *Siz tizimda Bosh Administrator (8340079081) sifatida aniqlandingiz.* Admin panelidan buyurtmalarni boshqarishingiz mumkin.`
-      : '';
-
-    const phoneInfo = user?.phone ? `\n📱 *Sizning raqamingiz:* \`${user.phone}\`` : '';
-
-    const welcomeText = `Assalomu alaykum, *${user?.name || firstName}*! 👋
-
-Xush kelibsiz **"FAIZA CAFE"**ning rasmiy buyurtma botiga! ✨🍽️
-${adminGreeting}${phoneInfo}
+Xush kelibsiz **"FAIZA CAFE"**ning rasmiy buyurtma botiga! ✨🍽️${phoneInfo}
 
 Rishton tumanidagi eng mazali va sifatli taomlar maskani:
 🍔 **Fastfud:** 20 dan ortiq lavash, tandir lavash, burger, shaurma va xot-doglar

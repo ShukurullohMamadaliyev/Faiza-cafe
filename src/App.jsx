@@ -7,6 +7,7 @@ import ProductModal from './components/ProductModal';
 import CheckoutModal from './components/CheckoutModal';
 import OrderSuccessModal from './components/OrderSuccessModal';
 import LocationPromptModal from './components/LocationPromptModal';
+import PhoneRequiredModal from './components/PhoneRequiredModal';
 
 import HomePage from './pages/HomePage';
 import MenuPage from './pages/MenuPage';
@@ -73,6 +74,7 @@ export default function App() {
         <CheckoutModal />
         <OrderSuccessModal />
         <LocationPromptModal />
+        <PhoneRequiredModal />
       </div>
     </div>
   );

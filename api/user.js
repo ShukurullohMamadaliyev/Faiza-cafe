@@ -7,14 +7,7 @@ import path from 'path';
 const TMP_FILE = '/tmp/faiza_users.json';
 
 // In-memory cache across warm lambdas
-let memoryUsers = {
-  '8340079081': {
-    userId: '8340079081',
-    phone: '+998 90 377 30 00',
-    name: 'Bosh Administrator',
-    username: 'admin'
-  }
-};
+let memoryUsers = {};
 
 function readUsers() {
   try {

@@ -29,11 +29,16 @@ export function AppProvider({ children }) {
   const [userPhone, setUserPhone] = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search).get('phone');
-      if (p) {
+      if (p && p !== '+998 90 377 30 00' && p !== '+998903773000') {
         localStorage.setItem('faiza_cafe_user_phone', p);
         return p;
       }
-      return localStorage.getItem('faiza_cafe_user_phone') || '';
+      const stored = localStorage.getItem('faiza_cafe_user_phone');
+      if (stored === '+998 90 377 30 00' || stored === '+998903773000') {
+        localStorage.removeItem('faiza_cafe_user_phone');
+        return '';
+      }
+      return stored || '';
     }
     return '';
   });
