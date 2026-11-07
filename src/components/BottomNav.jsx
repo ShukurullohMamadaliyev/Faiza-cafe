@@ -3,7 +3,7 @@ import { Home, Utensils, ShoppingBasket, ReceiptText, User } from 'lucide-react'
 import { useApp } from '../context/AppContext';
 
 export default function BottomNav() {
-  const { activeTab, setActiveTab, cartCount, t, telegram } = useApp();
+  const { activeTab, setActiveTab, setSelectedCategory, cartCount, t, telegram } = useApp();
 
   const navItems = [
     { id: 'home', label: t.home, icon: Home },
@@ -15,6 +15,9 @@ export default function BottomNav() {
 
   const handleNav = (tabId) => {
     telegram.triggerHaptic('selection');
+    if (tabId === 'home') {
+      setSelectedCategory('all');
+    }
     setActiveTab(tabId);
   };
 

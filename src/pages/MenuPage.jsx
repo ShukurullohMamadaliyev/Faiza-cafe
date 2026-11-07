@@ -8,17 +8,20 @@ import { CATEGORIES } from '../data/mockData';
 export default function MenuPage() {
   const { productList, searchQuery, selectedCategory, t } = useApp();
 
+  // Noto'g'ri toifa tushib qolmasligi uchun himoya
+  const validCategoryIds = ['fastfood', 'pizza', 'hotdishes', 'shashlik', 'drinks_dessert'];
+  const activeCategory = validCategoryIds.includes(selectedCategory) ? selectedCategory : 'all';
+
   const filteredProducts = productList.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    if (selectedCategory === 'all') return matchesSearch;
-    if (selectedCategory === 'promos') return matchesSearch && (product.isPromo || product.category === 'promos');
-    return matchesSearch && product.category === selectedCategory;
+    if (activeCategory === 'all') return matchesSearch;
+    return matchesSearch && product.category === activeCategory;
   });
 
-  const currentCategory = CATEGORIES.find((c) => c.id === selectedCategory) || CATEGORIES[0];
+  const currentCategory = CATEGORIES.find((c) => c.id === activeCategory) || CATEGORIES[0];
   const translatedCatName = t.categories?.[currentCategory.id] || currentCategory.name;
 
   return (

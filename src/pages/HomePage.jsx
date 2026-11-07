@@ -9,22 +9,24 @@ import { Flame, Sparkles, Tag, ArrowRight } from 'lucide-react';
 export default function HomePage() {
   const { productList, searchQuery, selectedCategory, setActiveTab, setSelectedCategory, t, telegram } = useApp();
 
-  // Filter products by search query or selected category
+  // Noto'g'ri toifa tushib qolmasligi uchun himoya (agar noma'lum toifa kelsa, 'all' deb oladi)
+  const validCategoryIds = ['fastfood', 'pizza', 'hotdishes', 'shashlik', 'drinks_dessert'];
+  const activeCategory = validCategoryIds.includes(selectedCategory) ? selectedCategory : 'all';
+
+  // Filter products by search query or active category
   const filteredProducts = productList.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.description.toLowerCase().includes(searchQuery.toLowerCase());
     
-    if (selectedCategory === 'all') return matchesSearch;
-    if (selectedCategory === 'promos') return matchesSearch && (product.isPromo || product.category === 'promos');
-    return matchesSearch && product.category === selectedCategory;
+    if (activeCategory === 'all') return matchesSearch;
+    return matchesSearch && product.category === activeCategory;
   });
 
   // Featured sections when viewing all and no search query active
-  const isDefaultView = !searchQuery && selectedCategory === 'all';
+  const isDefaultView = !searchQuery && activeCategory === 'all';
   const hitProducts = productList.filter((p) => p.isPopular).slice(0, 4);
   const newProducts = productList.filter((p) => p.isNew).slice(0, 4);
-  const promoProducts = productList.filter((p) => p.isPromo || p.category === 'promos').slice(0, 4);
 
   return (
     <div className="pb-28">
@@ -43,7 +45,7 @@ export default function HomePage() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-black text-base text-[#0d3b2e]">
-                {searchQuery ? `"${searchQuery}"` : (t.categories?.[selectedCategory] || t.allDishes)}
+                {searchQuery ? `"${searchQuery}"` : (t.categories?.[activeCategory] || t.allDishes)}
               </h3>
               <span className="text-xs text-gray-500 font-semibold">
                 {filteredProducts.length} {t.dishesCount}

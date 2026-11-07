@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react';
+import { Sparkles, ChevronRight, ChevronLeft, ShoppingBag } from 'lucide-react';
 import { BANNERS } from '../data/mockData';
 import { useApp } from '../context/AppContext';
 
 export default function PromoBanner() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { setActiveTab, setSelectedCategory, telegram } = useApp();
+  const { productList, setSelectedProduct, setSelectedCategory, setActiveTab, telegram } = useApp();
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -21,7 +21,21 @@ export default function PromoBanner() {
 
   const handleBannerClick = () => {
     telegram.triggerHaptic('medium');
-    setSelectedCategory('promos');
+
+    // 1. Kategoriyani bannerning o'z haqiqiy toifasiga o'tkazish (masalan: 'hotdishes', 'pizza', 'fastfood')
+    const targetCat = banner.category || 'all';
+    setSelectedCategory(targetCat);
+
+    // 2. Bannerdagi aynan usha taomni topib, to'g'ridan-to'g'ri ochib berish
+    if (banner.productId && productList && productList.length > 0) {
+      const targetDish = productList.find((p) => p.id === banner.productId);
+      if (targetDish) {
+        setSelectedProduct(targetDish);
+        return;
+      }
+    }
+
+    // Agar taom topilmasa, menyu sahifasiga to'g'ri toifa bilan o'tish
     setActiveTab('menu');
   };
 
@@ -129,9 +143,9 @@ export default function PromoBanner() {
               )}
 
               <div className="ml-auto pr-1">
-                <span className="text-[10px] font-extrabold text-white/90 bg-white/20 hover:bg-white/30 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 transition">
-                  <span>Menyu</span>
-                  <ArrowRight size={10} />
+                <span className="text-[10px] font-extrabold text-white/95 bg-white/20 hover:bg-white/30 backdrop-blur-md px-2.5 py-1 rounded-xl flex items-center gap-1 transition shadow-xs">
+                  <ShoppingBag size={11} />
+                  <span>Tanlash</span>
                 </span>
               </div>
             </div>
