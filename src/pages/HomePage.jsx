@@ -27,6 +27,8 @@ export default function HomePage() {
   const isDefaultView = !searchQuery && activeCategory === 'all';
   const hitProducts = productList.filter((p) => p.isPopular).slice(0, 4);
   const newProducts = productList.filter((p) => p.isNew).slice(0, 4);
+  const promoIds = ['hd-kotlet-cheese', 'pz-pepperoni-mega', 'pz-qazi-med', 'ff-lavash-tandir'];
+  const promoProducts = productList.filter((p) => p.isPromo || promoIds.includes(p.id) || p.price > 75000).slice(0, 4);
 
   return (
     <div className="pb-28">
