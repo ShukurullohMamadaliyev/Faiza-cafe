@@ -91,17 +91,25 @@ export function AppProvider({ children }) {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
 
-  // Orders State - LocalStorage bilan doimiy sinxronlash
+  // Orders State - LocalStorage bilan doimiy sinxronlash (mock ma'lumotlarsiz)
   const [orders, setOrders] = useState(() => {
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem('faiza_cafe_orders');
-        if (stored) return JSON.parse(stored);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            const cleaned = parsed.filter(
+              (o) => o.id !== 'FC-9142' && o.id !== 'FC-8851' && o.customer?.name !== 'Sherzodbek'
+            );
+            return cleaned;
+          }
+        }
       } catch (e) {
         console.warn('Failed to parse orders:', e);
       }
     }
-    return INITIAL_ORDERS;
+    return [];
   });
 
   // Orders o'zgarganda LocalStorage ga saqlash
