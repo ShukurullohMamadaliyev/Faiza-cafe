@@ -60,8 +60,29 @@ export function AppProvider({ children }) {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
 
-  // Orders State
-  const [orders, setOrders] = useState(INITIAL_ORDERS);
+  // Orders State - LocalStorage bilan doimiy sinxronlash
+  const [orders, setOrders] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('faiza_cafe_orders');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {
+        console.warn('Failed to parse orders:', e);
+      }
+    }
+    return INITIAL_ORDERS;
+  });
+
+  // Orders o'zgarganda LocalStorage ga saqlash
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('faiza_cafe_orders', JSON.stringify(orders));
+      } catch (e) {
+        console.warn('Failed to save orders:', e);
+      }
+    }
+  }, [orders]);
 
   // Admin Products state
   const [productList, setProductList] = useState(PRODUCTS);
@@ -108,8 +129,59 @@ export function AppProvider({ children }) {
     }
   };
 
-  // Ilova ochilganda avtomatik GPS so'rash (agar saqlangan manzil bo'lmasa)
+  // Ilova ochilganda URL parametrlari (admin, tab, order status) va GPS tekshirish
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      const adminParam = params.get('admin');
+      const updateOrderId = params.get('updateOrder') || params.get('orderId');
+      const updateStatus = params.get('status');
+
+      // Admin tekshiruvi (8340079081)
+      if (adminParam === '8340079081' || telegram.user?.id == 8340079081) {
+        if (adminParam === '8340079081') {
+          setActiveTab('admin');
+        }
+      }
+
+      if (tabParam) {
+        setActiveTab(tabParam);
+      }
+
+      // Agar buyurtma holati URL orqali yangilansa (masalan: Yetkazildi)
+      if (updateOrderId && updateStatus) {
+        const cleanId = updateOrderId.replace(/^#/, '');
+        setOrders((prev) => {
+          return prev.map((ord) => {
+            const matchId = (ord.id || '').replace(/^#/, '');
+            if (matchId === cleanId) {
+              const statusTextMap = {
+                preparing: 'Oshxonada tayyorlanmoqda',
+                delivering: 'Yetkazilmoqda (Kuryerda)',
+                completed: 'Yetkazildi',
+                cancelled: 'Bekor qilindi'
+              };
+              return {
+                ...ord,
+                status: updateStatus,
+                statusText: statusTextMap[updateStatus] || updateStatus
+              };
+            }
+            return ord;
+          });
+        });
+
+        if (tabParam === 'orders' || !tabParam) {
+          setActiveTab('orders');
+        }
+
+        showToast(
+          `Buyurtma #${cleanId}: ${updateStatus === 'completed' ? 'Yetkazildi ✅' : updateStatus}`
+        );
+      }
+    }
+
     if (!savedAddress) {
       // Birinchi marta kirganda 500ms kutib avtomatik GPS ruxsatini so'raymiz
       const timer = setTimeout(() => {
@@ -289,6 +361,11 @@ export function AppProvider({ children }) {
       statusText: 'Qabul qilindi',
       orderType,
       orderTypeName: orderType === 'delivery' ? 'Yetkazib berish' : orderType === 'takeaway' ? 'Olib ketish' : 'Stolda',
+      telegramUser: {
+        id: telegram.user?.id || null,
+        first_name: telegram.user?.first_name || '',
+        username: telegram.user?.username || ''
+      },
       customer: {
         name: customerDetails.name || telegram.user.first_name || 'Mijoz',
         phone: customerDetails.phone || '+998 90 377 30 00',
@@ -317,15 +394,21 @@ export function AppProvider({ children }) {
     setIsCheckoutOpen(false);
     clearCart();
 
-    // Telegram botga WebApp orqali buyurtma yuborish
+    // Serverless API orqali Admin (8340079081)ga buyurtma yuborish
+    try {
+      fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOrder)
+      }).catch(err => console.warn('Order API error:', err));
+    } catch (e) {
+      console.warn('Order API fetch error:', e);
+    }
+
+    // Telegram botga WebApp orqali buyurtma yuborish (agar bot klaviaturadan ochilgan bo'lsa)
     if (telegram.tg?.sendData) {
       try {
-        telegram.tg.sendData(JSON.stringify({
-          id: newOrderId,
-          total: cartTotal,
-          orderType,
-          address: orderType === 'delivery' ? customerDetails.address || deliveryAddress : undefined
-        }));
+        telegram.tg.sendData(JSON.stringify(newOrder));
       } catch (e) {
         console.warn("Telegram sendData xatoligi:", e);
       }

@@ -37,6 +37,11 @@ export default function ProfilePage() {
 
   const favProducts = productList.filter((p) => favorites.includes(p.id));
 
+  // Faqat belgilangan admin (8340079081) uchungina admin imkoniyati
+  const isAdmin =
+    telegram.user?.id == 8340079081 ||
+    (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('admin') === '8340079081');
+
   return (
     <div className="pb-28 min-h-screen bg-[#F8FAF9]">
       {/* Header */}
@@ -230,19 +235,21 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Admin Panel Access */}
-        <div className="pt-2">
-          <button
-            onClick={() => {
-              telegram.triggerHaptic('medium');
-              setActiveTab('admin');
-            }}
-            className="w-full py-3.5 bg-gray-900 hover:bg-black active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2"
-          >
-            <ShieldAlert size={16} className="text-amber-400" />
-            <span>{t.adminPanel}</span>
-          </button>
-        </div>
+        {/* Admin Panel Access - Faqat Telegram ID 8340079081 bo'lganda ko'rinadi */}
+        {isAdmin && (
+          <div className="pt-2">
+            <button
+              onClick={() => {
+                telegram.triggerHaptic('medium');
+                setActiveTab('admin');
+              }}
+              className="w-full py-3.5 bg-gray-900 hover:bg-black active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2"
+            >
+              <ShieldAlert size={16} className="text-amber-400" />
+              <span>🔐 {t.adminPanel}</span>
+            </button>
+          </div>
+        )}
 
         {/* Support & Version with 2-number selector */}
         <div className="text-center pt-2 space-y-2">

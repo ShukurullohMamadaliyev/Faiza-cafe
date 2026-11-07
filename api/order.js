@@ -1,0 +1,113 @@
+// Vercel Serverless Function: /api/order
+// Faiza Cafe - Telegram Admin Alert (8340079081)
+
+export default async function handler(req, res) {
+  // CORS sozlamalari
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const token = process.env.BOT_TOKEN || '9141727536:AAGkeeNUQGbsD3WBtMciA17UxhBkFhPLWx0';
+  const adminIdsStr = process.env.ADMIN_IDS || '8340079081';
+  const adminIds = adminIdsStr.split(',').map((id) => id.trim()).filter(Boolean);
+
+  try {
+    const order = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+
+    if (!order || !order.id) {
+      return res.status(400).json({ error: 'Order data required' });
+    }
+
+    const itemsText = (order.items || [])
+      .map(
+        (it) =>
+          `• *${it.quantity}x ${it.name}* — ${(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m`
+      )
+      .join('\n');
+
+    const customerInfo = order.customer || {};
+    const tgUser = order.telegramUser || {};
+    const userTag = tgUser.username
+      ? `@${tgUser.username}`
+      : tgUser.id
+      ? `ID: ${tgUser.id}`
+      : 'Web-mijoz';
+    const custChatId = tgUser.id || 0;
+
+    const addressInfo =
+      order.orderType === 'delivery'
+        ? `🚗 *Yetkazib berish:* ${customerInfo.address || 'Rishton'}`
+        : order.orderType === 'takeaway'
+        ? `🛍 *Olib ketish:* ${customerInfo.branch || 'Faiza Cafe (Markaz)'}`
+        : `🍽 *Kafeda:* ${customerInfo.table || '1'}-stol`;
+
+    const messageText = `🔔 *YANGI BUYURTMA! #${order.id}*
+━━━━━━━━━━━━━━━━━━━━
+👤 *Mijoz:* ${customerInfo.name || 'Mijoz'} (${userTag})
+📞 *Telefon:* \`${customerInfo.phone || 'Nomaʼlum'}\`
+${addressInfo}
+💬 *Izoh:* ${customerInfo.note ? `_${customerInfo.note}_` : 'Mavjud emas'}
+
+📋 *Taomlar ro‘yxati:*
+${itemsText || '• Taomlar ko‘rsatilmadi'}
+
+💰 *Jami to‘lov:* *${(order.total || 0).toLocaleString('uz-UZ')} so‘m*
+💳 *To‘lov turi:* ${order.paymentMethod || 'Naqd pul'}
+🕒 *Vaqt:* ${order.date || new Date().toLocaleString()}
+━━━━━━━━━━━━━━━━━━━━
+📌 *Holati:* 🟡 *Yangi (Kutilmoqda)*`;
+
+    // Admin boshqaruv tugmalari (Inline Buttons)
+    const inline_keyboard = [
+      [
+        { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${order.id}:${custChatId}` },
+        { text: '🍳 Tayyorlanmoqda', callback_data: `st:cook:${order.id}:${custChatId}` }
+      ],
+      [
+        { text: '🛵 Yetkazilmoqda', callback_data: `st:delv:${order.id}:${custChatId}` },
+        { text: '✅ Yetkazildi', callback_data: `st:comp:${order.id}:${custChatId}` }
+      ],
+      [
+        { text: '❌ Bekor qilish', callback_data: `st:canc:${order.id}:${custChatId}` }
+      ]
+    ];
+
+    // Har bir adminga (8340079081) xabar yuborish
+    const sendPromises = adminIds.map((adminId) =>
+      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: adminId,
+          text: messageText,
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard }
+        })
+      }).then((r) => r.json())
+    );
+
+    const results = await Promise.all(sendPromises);
+
+    return res.status(200).json({
+      success: true,
+      orderId: order.id,
+      adminNotified: results.map((r) => ({ ok: r.ok, message_id: r.result?.message_id }))
+    });
+  } catch (error) {
+    console.error('API /api/order error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+}

@@ -4,10 +4,17 @@ import { useApp } from '../context/AppContext';
 
 export default function OrdersPage() {
   const { orders, setActiveTab, addToCart, t, telegram } = useApp();
-  const [orderTab, setOrderTab] = useState('active'); // 'active' | 'completed'
 
   const activeOrders = orders.filter((o) => o.status !== 'completed' && o.status !== 'cancelled');
   const completedOrders = orders.filter((o) => o.status === 'completed' || o.status === 'cancelled');
+
+  const [orderTab, setOrderTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      if (p.get('status') === 'completed') return 'completed';
+    }
+    return activeOrders.length > 0 ? 'active' : 'completed';
+  });
 
   const currentList = orderTab === 'active' ? activeOrders : completedOrders;
 
@@ -33,7 +40,7 @@ export default function OrdersPage() {
       case 'delivering':
         return { label: t.statusDelivering || 'Yetkazilmoqda (Kuryerda)', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
       case 'completed':
-        return { label: t.statusCompleted || 'Yetkazildi', bg: 'bg-gray-100 text-gray-700 border-gray-200' };
+        return { label: `${t.statusCompleted || 'Yetkazildi'} ✅`, bg: 'bg-emerald-50 text-emerald-800 border-emerald-300' };
       default:
         return { label: status, bg: 'bg-gray-100 text-gray-700 border-gray-200' };
     }
