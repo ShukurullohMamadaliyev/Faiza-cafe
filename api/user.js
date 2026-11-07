@@ -3,17 +3,18 @@
 
 import fs from 'fs';
 import path from 'path';
+import { SEED_USERS } from './usersDb.js';
 
 const TMP_FILE = '/tmp/faiza_users.json';
 
 // In-memory cache across warm lambdas
-let memoryUsers = {};
+let memoryUsers = { ...SEED_USERS };
 
 function readUsers() {
   try {
     if (fs.existsSync(TMP_FILE)) {
       const data = JSON.parse(fs.readFileSync(TMP_FILE, 'utf-8'));
-      memoryUsers = { ...memoryUsers, ...data };
+      memoryUsers = { ...SEED_USERS, ...memoryUsers, ...data };
     }
   } catch (e) {
     // Ignore read error

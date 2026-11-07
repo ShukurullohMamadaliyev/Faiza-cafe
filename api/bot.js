@@ -3,6 +3,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { SEED_USERS } from './usersDb.js';
 
 const token = process.env.BOT_TOKEN || '9141727536:AAGkeeNUQGbsD3WBtMciA17UxhBkFhPLWx0';
 const webAppUrl = process.env.WEBAPP_URL || 'https://faiza-cafe.vercel.app';
@@ -11,13 +12,13 @@ const ORDER_GROUP_ID = process.env.ORDER_GROUP_ID || '-1003577268173';
 const API_BASE = `https://api.telegram.org/bot${token}`;
 
 const TMP_USERS_FILE = '/tmp/faiza_users.json';
-let inMemoryUsers = {};
+let inMemoryUsers = { ...SEED_USERS };
 
 function getUser(userId) {
   try {
     if (fs.existsSync(TMP_USERS_FILE)) {
       const data = JSON.parse(fs.readFileSync(TMP_USERS_FILE, 'utf-8'));
-      inMemoryUsers = { ...inMemoryUsers, ...data };
+      inMemoryUsers = { ...SEED_USERS, ...inMemoryUsers, ...data };
     }
   } catch (e) {}
 
@@ -25,15 +26,7 @@ function getUser(userId) {
     return inMemoryUsers[String(userId)];
   }
 
-  try {
-    const localDbPath = path.resolve(process.cwd(), 'users_db.json');
-    if (fs.existsSync(localDbPath)) {
-      const db = JSON.parse(fs.readFileSync(localDbPath, 'utf-8'));
-      if (db[String(userId)]) return db[String(userId)];
-    }
-  } catch (e) {}
-
-  return null;
+  return SEED_USERS[String(userId)] || null;
 }
 
 function saveUser(userId, userData) {
@@ -332,7 +325,7 @@ Oshpazlarimiz taomni tayyorlashni boshlashdi. Rahmat! 🍔✨`;
     return;
   }
 
-  // Telefon raqam tekshiruvi (GATE)
+  // Foydalanuvchi ma'lumotlarini aniqlash
   const user = getUser(chatId);
   const hasPhone = Boolean(
     user &&
@@ -341,17 +334,29 @@ Oshpazlarimiz taomni tayyorlashni boshlashdi. Rahmat! 🍔✨`;
     user.phone !== '+998903773000'
   );
 
-  if (!hasPhone) {
-    await tg('setChatMenuButton', {
-      chat_id: chatId,
-      menu_button: { type: 'default' }
-    }).catch(() => {});
+  let userAppUrl = webAppUrl;
+  if (hasPhone) {
+    userAppUrl = `${webAppUrl}?phone=${encodeURIComponent(user.phone)}&name=${encodeURIComponent(user.name || firstName)}`;
+  }
 
+  // Telegram pastki Menyu tugmasini har doim faol qilib qo'yish (hech qachon o'chirilmaydi)
+  await tg('setChatMenuButton', {
+    chat_id: chatId,
+    menu_button: {
+      type: 'web_app',
+      text: '🍽 Menyu',
+      web_app: { url: userAppUrl }
+    }
+  }).catch(() => {});
+
+  if (!hasPhone) {
     const askPhoneText = `Assalomu alaykum, *${firstName}*! 👋
 
-Xush kelibsiz **"FAIZA CAFE"**ning rasmiy buyurtma botiga! ✨🍽️
+Xush kelibsiz *"FAIZA CAFE"*ning rasmiy buyurtma botiga! ✨🍽️
 
-Buyurtma berish, menyuni ko‘rish va bepul yetkazib berish xizmatidan foydalanish uchun, iltimos, pastdagi **"📱 Telefon raqamimni yuborish"** tugmasini bosing:`;
+Buyurtma berish uchun quyidagi imkoniyatlardan foydalanishingiz mumkin:
+1️⃣ Pastdagi **"🍽 Menyu va Buyurtma berish"** orqali mini ilovani oching.
+2️⃣ Yoki profilingizni biriktirish uchun **"📱 Telefon raqamimni yuborish"** tugmasini bosing:`;
 
     await tg('sendMessage', {
       chat_id: chatId,
@@ -361,9 +366,19 @@ Buyurtma berish, menyuni ko‘rish va bepul yetkazib berish xizmatidan foydalani
         keyboard: [
           [
             {
+              text: '🍽 Menyu va Buyurtma berish',
+              web_app: { url: userAppUrl }
+            }
+          ],
+          [
+            {
               text: '📱 Telefon raqamimni yuborish',
               request_contact: true
             }
+          ],
+          [
+            { text: '📍 Manzilimiz va Mo‘ljal' },
+            { text: '📞 Aloqa / Telefon' }
           ]
         ],
         resize_keyboard: true,
