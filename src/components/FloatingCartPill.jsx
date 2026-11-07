@@ -3,7 +3,7 @@ import { ShoppingBag, ChevronRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export default function FloatingCartPill() {
-  const { cartCount, cartTotal, setActiveTab, activeTab, telegram } = useApp();
+  const { cartCount, cartTotal, setActiveTab, activeTab, t, telegram } = useApp();
 
   // Only show if items exist and not already on cart tab or checkout
   if (cartCount === 0 || activeTab === 'cart' || activeTab === 'admin') {
@@ -32,10 +32,10 @@ export default function FloatingCartPill() {
 
         <div className="flex flex-col text-left leading-none pr-1">
           <span className="text-[10px] text-emerald-200 font-semibold uppercase tracking-wider">
-            Savat
+            {t.cart}
           </span>
           <span className="text-sm font-black text-white">
-            {cartTotal.toLocaleString('uz-UZ')} so'm
+            {cartTotal.toLocaleString('uz-UZ')} {t.currency}
           </span>
         </div>
 

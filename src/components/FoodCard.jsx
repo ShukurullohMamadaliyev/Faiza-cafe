@@ -10,6 +10,7 @@ export default function FoodCard({ product }) {
     quickDecrement,
     favorites,
     toggleFavorite,
+    t,
     telegram
   } = useApp();
 
@@ -81,7 +82,7 @@ export default function FoodCard({ product }) {
         {/* Out of stock overlay */}
         {product.isOutOfStock && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-bold rounded-2xl">
-            Tugagan
+            {t.outOfStock}
           </div>
         )}
       </div>
@@ -90,7 +91,7 @@ export default function FoodCard({ product }) {
       <div className="space-y-1">
         <div className="flex items-baseline gap-1.5">
           <span className="text-[15px] font-black text-gray-900 tracking-tight">
-            {product.price.toLocaleString('uz-UZ')} so'm
+            {product.price.toLocaleString('uz-UZ')} {t.currency}
           </span>
           {product.oldPrice && (
             <span className="text-[11px] text-gray-400 line-through">
@@ -136,7 +137,7 @@ export default function FoodCard({ product }) {
             onClick={handlePlus}
             disabled={product.isOutOfStock}
             className="w-8 h-8 rounded-full bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-800 border border-emerald-200/60 flex items-center justify-center active:scale-90 transition-all shadow-xs"
-            aria-label="Savatga qo'shish"
+            aria-label={t.addToCart}
           >
             <Plus size={16} strokeWidth={2.5} />
           </button>

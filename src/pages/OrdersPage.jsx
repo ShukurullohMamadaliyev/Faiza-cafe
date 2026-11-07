@@ -27,13 +27,13 @@ export default function OrdersPage() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'new':
-        return { label: 'Qabul qilindi', bg: 'bg-blue-50 text-blue-700 border-blue-200' };
+        return { label: t.statusNew || 'Qabul qilindi', bg: 'bg-blue-50 text-blue-700 border-blue-200' };
       case 'preparing':
-        return { label: 'Oshxonada tayyorlanmoqda', bg: 'bg-amber-50 text-amber-700 border-amber-200' };
+        return { label: t.statusPreparing || 'Oshxonada tayyorlanmoqda', bg: 'bg-amber-50 text-amber-700 border-amber-200' };
       case 'delivering':
-        return { label: 'Yetkazilmoqda (Kuryerda)', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+        return { label: t.statusDelivering || 'Yetkazilmoqda (Kuryerda)', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
       case 'completed':
-        return { label: 'Yetkazildi', bg: 'bg-gray-100 text-gray-700 border-gray-200' };
+        return { label: t.statusCompleted || 'Yetkazildi', bg: 'bg-gray-100 text-gray-700 border-gray-200' };
       default:
         return { label: status, bg: 'bg-gray-100 text-gray-700 border-gray-200' };
     }
@@ -95,7 +95,7 @@ export default function OrdersPage() {
               🪙
             </div>
             <h4 className="font-black text-base text-gray-900">
-              {orderTab === 'active' ? t.noActiveOrders : 'Yakunlangan buyurtmalar mavjud emas'}
+              {orderTab === 'active' ? t.noActiveOrders : (t.noCompletedOrders || 'Yakunlangan buyurtmalar mavjud emas')}
             </h4>
             <p className="text-xs text-gray-500 max-w-xs">
               {t.noActiveDesc}
@@ -135,10 +135,10 @@ export default function OrdersPage() {
                       <div className={`h-1.5 rounded-full ${order.status === 'completed' ? 'bg-emerald-500' : 'bg-gray-200'}`}></div>
                     </div>
                     <div className="flex justify-between text-[10px] text-gray-400 font-semibold px-0.5">
-                      <span>Qabul</span>
-                      <span>Oshxona</span>
-                      <span>Yetkazish</span>
-                      <span>Yakun</span>
+                      <span>{t.statusSteps?.received || 'Qabul'}</span>
+                      <span>{t.statusSteps?.kitchen || 'Oshxona'}</span>
+                      <span>{t.statusSteps?.delivery || 'Yetkazish'}</span>
+                      <span>{t.statusSteps?.done || 'Yakun'}</span>
                     </div>
                   </div>
                 )}
@@ -149,7 +149,7 @@ export default function OrdersPage() {
                     <div key={idx} className="flex justify-between text-gray-700">
                       <span>{it.quantity}x {it.name}</span>
                       <span className="font-semibold text-gray-900">
-                        {(it.price * it.quantity).toLocaleString('uz-UZ')} so'm
+                        {(it.price * it.quantity).toLocaleString('uz-UZ')} {t.currency}
                       </span>
                     </div>
                   ))}
@@ -158,9 +158,9 @@ export default function OrdersPage() {
                 {/* Footer with total & actions */}
                 <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] text-gray-400 block font-medium">Jami to'lov:</span>
+                    <span className="text-[11px] text-gray-400 block font-medium">{t.orderTotalLabel || "Jami to'lov:"}</span>
                     <span className="text-sm font-black text-[#0d3b2e]">
-                      {order.total.toLocaleString('uz-UZ')} so'm
+                      {order.total.toLocaleString('uz-UZ')} {t.currency}
                     </span>
                   </div>
 

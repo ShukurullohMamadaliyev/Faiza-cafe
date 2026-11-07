@@ -32,7 +32,7 @@ export default function CartPage() {
   useEffect(() => {
     if (cart.length > 0) {
       telegram.showMainButton(
-        `Buyurtma berish • ${cartTotal.toLocaleString('uz-UZ')} so'm`,
+        `${t.checkoutBtn} • ${cartTotal.toLocaleString('uz-UZ')} ${t.currency}`,
         () => setIsCheckoutOpen(true)
       );
     } else {
@@ -113,10 +113,10 @@ export default function CartPage() {
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 animate-pulse"></span>
               <span className="font-bold text-gray-800 truncate">
                 {orderType === 'delivery'
-                  ? `Yetkazib berish: ${deliveryAddress}`
+                  ? `${t.delivery}: ${deliveryAddress}`
                   : orderType === 'takeaway'
-                  ? `Olib ketish: ${selectedBranch.name}`
-                  : 'Kafeda (Stolda buyurtma)'}
+                  ? `${t.takeaway}: ${selectedBranch.name}`
+                  : t.dineIn}
               </span>
             </div>
             <button
@@ -126,14 +126,14 @@ export default function CartPage() {
               }}
               className="text-emerald-700 font-bold hover:underline shrink-0"
             >
-              O'zgartirish
+              {t.change}
             </button>
           </div>
 
           {/* Cart Items List */}
           <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-card space-y-4">
             <h4 className="text-xs font-extrabold text-gray-400 uppercase tracking-wider">
-              Tanlangan taomlar ({cartCount})
+              {t.selectedDishes} ({cartCount})
             </h4>
 
             <div className="divide-y divide-gray-100">
@@ -155,14 +155,14 @@ export default function CartPage() {
                       <div className="mt-1 space-y-0.5">
                         {item.selectedModifiers.map((mod) => (
                           <div key={mod.id} className="text-[11px] text-gray-500 font-medium">
-                            + {mod.name} ({mod.price.toLocaleString('uz-UZ')} so'm)
+                            + {mod.name} ({mod.price.toLocaleString('uz-UZ')} {t.currency})
                           </div>
                         ))}
                       </div>
                     )}
 
                     <div className="text-xs font-black text-emerald-800 mt-1.5">
-                      {item.totalPrice.toLocaleString('uz-UZ')} so'm
+                      {item.totalPrice.toLocaleString('uz-UZ')} {t.currency}
                     </div>
                   </div>
 
@@ -192,8 +192,8 @@ export default function CartPage() {
             <div className="flex items-center gap-2.5">
               <span className="text-lg">🍴</span>
               <div>
-                <div className="text-xs font-bold text-gray-800">Priborlar (qoshiq, vilka, salfetka)</div>
-                <div className="text-[11px] text-gray-400">Buyurtmaga bepul qo'shiladi</div>
+                <div className="text-xs font-bold text-gray-800">{t.cutlery}</div>
+                <div className="text-[11px] text-gray-400">{t.freeWithOrder}</div>
               </div>
             </div>
             <input
@@ -240,14 +240,14 @@ export default function CartPage() {
           <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-card space-y-2 text-xs">
             <div className="flex justify-between text-gray-600 font-medium">
               <span>{t.dishesPrice}</span>
-              <span>{cartSubtotal.toLocaleString('uz-UZ')} so'm</span>
+              <span>{cartSubtotal.toLocaleString('uz-UZ')} {t.currency}</span>
             </div>
 
             {orderType === 'delivery' && (
               <div className="flex justify-between text-gray-600 font-medium">
                 <span>{t.deliveryFee}</span>
                 <span className="text-emerald-700 font-bold">
-                  Bepul 🚖
+                  {t.freeDelivery}
                 </span>
               </div>
             )}
@@ -255,14 +255,14 @@ export default function CartPage() {
             {discountAmount > 0 && (
               <div className="flex justify-between text-emerald-600 font-bold">
                 <span>{t.discount}</span>
-                <span>-{discountAmount.toLocaleString('uz-UZ')} so'm</span>
+                <span>-{discountAmount.toLocaleString('uz-UZ')} {t.currency}</span>
               </div>
             )}
 
             <div className="pt-2 border-t border-gray-100 flex justify-between text-base font-black text-gray-900">
               <span>{t.totalPay}</span>
               <span className="text-[#0d3b2e]">
-                {cartTotal.toLocaleString('uz-UZ')} so'm
+                {cartTotal.toLocaleString('uz-UZ')} {t.currency}
               </span>
             </div>
           </div>
@@ -282,10 +282,10 @@ export default function CartPage() {
             >
               <div className="flex items-center gap-2">
                 <ShoppingBag size={18} className="text-emerald-300" />
-                <span>Buyurtmani rasmiylashtirish</span>
+                <span>{t.checkoutBtn}</span>
               </div>
               <span className="bg-emerald-800/90 text-gold-300 px-3 py-1 rounded-xl text-xs font-black shadow-xs">
-                {cartTotal.toLocaleString('uz-UZ')} so'm
+                {cartTotal.toLocaleString('uz-UZ')} {t.currency}
               </span>
             </button>
           </div>

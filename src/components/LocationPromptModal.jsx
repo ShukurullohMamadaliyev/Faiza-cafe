@@ -9,6 +9,7 @@ export default function LocationPromptModal() {
     isDetectingLocation,
     detectAndSetLocation,
     deliveryAddress,
+    t,
     telegram
   } = useApp();
 
@@ -27,10 +28,10 @@ export default function LocationPromptModal() {
 
         <div className="space-y-1.5">
           <h3 className="text-lg font-black text-[#0d3b2e] tracking-tight">
-            Yetkazib berish manzilini aniqlash 📍
+            {t.locationPromptTitle || 'Yetkazib berish manzilini aniqlash 📍'}
           </h3>
           <p className="text-xs text-gray-500 leading-relaxed font-medium">
-            Taomlaringizni tez va to‘g‘ri yetkazib berishimiz uchun joriy joylashuvingizni (GPS) aniqlashga ruxsat bering.
+            {t.locationPromptDesc || 'Taomlaringizni tez va to‘g‘ri yetkazib berishimiz uchun joriy joylashuvingizni (GPS) aniqlashga ruxsat bering.'}
           </p>
         </div>
 
@@ -38,7 +39,7 @@ export default function LocationPromptModal() {
         {deliveryAddress && deliveryAddress !== 'Rishton tumani (Joriy joylashuv)' && (
           <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200/80 text-left text-xs space-y-1">
             <span className="text-[10px] text-emerald-800 font-extrabold uppercase tracking-wider block">
-              Aniqlangan manzil:
+              {t.detectedAddressLabel || 'Aniqlangan manzil:'}
             </span>
             <div className="font-bold text-gray-900 flex items-center gap-1.5">
               <Check size={14} className="text-emerald-600 shrink-0" />
@@ -57,12 +58,12 @@ export default function LocationPromptModal() {
             {isDetectingLocation ? (
               <>
                 <Loader2 size={16} className="animate-spin text-emerald-300" />
-                <span>GPS orqali aniqlanmoqda...</span>
+                <span>{t.gpsDetecting || 'GPS orqali aniqlanmoqda...'}</span>
               </>
             ) : (
               <>
                 <Navigation size={15} />
-                <span>📍 Joriy joylashuvimni aniqlash</span>
+                <span>{t.detectLocationBtn || '📍 Joriy joylashuvimni aniqlash'}</span>
               </>
             )}
           </button>
@@ -74,7 +75,7 @@ export default function LocationPromptModal() {
             }}
             className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 active:scale-98 text-gray-600 font-bold text-xs rounded-xl transition"
           >
-            Qo‘lda kiritaman
+            {t.enterManuallyBtn || 'Qo‘lda kiritaman'}
           </button>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { CATEGORIES } from '../data/mockData';
 import { useApp } from '../context/AppContext';
 
 export default function CategoryChips() {
-  const { selectedCategory, setSelectedCategory, telegram } = useApp();
+  const { selectedCategory, setSelectedCategory, t, telegram } = useApp();
 
   const handleSelect = (catId) => {
     telegram.triggerHaptic('selection');
@@ -15,6 +15,8 @@ export default function CategoryChips() {
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth">
         {CATEGORIES.map((cat) => {
           const isSelected = selectedCategory === cat.id;
+          const translatedName = t.categories?.[cat.id] || cat.name;
+
           return (
             <button
               key={cat.id}
@@ -26,7 +28,7 @@ export default function CategoryChips() {
               }`}
             >
               <span className="text-sm">{cat.icon}</span>
-              <span>{cat.name}</span>
+              <span>{translatedName}</span>
               {cat.badge && (
                 <span className="text-[9px] bg-red-500 text-white px-1.5 py-0.2 rounded-full font-extrabold uppercase">
                   {cat.badge}

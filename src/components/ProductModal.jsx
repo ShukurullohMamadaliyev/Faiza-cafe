@@ -9,6 +9,7 @@ export default function ProductModal() {
     addToCart,
     favorites,
     toggleFavorite,
+    t,
     telegram
   } = useApp();
 
@@ -121,11 +122,11 @@ export default function ProductModal() {
               {selectedProduct.description}
             </p>
 
-            {/* Modifiers List (Exact as screenshot) */}
+            {/* Modifiers List */}
             {selectedProduct.modifiers && selectedProduct.modifiers.length > 0 && (
               <div className="space-y-2.5 pt-2 border-t border-gray-100">
                 <h4 className="text-sm font-bold text-gray-900">
-                  Qo'shimcha modifikatorlar
+                  {t.modifiers || "Qo'shimcha modifikatorlar"}
                 </h4>
 
                 <div className="space-y-2">
@@ -156,7 +157,7 @@ export default function ProductModal() {
                           </span>
                         </div>
                         <span className="text-xs font-bold text-red-600">
-                          + {mod.price.toLocaleString('uz-UZ')} so'm
+                          + {mod.price.toLocaleString('uz-UZ')} {t.currency}
                         </span>
                       </div>
                     );
@@ -167,14 +168,14 @@ export default function ProductModal() {
           </div>
         </div>
 
-        {/* Bottom Sticky Action Bar (Exact as screenshot 6) */}
+        {/* Bottom Sticky Action Bar */}
         <div className="absolute bottom-0 inset-x-0 bg-white border-t border-gray-100 p-4 safe-area-bottom shadow-lg flex items-center justify-between gap-4">
           <div>
             <div className="text-[11px] font-semibold text-gray-400 truncate max-w-[140px]">
               {selectedProduct.name} • {selectedProduct.weight || '1 dona'}
             </div>
             <div className="text-base font-black text-gray-900">
-              {totalPrice.toLocaleString('uz-UZ')} so'm
+              {totalPrice.toLocaleString('uz-UZ')} {t.currency}
             </div>
           </div>
 
@@ -207,7 +208,7 @@ export default function ProductModal() {
               onClick={handleAdd}
               className="py-3 px-6 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-95 text-white font-extrabold text-sm rounded-2xl shadow-float transition flex items-center gap-2"
             >
-              <span>Qo'shish</span>
+              <span>{t.add || "Qo'shish"}</span>
             </button>
           </div>
         </div>

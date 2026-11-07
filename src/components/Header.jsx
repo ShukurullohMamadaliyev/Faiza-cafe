@@ -59,7 +59,7 @@ export default function Header({ showSearch = true }) {
                 08:00 – 03:00
               </span>
               <span>•</span>
-              <span className="text-gray-400">Halol</span>
+              <span className="text-gray-400">{t.halal || 'Halol'}</span>
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function Header({ showSearch = true }) {
         {/* Cafe Status Badge */}
         <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-200/60 shadow-xs">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Ochiq
+          {t.open || 'Ochiq'}
         </div>
       </div>
 
@@ -87,17 +87,17 @@ export default function Header({ showSearch = true }) {
           <div className="leading-tight truncate pr-1">
             <div className="text-[10px] font-extrabold text-brand-700 uppercase tracking-wider">
               {orderType === 'delivery'
-                ? 'Yetkazib berish manzili'
+                ? (t.deliveryAddressLabel || 'Yetkazib berish manzili')
                 : orderType === 'takeaway'
-                ? 'Olib ketish filiali'
-                : 'Kafedagi stol'}
+                ? (t.takeawayBranchLabel || 'Olib ketish filiali')
+                : (t.tableLabel || 'Kafedagi stol')}
             </div>
             <div className="text-xs font-bold text-gray-900 truncate">
               {orderType === 'delivery'
                 ? deliveryAddress
                 : orderType === 'takeaway'
                 ? selectedBranch.name
-                : `${tableNumber}-stol (Zalda)`}
+                : `${tableNumber}-stol`}
             </div>
           </div>
         </button>
@@ -107,7 +107,7 @@ export default function Header({ showSearch = true }) {
           <button
             onClick={handleGpsClick}
             disabled={isDetectingLocation}
-            title="GPS orqali aniqlash"
+            title={t.detectGps}
             className="flex items-center gap-1 bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold px-2.5 py-1.5 rounded-xl shadow-xs shrink-0 active:scale-95 transition"
           >
             {isDetectingLocation ? (
@@ -127,7 +127,7 @@ export default function Header({ showSearch = true }) {
           }}
           className="flex items-center gap-1 text-xs font-semibold text-brand-700 pl-2 shrink-0 cursor-pointer"
         >
-          <span>O'zgartirish</span>
+          <span>{t.change || "O'zgartirish"}</span>
           <ChevronDown size={14} className="text-brand-600 group-hover:translate-y-0.5 transition-transform" />
         </button>
       </div>
@@ -205,10 +205,10 @@ export default function Header({ showSearch = true }) {
             <div className="flex items-center justify-between pb-2 border-b border-gray-100">
               <h3 className="font-bold text-base text-[#0d3b2e]">
                 {orderType === 'delivery'
-                  ? 'Yetkazib berish manzilini kiriting'
+                  ? (t.deliveryAddressLabel || 'Yetkazib berish manzili')
                   : orderType === 'takeaway'
-                  ? 'Faiza Cafe filialini tanlang'
-                  : 'Stol raqamini tanlang'}
+                  ? (t.selectBranch || 'Filialni tanlang')
+                  : (t.tableNumber || 'Stol raqami')}
               </h3>
               <button
                 onClick={() => setIsBranchModalOpen(false)}
@@ -236,31 +236,33 @@ export default function Header({ showSearch = true }) {
                   {isDetectingLocation ? (
                     <>
                       <Loader2 size={16} className="animate-spin text-emerald-700" />
-                      <span>GPS orqali joylashuv aniqlanmoqda...</span>
+                      <span>{t.gpsDetecting || 'GPS orqali joylashuv aniqlanmoqda...'}</span>
                     </>
                   ) : (
                     <>
                       <Navigation size={15} className="text-emerald-700" />
-                      <span>📍 Mening joriy joylashuvimni aniqlash (GPS)</span>
+                      <span>📍 {t.detectGps || 'Mening joriy joylashuvimni aniqlash (GPS)'}</span>
                     </>
                   )}
                 </button>
 
                 <div className="relative flex items-center">
                   <div className="flex-grow border-t border-gray-200"></div>
-                  <span className="shrink mx-2 text-[11px] text-gray-400 font-medium">yoki qo‘lda kiriting</span>
+                  <span className="shrink mx-2 text-[11px] text-gray-400 font-medium">
+                    {t.orEnterManually || 'yoki qo‘lda kiriting'}
+                  </span>
                   <div className="flex-grow border-t border-gray-200"></div>
                 </div>
 
                 <div>
                   <label className="text-xs font-semibold text-gray-600 block mb-1">
-                    Aniq manzil yoki mo‘ljal:
+                    {t.address || 'Aniq manzil yoki mo‘ljal:'}
                   </label>
                   <input
                     type="text"
                     value={tempAddress}
                     onChange={(e) => setTempAddress(e.target.value)}
-                    placeholder="Masalan: Rishton, Mustaqillik ko‘chasi, 15-uy..."
+                    placeholder={t.addressInputPlaceholder || "Masalan: Rishton, Mustaqillik ko‘chasi, 15-uy..."}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 font-medium"
                   />
                 </div>
@@ -268,7 +270,7 @@ export default function Header({ showSearch = true }) {
                 {/* Rishton tezkor manzillar */}
                 <div className="space-y-1.5 pt-1">
                   <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">
-                    Ommabop mo‘ljallar:
+                    {t.popularLandmarks || 'Ommabop mo‘ljallar:'}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {[
@@ -301,14 +303,14 @@ export default function Header({ showSearch = true }) {
                   }}
                   className="w-full py-3 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-bold rounded-xl text-sm transition shadow-md"
                 >
-                  Manzilni saqlash
+                  {t.saveAddress || 'Manzilni saqlash'}
                 </button>
               </div>
             )}
 
             {orderType === 'takeaway' && (
               <div className="space-y-2">
-                <p className="text-xs text-gray-500 mb-2">Buyurtmangizni qaysi filialdan olib ketmoqchisiz?</p>
+                <p className="text-xs text-gray-500 mb-2">{t.selectBranch || 'Buyurtmangizni qaysi filialdan olib ketmoqchisiz?'}</p>
                 {BRANCHES.map((branch) => (
                   <div
                     key={branch.id}
@@ -337,7 +339,7 @@ export default function Header({ showSearch = true }) {
 
             {orderType === 'dineIn' && (
               <div className="space-y-3">
-                <p className="text-xs text-gray-500">Kafedagi stolingizdagi raqamni tanlang:</p>
+                <p className="text-xs text-gray-500">{t.tableNumber || 'Kafedagi stolingizdagi raqamni tanlang:'}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {['1', '2', '3', '4', '5', '6', '7', '8', 'VIP 1', 'VIP 2'].map((tbl) => (
                     <button

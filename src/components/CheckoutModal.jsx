@@ -21,11 +21,11 @@ export default function CheckoutModal() {
   } = useApp();
 
   const [name, setName] = useState(telegram.user?.first_name || 'Sherzodbek');
-  const [phone, setPhone] = useState('+998 90 123 45 67');
+  const [phone, setPhone] = useState('+998 90 377 30 00');
   const [address, setAddress] = useState(deliveryAddress);
   const [table, setTable] = useState(tableNumber);
   const [note, setNote] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('Naqd'); // 'Naqd' | 'Payme' | 'Click' | 'Uzum'
+  const [paymentMethod, setPaymentMethod] = useState('Naqd');
 
   if (!isCheckoutOpen) return null;
 
@@ -63,7 +63,7 @@ export default function CheckoutModal() {
               {t.checkoutTitle}
             </h3>
             <p className="text-xs text-gray-500 font-medium">
-              Fayz Cafe • {orderType === 'delivery' ? t.delivery : orderType === 'takeaway' ? t.takeaway : t.dineIn}
+              Faiza Cafe • {orderType === 'delivery' ? t.delivery : orderType === 'takeaway' ? t.takeaway : t.dineIn}
             </p>
           </div>
           <button
@@ -79,7 +79,7 @@ export default function CheckoutModal() {
           {/* Contact Details */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-              Mijoz ma'lumotlari
+              {t.clientInfo || "Mijoz ma'lumotlari"}
             </h4>
 
             <div>
@@ -112,7 +112,7 @@ export default function CheckoutModal() {
           {/* Delivery / Takeaway Details */}
           <div className="space-y-3 pt-2 border-t border-gray-100">
             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-              Qabul qilish tartibi
+              {t.receiveType || "Qabul qilish tartibi"}
             </h4>
 
             {orderType === 'delivery' && (
@@ -138,7 +138,7 @@ export default function CheckoutModal() {
               <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-3">
                 <ShoppingBag size={20} className="text-emerald-700 shrink-0" />
                 <div>
-                  <div className="text-xs font-bold text-emerald-900">Filialdan olib ketish</div>
+                  <div className="text-xs font-bold text-emerald-900">{t.takeaway}</div>
                   <div className="text-xs text-emerald-700 font-medium">{selectedBranch.name} ({selectedBranch.address})</div>
                 </div>
               </div>
@@ -147,7 +147,7 @@ export default function CheckoutModal() {
             {orderType === 'dineIn' && (
               <div>
                 <label className="text-xs font-semibold text-gray-700 block mb-1">
-                  Stol raqami
+                  {t.tableNumber || "Stol raqami"}
                 </label>
                 <input
                   type="text"
@@ -161,13 +161,13 @@ export default function CheckoutModal() {
 
             <div>
               <label className="text-xs font-semibold text-gray-700 block mb-1">
-                {t.orderNote} (ixtiyoriy)
+                {t.orderNote}
               </label>
               <input
                 type="text"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Masalan: Achchiq sous alohida idishda bo'lsin"
+                placeholder={t.orderNotePlaceholder}
                 className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-medium text-gray-700 focus:outline-none focus:border-emerald-600"
               />
             </div>
@@ -211,30 +211,26 @@ export default function CheckoutModal() {
           <div className="bg-gray-50 rounded-2xl p-4 space-y-2 text-xs">
             <div className="flex justify-between text-gray-600 font-medium">
               <span>{t.dishesPrice}</span>
-              <span>{cartSubtotal.toLocaleString('uz-UZ')} so'm</span>
+              <span>{cartSubtotal.toLocaleString('uz-UZ')} {t.currency}</span>
             </div>
             {orderType === 'delivery' && (
               <div className="flex justify-between text-gray-600 font-medium">
                 <span>{t.deliveryFee}</span>
-                <span>
-                  {deliveryFee === 0 ? (
-                    <span className="text-emerald-600 font-bold">Bepul</span>
-                  ) : (
-                    `${deliveryFee.toLocaleString('uz-UZ')} so'm`
-                  )}
+                <span className="text-emerald-700 font-bold">
+                  {t.freeDelivery || "Bepul 🚖"}
                 </span>
               </div>
             )}
             {discountAmount > 0 && (
               <div className="flex justify-between text-emerald-600 font-bold">
                 <span>{t.discount}</span>
-                <span>-{discountAmount.toLocaleString('uz-UZ')} so'm</span>
+                <span>-{discountAmount.toLocaleString('uz-UZ')} {t.currency}</span>
               </div>
             )}
             <div className="pt-2 border-t border-gray-200 flex justify-between text-sm font-black text-gray-900">
               <span>{t.totalPay}</span>
               <span className="text-[#0d3b2e]">
-                {cartTotal.toLocaleString('uz-UZ')} so'm
+                {cartTotal.toLocaleString('uz-UZ')} {t.currency}
               </span>
             </div>
           </div>
@@ -244,7 +240,7 @@ export default function CheckoutModal() {
             type="submit"
             className="w-full py-3.5 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-extrabold text-sm rounded-2xl shadow-float transition"
           >
-            {t.confirmOrder} • {cartTotal.toLocaleString('uz-UZ')} so'm
+            {t.confirmOrder} • {cartTotal.toLocaleString('uz-UZ')} {t.currency}
           </button>
         </form>
       </div>

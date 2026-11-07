@@ -11,7 +11,9 @@ import {
   ShieldAlert,
   ChevronRight,
   Sparkles,
-  PhoneCall
+  PhoneCall,
+  Phone,
+  X
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -31,12 +33,13 @@ export default function ProfilePage() {
   const [userName, setUserName] = useState(telegram.user?.first_name || 'Sherzodbek');
   const [isEditingName, setIsEditingName] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
 
   const favProducts = productList.filter((p) => favorites.includes(p.id));
 
   return (
     <div className="pb-28 min-h-screen bg-[#F8FAF9]">
-      {/* Header matching screenshot 11 */}
+      {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30 flex items-center justify-between">
         <button
           onClick={() => {
@@ -51,7 +54,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="p-4 space-y-4">
-        {/* User Card matching screenshot 11 */}
+        {/* User Card */}
         <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-card flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-2xl bg-[#0d3b2e] text-white flex items-center justify-center font-black text-xl shadow-md border-2 border-emerald-400/30 overflow-hidden">
@@ -75,7 +78,7 @@ export default function ProfilePage() {
                   <button
                     onClick={() => {
                       setIsEditingName(false);
-                      showToast('Ism yangilandi');
+                      showToast(t.nameUpdated || 'Ism yangilandi');
                     }}
                     className="text-xs bg-[#0d3b2e] text-white px-2 py-1 rounded-md"
                   >
@@ -96,7 +99,7 @@ export default function ProfilePage() {
                 </div>
               )}
               <span className="text-xs text-gray-400 font-medium block mt-0.5">
-                +998 90 123 45 67
+                +998 90 377 30 00
               </span>
             </div>
           </div>
@@ -142,7 +145,7 @@ export default function ProfilePage() {
               <span className="text-xs font-bold text-gray-800">{t.favorites}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-gray-400">{favorites.length} ta</span>
+              <span className="text-xs font-bold text-gray-400">{favorites.length} {t.itemsInCart || 'ta'}</span>
               <ChevronRight size={16} className="text-gray-300" />
             </div>
           </button>
@@ -150,7 +153,7 @@ export default function ProfilePage() {
           <button
             onClick={() => {
               telegram.triggerHaptic('light');
-              showToast('Manzillar saqlandi');
+              showToast(t.addressesSaved || 'Manzillar saqlandi');
             }}
             className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition text-left"
           >
@@ -166,7 +169,7 @@ export default function ProfilePage() {
           <button
             onClick={() => {
               telegram.triggerHaptic('light');
-              showToast('Mavjud promokodlar: FAYZ10, FAYZ20K');
+              showToast(t.promosAvailable || 'Mavjud promokodlar: FAYZ10, FAYZ20K');
             }}
             className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition text-left"
           >
@@ -182,7 +185,7 @@ export default function ProfilePage() {
           <button
             onClick={() => {
               telegram.triggerHaptic('light');
-              showToast('Bildirishnomalar yoqilgan');
+              showToast(t.notificationsEnabled || 'Bildirishnomalar yoqilgan');
             }}
             className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition text-left"
           >
@@ -196,7 +199,7 @@ export default function ProfilePage() {
           </button>
         </div>
 
-        {/* Language Switcher matching screenshot 11 */}
+        {/* Language Switcher */}
         <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-card space-y-2.5">
           <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider">
             {t.language}
@@ -213,11 +216,11 @@ export default function ProfilePage() {
                 onClick={() => {
                   telegram.triggerHaptic('selection');
                   setLang(item.id);
-                  showToast(`Til o'zgartirildi: ${item.label}`);
+                  showToast(item.id === 'ru' ? 'Язык изменен: RU' : item.id === 'en' ? 'Language switched: EN' : "Til o'zgartirildi: O'Z");
                 }}
                 className={`py-2 rounded-xl text-xs font-extrabold transition-all ${
                   lang === item.id
-                    ? 'bg-[#0d3b2e] text-white shadow-sm'
+                    ? 'bg-[#0d3b2e] text-white shadow-sm ring-2 ring-emerald-500/30'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -237,24 +240,101 @@ export default function ProfilePage() {
             className="w-full py-3.5 bg-gray-900 hover:bg-black active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2"
           >
             <ShieldAlert size={16} className="text-amber-400" />
-            <span>Admin Panel (Kafedra boshqaruvi)</span>
+            <span>{t.adminPanel}</span>
           </button>
         </div>
 
-        {/* Support & Version */}
-        <div className="text-center pt-2 space-y-1">
+        {/* Support & Version with 2-number selector */}
+        <div className="text-center pt-2 space-y-2">
           <p className="text-[11px] text-gray-400 font-medium">
-            Fayz Cafe Telegram Mini App v1.0.0
+            Faiza Cafe Telegram Mini App v1.0.0
           </p>
-          <a
-            href="tel:+998712000000"
-            className="inline-flex items-center gap-1 text-xs text-emerald-800 font-bold hover:underline"
+          <button
+            onClick={() => {
+              telegram.triggerHaptic('selection');
+              setShowSupportModal(true);
+            }}
+            className="inline-flex items-center gap-1.5 text-xs text-emerald-800 font-bold bg-emerald-50 hover:bg-emerald-100 px-3.5 py-2 rounded-xl border border-emerald-200 transition active:scale-95"
           >
-            <PhoneCall size={12} />
-            <span>Qo'llab-quvvatlash xizmati</span>
-          </a>
+            <PhoneCall size={14} className="text-emerald-700" />
+            <span>{t.supportService}</span>
+          </button>
         </div>
       </div>
+
+      {/* 2 ta Raqamli Qo'llab-quvvatlash Modali (Support Modal) */}
+      {showSupportModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 select-none animate-fade-in">
+          <div className="bg-white w-full max-w-sm rounded-t-[32px] sm:rounded-3xl p-5 space-y-4 shadow-2xl animate-slide-up border border-emerald-100">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <PhoneCall size={16} />
+                </div>
+                <div>
+                  <h3 className="font-black text-sm text-[#0d3b2e]">{t.callSupport}</h3>
+                  <p className="text-[11px] text-gray-400">{t.callPrompt}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSupportModal(false)}
+                className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            <div className="space-y-2.5">
+              {/* 1-Raqam: +998 90 377 30 00 */}
+              <a
+                href="tel:+998903773000"
+                onClick={() => telegram.triggerHaptic('medium')}
+                className="p-3.5 bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200 rounded-2xl flex items-center justify-between transition group active:scale-98"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                    <Phone size={18} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-gray-500">{t.callLine1}</div>
+                    <div className="text-sm font-black text-[#0d3b2e] tracking-wide">+998 90 377 30 00</div>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-xl shadow-xs border border-emerald-100">
+                  {t.call}
+                </span>
+              </a>
+
+              {/* 2-Raqam: +998 98 571 00 67 */}
+              <a
+                href="tel:+998985710067"
+                onClick={() => telegram.triggerHaptic('medium')}
+                className="p-3.5 bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200 rounded-2xl flex items-center justify-between transition group active:scale-98"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                    <Phone size={18} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-gray-500">{t.callLine2}</div>
+                    <div className="text-sm font-black text-[#0d3b2e] tracking-wide">+998 98 571 00 67</div>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-xl shadow-xs border border-emerald-100">
+                  {t.call}
+                </span>
+              </a>
+            </div>
+
+            <button
+              onClick={() => setShowSupportModal(false)}
+              className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs rounded-xl transition"
+            >
+              {t.cancel}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Favorites Modal */}
       {showFavoritesModal && (
@@ -263,7 +343,7 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between pb-2 border-b border-gray-100">
               <h3 className="font-bold text-base text-[#0d3b2e] flex items-center gap-2">
                 <Heart size={18} className="text-red-500 fill-red-500" />
-                <span>Sevimlilar ({favProducts.length})</span>
+                <span>{t.favorites} ({favProducts.length})</span>
               </h3>
               <button
                 onClick={() => setShowFavoritesModal(false)}
@@ -275,7 +355,7 @@ export default function ProfilePage() {
 
             {favProducts.length === 0 ? (
               <p className="text-center text-xs text-gray-400 py-6">
-                Hozircha sevimli taomlar qo'shilmagan
+                {t.noFavoritesYet || "Hozircha sevimli taomlar yo'q"}
               </p>
             ) : (
               <div className="space-y-2">
@@ -298,7 +378,7 @@ export default function ProfilePage() {
                         {p.name}
                       </div>
                       <div className="text-xs font-black text-emerald-800">
-                        {p.price.toLocaleString('uz-UZ')} so'm
+                        {p.price.toLocaleString('uz-UZ')} {t.currency}
                       </div>
                     </div>
                   </div>

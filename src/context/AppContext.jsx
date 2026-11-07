@@ -9,7 +9,20 @@ const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const telegram = useTelegram();
-  const [lang, setLang] = useState('uz');
+  const [lang, setLangState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('faiza_cafe_lang') || 'uz';
+    }
+    return 'uz';
+  });
+
+  const setLang = (newLang) => {
+    setLangState(newLang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('faiza_cafe_lang', newLang);
+    }
+  };
+
   const t = translations[lang] || translations.uz;
 
   // Active view tab

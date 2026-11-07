@@ -47,7 +47,7 @@ export default function OrderSuccessModal() {
 
           <div className="flex items-center gap-2 text-gray-700 font-medium">
             <Clock size={14} className="text-emerald-700 shrink-0" />
-            <span>Kutilayotgan vaqt: <strong className="text-gray-900">{placedOrder.estimatedTime}</strong></span>
+            <span>{t.estTime}: <strong className="text-gray-900">{placedOrder.estimatedTime}</strong></span>
           </div>
 
           <div className="flex items-center gap-2 text-gray-700 font-medium">
@@ -62,9 +62,9 @@ export default function OrderSuccessModal() {
           </div>
 
           <div className="flex justify-between items-center pt-2 border-t border-emerald-100 text-gray-900 font-bold">
-            <span>Jami summa:</span>
+            <span>{t.orderTotalLabel || 'Jami summa:'}</span>
             <span className="text-sm font-black text-[#0d3b2e]">
-              {placedOrder.total.toLocaleString('uz-UZ')} so'm
+              {placedOrder.total.toLocaleString('uz-UZ')} {t.currency}
             </span>
           </div>
         </div>

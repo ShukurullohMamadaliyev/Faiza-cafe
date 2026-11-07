@@ -43,10 +43,10 @@ export default function HomePage() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-black text-base text-[#0d3b2e]">
-                {searchQuery ? `"${searchQuery}" bo'yicha qidiruv` : t.allDishes}
+                {searchQuery ? `"${searchQuery}"` : (t.categories?.[selectedCategory] || t.allDishes)}
               </h3>
               <span className="text-xs text-gray-500 font-semibold">
-                {filteredProducts.length} ta taom
+                {filteredProducts.length} {t.dishesCount}
               </span>
             </div>
 
@@ -58,15 +58,15 @@ export default function HomePage() {
               </div>
             ) : (
               <div className="text-center py-12 text-gray-400">
-                <p className="text-sm font-semibold">Hech qanday taom topilmadi</p>
-                <p className="text-xs mt-1">Boshqa so'z bilan qidirib ko'ring</p>
+                <p className="text-sm font-semibold">{t.cartEmpty}</p>
+                <p className="text-xs mt-1">{t.cartEmptyDesc}</p>
               </div>
             )}
           </div>
         ) : (
-          /* Default Rich Multi-Section Layout matching screenshots */
+          /* Default Rich Multi-Section Layout */
           <>
-            {/* Section 1: Hit Taomlar (Matching screenshot 1 & 2 "Хит продаж") */}
+            {/* Section 1: Hit Taomlar */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export default function HomePage() {
                   }}
                   className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
                 >
-                  <span>Barchasi</span>
+                  <span>{t.seeAll}</span>
                   <ArrowRight size={13} />
                 </button>
               </div>
@@ -98,7 +98,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Section 2: Yangiliklar (Matching screenshot 3 "ЯНГИЛИК") */}
+            {/* Section 2: Yangiliklar */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -118,7 +118,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Section 3: Aksiyalar & To'plamlar (Matching screenshot 3 & 4 "AKSIYALAR") */}
+            {/* Section 3: Aksiyalar */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
