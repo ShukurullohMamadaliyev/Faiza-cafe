@@ -22,7 +22,8 @@ export default function CheckoutModal() {
     userName,
     userCoords,
     detectAndSetLocation,
-    isDetectingLocation
+    isDetectingLocation,
+    showToast
   } = useApp();
 
   const [name, setName] = useState(userName || telegram.user?.first_name || 'Mijoz');
@@ -92,10 +93,37 @@ export default function CheckoutModal() {
   };
 
   const paymentOptions = [
-    { id: 'Naqd', label: t.payCash, icon: Banknote, color: 'text-emerald-700 bg-emerald-50' },
-    { id: 'Payme', label: t.payPayme, icon: CreditCard, color: 'text-cyan-700 bg-cyan-50' },
-    { id: 'Click', label: t.payClick, icon: CreditCard, color: 'text-blue-700 bg-blue-50' },
-    { id: 'Uzum', label: t.payUzum, icon: CreditCard, color: 'text-purple-700 bg-purple-50' },
+    {
+      id: 'Naqd',
+      label: t.payCash || 'Naqd pul orqali',
+      icon: Banknote,
+      color: 'text-emerald-700 bg-emerald-50',
+      active: true
+    },
+    {
+      id: 'Payme',
+      label: 'Payme',
+      icon: CreditCard,
+      color: 'text-cyan-700 bg-cyan-50',
+      active: false,
+      badge: t.comingSoon || 'Tez kunda'
+    },
+    {
+      id: 'Click',
+      label: 'Click',
+      icon: CreditCard,
+      color: 'text-blue-700 bg-blue-50',
+      active: false,
+      badge: t.comingSoon || 'Tez kunda'
+    },
+    {
+      id: 'Uzum',
+      label: 'Uzum Bank',
+      icon: CreditCard,
+      color: 'text-purple-700 bg-purple-50',
+      active: false,
+      badge: t.comingSoon || 'Tez kunda'
+    },
   ];
 
   return (
@@ -273,26 +301,52 @@ export default function CheckoutModal() {
 
             <div className="grid grid-cols-2 gap-2">
               {paymentOptions.map((opt) => {
-                const isSelected = paymentMethod === opt.id;
+                const isSelected = paymentMethod === opt.id && opt.active;
                 const Icon = opt.icon;
                 return (
                   <button
                     key={opt.id}
                     type="button"
                     onClick={() => {
+                      if (!opt.active) {
+                        telegram.triggerHaptic('warning');
+                        showToast(
+                          t.cashOnlyNotice ||
+                            `${opt.label} tez kunda ishga tushadi! Hozircha faqat naqd pulda to‘lov qabul qilinadi.`
+                        );
+                        return;
+                      }
                       telegram.triggerHaptic('selection');
                       setPaymentMethod(opt.id);
                     }}
-                    className={`flex items-center gap-2 p-3 rounded-2xl border transition text-left ${
+                    className={`relative flex items-center justify-between p-3 rounded-2xl border transition text-left ${
                       isSelected
-                        ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold'
-                        : 'border-gray-200 bg-white text-gray-700 font-medium hover:border-gray-300'
+                        ? 'border-emerald-600 bg-emerald-50/80 text-emerald-950 font-bold ring-1 ring-emerald-600/30 shadow-xs'
+                        : opt.active
+                        ? 'border-gray-200 bg-white text-gray-700 font-medium hover:border-gray-300'
+                        : 'border-dashed border-gray-200 bg-gray-50/70 text-gray-400 opacity-80 cursor-not-allowed'
                     }`}
                   >
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${opt.color}`}>
-                      <Icon size={16} />
+                    <div className="flex items-center gap-2 truncate mr-1">
+                      <div
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                          opt.active ? opt.color : 'text-gray-400 bg-gray-100'
+                        }`}
+                      >
+                        <Icon size={16} />
+                      </div>
+                      <span className="text-xs truncate">{opt.label}</span>
                     </div>
-                    <span className="text-xs truncate">{opt.label}</span>
+
+                    {!opt.active && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-200/60 shrink-0">
+                        {opt.badge}
+                      </span>
+                    )}
+
+                    {isSelected && (
+                      <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
+                    )}
                   </button>
                 );
               })}

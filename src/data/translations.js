@@ -97,6 +97,8 @@ export const translations = {
     payPayme: 'Payme',
     payClick: 'Click',
     payUzum: 'Uzum Bank',
+    comingSoon: 'Tez kunda',
+    cashOnlyNotice: 'Ushbu to‘lov usuli tez kunda ishga tushadi! Hozircha faqat naqd pul orqali to‘lov mavjud.',
     confirmOrder: 'Buyurtmani yuborish',
 
     // Success Screen
@@ -248,6 +250,8 @@ export const translations = {
     payPayme: 'Payme',
     payClick: 'Click',
     payUzum: 'Uzum Bank',
+    comingSoon: 'Скоро',
+    cashOnlyNotice: 'Этот способ оплаты скоро станет доступен! Пока оплата только наличными.',
     confirmOrder: 'Подтвердить заказ',
 
     // Success Screen
@@ -399,6 +403,8 @@ export const translations = {
     payPayme: 'Payme',
     payClick: 'Click',
     payUzum: 'Uzum Bank',
+    comingSoon: 'Soon',
+    cashOnlyNotice: 'This payment method is coming soon! Only cash payment is available for now.',
     confirmOrder: 'Place Order',
 
     // Success Screen
