@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
   const token = process.env.BOT_TOKEN || '9141727536:AAGkeeNUQGbsD3WBtMciA17UxhBkFhPLWx0';
   const adminIdsStr = process.env.ADMIN_IDS || '8340079081';
-  let orderGroupId = process.env.ORDER_GROUP_ID || '';
+  let orderGroupId = process.env.ORDER_GROUP_ID || '-1003577268173';
 
   try {
     const fs = await import('fs');
@@ -36,15 +36,18 @@ export default async function handler(req, res) {
 
   const recipients = [];
   if (orderGroupId) {
+    // Agar guruh ulangan bo'lsa, buyurtma FAQAT guruhga yuboriladi
     recipients.push(String(orderGroupId));
+  } else {
+    // Guruh belgilanmagan bo'lsagina adminga yuboriladi
+    adminIdsStr
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean)
+      .forEach((id) => {
+        if (!recipients.includes(id)) recipients.push(id);
+      });
   }
-  adminIdsStr
-    .split(',')
-    .map((id) => id.trim())
-    .filter(Boolean)
-    .forEach((id) => {
-      if (!recipients.includes(id)) recipients.push(id);
-    });
 
   try {
     const order = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;

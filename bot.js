@@ -286,11 +286,14 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
   const groupConfig = getGroupConfig();
   const recipients = [];
   if (groupConfig?.groupId) {
+    // Agar guruh ulangan bo'lsa, buyurtma bildirishnomasi va lokatsiya FAQAT guruhga yuboriladi
     recipients.push(String(groupConfig.groupId));
-  }
-  for (const adminId of ADMIN_IDS) {
-    if (!recipients.includes(String(adminId))) {
-      recipients.push(String(adminId));
+  } else {
+    // Guruh belgilanmagan bo'lsagina zaxira sifatida adminga yuboriladi
+    for (const adminId of ADMIN_IDS) {
+      if (!recipients.includes(String(adminId))) {
+        recipients.push(String(adminId));
+      }
     }
   }
 
