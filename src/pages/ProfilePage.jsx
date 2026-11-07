@@ -27,10 +27,13 @@ export default function ProfilePage() {
     favorites,
     productList,
     setSelectedProduct,
-    showToast
+    showToast,
+    userPhone,
+    userName,
+    setUserName
   } = useApp();
 
-  const [userName, setUserName] = useState(telegram.user?.first_name || 'Sherzodbek');
+  const [editNameVal, setEditNameVal] = useState(userName || telegram.user?.first_name || 'Mijoz');
   const [isEditingName, setIsEditingName] = useState(false);
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showSupportModal, setShowSupportModal] = useState(false);
@@ -75,14 +78,18 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-1.5">
                   <input
                     type="text"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
+                    value={editNameVal}
+                    onChange={(e) => setEditNameVal(e.target.value)}
                     className="text-sm font-bold border border-emerald-500 rounded-lg px-2 py-0.5 focus:outline-none"
                     autoFocus
                   />
                   <button
                     onClick={() => {
                       setIsEditingName(false);
+                      setUserName(editNameVal);
+                      if (typeof window !== 'undefined') {
+                        localStorage.setItem('faiza_cafe_user_name', editNameVal);
+                      }
                       showToast(t.nameUpdated || 'Ism yangilandi');
                     }}
                     className="text-xs bg-[#0d3b2e] text-white px-2 py-1 rounded-md"
@@ -93,18 +100,22 @@ export default function ProfilePage() {
               ) : (
                 <div className="flex items-center gap-2">
                   <h3 className="font-black text-base text-gray-900 leading-tight">
-                    {userName}
+                    {userName || 'Mijoz'}
                   </h3>
                   <button
-                    onClick={() => setIsEditingName(true)}
+                    onClick={() => {
+                      setEditNameVal(userName);
+                      setIsEditingName(true);
+                    }}
                     className="text-gray-400 hover:text-emerald-700"
                   >
                     <Edit3 size={14} />
                   </button>
                 </div>
               )}
-              <span className="text-xs text-gray-400 font-medium block mt-0.5">
-                +998 90 377 30 00
+              <span className="text-xs text-emerald-800 font-bold block mt-1 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200/60 inline-flex items-center gap-1">
+                <span>📱</span>
+                <span>{userPhone || '+998 90 377 30 00'}</span>
               </span>
             </div>
           </div>

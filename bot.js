@@ -15,13 +15,50 @@ if (!token) {
 
 const API_BASE = `https://api.telegram.org/bot${token}`;
 const DB_FILE = path.resolve('orders_db.json');
+const USERS_DB_FILE = path.resolve('users_db.json');
 
 // Admin tekshiruvi
 function isAdmin(userId) {
   return ADMIN_IDS.includes(String(userId));
 }
 
-// Local Orders Database
+// ==========================================
+// 1. Foydalanuvchilar Bazasi (Users Database)
+// ==========================================
+function getUsersDb() {
+  try {
+    if (fs.existsSync(USERS_DB_FILE)) {
+      return JSON.parse(fs.readFileSync(USERS_DB_FILE, 'utf-8'));
+    }
+  } catch (e) {
+    console.error('Error reading users_db.json:', e);
+  }
+  return {};
+}
+
+function getUserFromDb(userId) {
+  const users = getUsersDb();
+  return users[String(userId)] || null;
+}
+
+function saveUserToDb(userId, userData) {
+  try {
+    const users = getUsersDb();
+    users[String(userId)] = {
+      ...(users[String(userId)] || {}),
+      ...userData,
+      userId: String(userId),
+      updatedAt: new Date().toISOString()
+    };
+    fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Error writing users_db.json:', e);
+  }
+}
+
+// ==========================================
+// 2. Buyurtmalar Bazasi (Orders Database)
+// ==========================================
 function getOrdersDb() {
   try {
     if (fs.existsSync(DB_FILE)) {
@@ -78,13 +115,33 @@ async function tg(method, data = {}) {
   }
 }
 
-// Bosh Reply Keyboard - Admin (8340079081) bo'lsa Admin Panel tugmasi chiqadi
+// Bosh Reply Keyboard - Foydalanuvchi ma'lumotlari bilan shaxsiylashtirilgan WebApp URL
 function getMainKeyboard(userId) {
+  const user = getUserFromDb(userId);
+  let appUrl = webAppUrl;
+  const queryParts = [];
+
+  if (user && user.phone) {
+    queryParts.push(`phone=${encodeURIComponent(user.phone)}`);
+    if (user.name) {
+      queryParts.push(`name=${encodeURIComponent(user.name)}`);
+    }
+  }
+
+  if (isAdmin(userId)) {
+    queryParts.push(`admin=8340079081`);
+  }
+
+  if (queryParts.length > 0) {
+    const sep = appUrl.includes('?') ? '&' : '?';
+    appUrl = `${appUrl}${sep}${queryParts.join('&')}`;
+  }
+
   const keyboard = [
     [
       {
         text: '🍽 Menyu va Buyurtma berish',
-        web_app: { url: webAppUrl }
+        web_app: { url: appUrl }
       }
     ]
   ];
@@ -116,13 +173,20 @@ function getMainKeyboard(userId) {
 }
 
 // Inline Keyboard
-function getInlineActionKeyboard() {
+function getInlineActionKeyboard(userId = 0) {
+  const user = getUserFromDb(userId);
+  let appUrl = webAppUrl;
+  if (user && user.phone) {
+    const sep = appUrl.includes('?') ? '&' : '?';
+    appUrl = `${appUrl}${sep}phone=${encodeURIComponent(user.phone)}&name=${encodeURIComponent(user.name || '')}`;
+  }
+
   return {
     inline_keyboard: [
       [
         {
           text: '🍕 Menyuni ochish (Mini App)',
-          web_app: { url: webAppUrl }
+          web_app: { url: appUrl }
         }
       ],
       [
@@ -206,7 +270,47 @@ async function handleMessage(msg) {
   const text = (msg.text || '').trim();
   const firstName = msg.from?.first_name || 'Hurmatli mehmon';
 
-  // 1. Mini App'dan buyurtma kelganda (web_app_data)
+  // 1. Telefon raqam ulashilganda (request_contact orqali)
+  if (msg.contact) {
+    let phone = (msg.contact.phone_number || '').trim();
+    if (!phone.startsWith('+')) {
+      phone = '+' + phone;
+    }
+    const name = msg.contact.first_name || firstName;
+    const userData = {
+      phone,
+      name,
+      username: msg.from?.username || '',
+      registeredAt: new Date().toISOString()
+    };
+    saveUserToDb(chatId, userData);
+
+    // Vercel Serverless API ga ham yuboramiz
+    try {
+      fetch(`${webAppUrl}/api/user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: chatId, ...userData })
+      }).catch(() => {});
+    } catch (e) {}
+
+    const successRegText = `✅ *Raqamingiz muvaffaqiyatli saqlandi!*
+
+👤 *Mijoz:* ${name}
+📱 *Telefon:* \`${phone}\`
+
+Endi siz uchun barcha imkoniyatlar ochildi! Pastdagi **"🍽 Menyu va Buyurtma berish"** tugmasini bosing va o‘zingiz yoqtirgan lazzatli taomlarga buyurtma bering! 👇`;
+
+    await tg('sendMessage', {
+      chat_id: chatId,
+      text: successRegText,
+      parse_mode: 'Markdown',
+      reply_markup: getMainKeyboard(chatId)
+    });
+    return;
+  }
+
+  // 2. Mini App'dan buyurtma kelganda (web_app_data)
   if (msg.web_app_data) {
     try {
       const order = JSON.parse(msg.web_app_data.data);
@@ -234,16 +338,49 @@ Oshpazlarimiz taomni tayyorlashni boshlashdi. Rahmat! 🍔✨`;
     return;
   }
 
-  // 2. /start
+  // 3. /start
   if (text.startsWith('/start')) {
+    const user = getUserFromDb(chatId);
+
+    // Agar foydalanuvchi hali telefon raqamini yubormagan bo'lsa (va admin bo'lmasa)
+    if ((!user || !user.phone) && !isAdmin(chatId)) {
+      const askPhoneText = `Assalomu alaykum, *${firstName}*! 👋
+
+Xush kelibsiz **"FAIZA CAFE"**ning rasmiy buyurtma botiga! ✨🍽️
+
+Buyurtma berish va bepul yetkazib berish xizmatidan foydalanish uchun, iltimos, pastdagi **"📱 Telefon raqamimni yuborish"** tugmasini bosing:`;
+
+      await tg('sendMessage', {
+        chat_id: chatId,
+        text: askPhoneText,
+        parse_mode: 'Markdown',
+        reply_markup: {
+          keyboard: [
+            [
+              {
+                text: '📱 Telefon raqamimni yuborish',
+                request_contact: true
+              }
+            ]
+          ],
+          resize_keyboard: true,
+          one_time_keyboard: true
+        }
+      });
+      return;
+    }
+
+    // Foydalanuvchi avval ro'yxatdan o'tgan bo'lsa (yoki admin bo'lsa):
     const adminGreeting = isAdmin(chatId)
       ? `\n\n⭐ *Siz tizimda Bosh Administrator (8340079081) sifatida aniqlandingiz.* Admin panelidan buyurtmalarni boshqarishingiz mumkin.`
       : '';
 
-    const welcomeText = `Assalomu alaykum, *${firstName}*! 👋
+    const phoneInfo = user?.phone ? `\n📱 *Sizning raqamingiz:* \`${user.phone}\`` : '';
+
+    const welcomeText = `Assalomu alaykum, *${user?.name || firstName}*! 👋
 
 Xush kelibsiz **"FAIZA CAFE"**ning rasmiy buyurtma botiga! ✨🍽️
-${adminGreeting}
+${adminGreeting}${phoneInfo}
 
 Rishton tumanidagi eng mazali va sifatli taomlar maskani:
 🍔 **Fastfud:** 20 dan ortiq lavash, tandir lavash, burger, shaurma va xot-doglar
@@ -267,7 +404,7 @@ Rishton tumanidagi eng mazali va sifatli taomlar maskani:
     return;
   }
 
-  // 3. Admin Panel (Faqat 8340079081 uchun)
+  // 4. Admin Panel (Faqat 8340079081 uchun)
   if (text === '🛠 Admin Panel' || text.startsWith('/admin')) {
     if (!isAdmin(chatId)) {
       await tg('sendMessage', {
@@ -317,7 +454,7 @@ Kerakli bo‘limni tanlang:`;
     return;
   }
 
-  // 4. Buyurtmalar ro'yxati (Faqat admin uchun)
+  // 5. Buyurtmalar ro'yxati (Faqat admin uchun)
   if (text === '📊 Buyurtmalar' || text === '📊 Buyurtmalar ro‘yxati' || text.startsWith('/orders')) {
     if (isAdmin(chatId)) {
       const orders = getOrdersDb();
@@ -346,7 +483,7 @@ Kerakli bo‘limni tanlang:`;
     }
   }
 
-  // 5. Manzilimiz va Mo'ljal
+  // 6. Manzilimiz va Mo'ljal
   if (text.includes('Manzilimiz') || text === '/location') {
     const locationText = `📍 **"FAIZA CAFE" Manzili:**
 
@@ -362,12 +499,12 @@ Xaritada ko'rish yoki yetkazib berish manzilini belgilash uchun Mini App'dan foy
       chat_id: chatId,
       text: locationText,
       parse_mode: 'Markdown',
-      reply_markup: getInlineActionKeyboard()
+      reply_markup: getInlineActionKeyboard(chatId)
     });
     return;
   }
 
-  // 6. Aloqa / Telefon
+  // 7. Aloqa / Telefon
   if (text.includes('Aloqa') || text === '/contact') {
     const contactText = `📞 **FAIZA CAFE bilan bog'lanish:**
 
@@ -382,12 +519,12 @@ Biz har doim sizning xizmatingizdamiz! Savollaringiz, takliflaringiz yoki maxsus
       chat_id: chatId,
       text: contactText,
       parse_mode: 'Markdown',
-      reply_markup: getInlineActionKeyboard()
+      reply_markup: getInlineActionKeyboard(chatId)
     });
     return;
   }
 
-  // 7. Ish vaqti
+  // 8. Ish vaqti
   if (text.includes('Ish vaqti') || text === '/hours') {
     const hoursText = `⏰ **FAIZA CAFE Ish Vaqti:**
 
@@ -400,12 +537,12 @@ Yetkazib berish xizmatimiz soat 03:00 gacha faol.`;
       chat_id: chatId,
       text: hoursText,
       parse_mode: 'Markdown',
-      reply_markup: getInlineActionKeyboard()
+      reply_markup: getInlineActionKeyboard(chatId)
     });
     return;
   }
 
-  // 8. Biz haqimizda
+  // 9. Biz haqimizda
   if (text.includes('Biz haqimizda') || text === '/about') {
     const aboutText = `ℹ️ **"FAIZA CAFE" Haqida:**
 

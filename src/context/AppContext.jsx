@@ -25,6 +25,32 @@ export function AppProvider({ children }) {
 
   const t = translations[lang] || translations.uz;
 
+  // User Profile: Telefon raqami va Ism
+  const [userPhone, setUserPhone] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('phone');
+      if (p) {
+        localStorage.setItem('faiza_cafe_user_phone', p);
+        return p;
+      }
+      return localStorage.getItem('faiza_cafe_user_phone') || '';
+    }
+    return '';
+  });
+
+  const [userName, setUserName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const n = new URLSearchParams(window.location.search).get('name');
+      if (n) {
+        localStorage.setItem('faiza_cafe_user_name', n);
+        return n;
+      }
+      const stored = localStorage.getItem('faiza_cafe_user_name');
+      if (stored) return stored;
+    }
+    return telegram.user?.first_name || 'Mijoz';
+  });
+
   // Active view tab
   const [activeTab, setActiveTab] = useState('home');
 
@@ -135,8 +161,19 @@ export function AppProvider({ children }) {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
       const adminParam = params.get('admin');
+      const phoneParam = params.get('phone');
+      const nameParam = params.get('name');
       const updateOrderId = params.get('updateOrder') || params.get('orderId');
       const updateStatus = params.get('status');
+
+      if (phoneParam) {
+        setUserPhone(phoneParam);
+        localStorage.setItem('faiza_cafe_user_phone', phoneParam);
+      }
+      if (nameParam) {
+        setUserName(nameParam);
+        localStorage.setItem('faiza_cafe_user_name', nameParam);
+      }
 
       // Admin tekshiruvi (8340079081)
       if (adminParam === '8340079081' || telegram.user?.id == 8340079081) {
@@ -180,6 +217,23 @@ export function AppProvider({ children }) {
           `Buyurtma #${cleanId}: ${updateStatus === 'completed' ? 'Yetkazildi ✅' : updateStatus}`
         );
       }
+    }
+
+    // Agar Telegram ID bo'lsa va raqam hali yuklanmagan bo'lsa, serverdan tekshirish
+    if (telegram.user?.id && !userPhone) {
+      fetch(`/api/user?id=${telegram.user.id}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.user?.phone) {
+            setUserPhone(data.user.phone);
+            localStorage.setItem('faiza_cafe_user_phone', data.user.phone);
+          }
+          if (data?.user?.name) {
+            setUserName(data.user.name);
+            localStorage.setItem('faiza_cafe_user_name', data.user.name);
+          }
+        })
+        .catch(() => {});
     }
 
     if (!savedAddress) {
@@ -367,8 +421,8 @@ export function AppProvider({ children }) {
         username: telegram.user?.username || ''
       },
       customer: {
-        name: customerDetails.name || telegram.user.first_name || 'Mijoz',
-        phone: customerDetails.phone || '+998 90 377 30 00',
+        name: customerDetails.name || userName || telegram.user.first_name || 'Mijoz',
+        phone: customerDetails.phone || userPhone || '+998 90 377 30 00',
         address: orderType === 'delivery' ? customerDetails.address || deliveryAddress : undefined,
         branch: orderType === 'takeaway' ? selectedBranch.name : undefined,
         table: orderType === 'dineIn' ? customerDetails.table || tableNumber : undefined,
@@ -514,7 +568,11 @@ export function AppProvider({ children }) {
         productList,
         toggleProductStock,
         toastMessage,
-        showToast
+        showToast,
+        userPhone,
+        setUserPhone,
+        userName,
+        setUserName
       }}
     >
       {children}
