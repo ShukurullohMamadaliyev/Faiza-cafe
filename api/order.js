@@ -22,7 +22,29 @@ export default async function handler(req, res) {
 
   const token = process.env.BOT_TOKEN || '9141727536:AAGkeeNUQGbsD3WBtMciA17UxhBkFhPLWx0';
   const adminIdsStr = process.env.ADMIN_IDS || '8340079081';
-  const adminIds = adminIdsStr.split(',').map((id) => id.trim()).filter(Boolean);
+  let orderGroupId = process.env.ORDER_GROUP_ID || '';
+
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const cfgPath = path.resolve(process.cwd(), 'group_config.json');
+    if (fs.existsSync(cfgPath)) {
+      const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf-8'));
+      if (cfg?.groupId) orderGroupId = cfg.groupId;
+    }
+  } catch (e) {}
+
+  const recipients = [];
+  if (orderGroupId) {
+    recipients.push(String(orderGroupId));
+  }
+  adminIdsStr
+    .split(',')
+    .map((id) => id.trim())
+    .filter(Boolean)
+    .forEach((id) => {
+      if (!recipients.includes(id)) recipients.push(id);
+    });
 
   try {
     const order = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
@@ -103,13 +125,13 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
       ]
     );
 
-    // Har bir adminga (8340079081) xabar yuborish
-    const sendPromises = adminIds.map((adminId) =>
+    // Guruh va adminga buyurtma bildirishnomasini yuborish
+    const sendPromises = recipients.map((targetId) =>
       fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          chat_id: adminId,
+          chat_id: targetId,
           text: messageText,
           parse_mode: 'Markdown',
           reply_markup: { inline_keyboard }
@@ -121,13 +143,13 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
 
     // Agar yetkazib berish va GPS mavjud bo'lsa, Telegram orqali xaritadagi lokatsiya pinini jo'natamiz
     if (order.orderType === 'delivery' && hasCoords) {
-      for (const adminId of adminIds) {
+      for (const targetId of recipients) {
         try {
           await fetch(`https://api.telegram.org/bot${token}/sendLocation`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              chat_id: adminId,
+              chat_id: targetId,
               latitude: Number(lat),
               longitude: Number(lon)
             })

@@ -16,10 +16,34 @@ if (!token) {
 const API_BASE = `https://api.telegram.org/bot${token}`;
 const DB_FILE = path.resolve('orders_db.json');
 const USERS_DB_FILE = path.resolve('users_db.json');
+const GROUP_CONFIG_FILE = path.resolve('group_config.json');
 
 // Admin tekshiruvi
 function isAdmin(userId) {
   return ADMIN_IDS.includes(String(userId));
+}
+
+// Guruh konfiguratsiyasini boshqarish
+function getGroupConfig() {
+  try {
+    if (fs.existsSync(GROUP_CONFIG_FILE)) {
+      return JSON.parse(fs.readFileSync(GROUP_CONFIG_FILE, 'utf-8'));
+    }
+  } catch (e) {
+    console.error('Error reading group_config.json:', e);
+  }
+  if (process.env.ORDER_GROUP_ID) {
+    return { groupId: process.env.ORDER_GROUP_ID, groupTitle: 'Faiza Cafe Guruh' };
+  }
+  return null;
+}
+
+function saveGroupConfig(config) {
+  try {
+    fs.writeFileSync(GROUP_CONFIG_FILE, JSON.stringify(config, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Error writing group_config.json:', e);
+  }
 }
 
 // ==========================================
@@ -143,18 +167,7 @@ function getMainKeyboard(userId) {
         text: '🍽 Menyu va Buyurtma berish',
         web_app: { url: appUrl }
       }
-    ]
-  ];
-
-  // Faqat adminga ko'rinadigan tugmalar
-  if (isAdmin(userId)) {
-    keyboard.push([
-      { text: '🛠 Admin Panel' },
-      { text: '📊 Buyurtmalar' }
-    ]);
-  }
-
-  keyboard.push(
+    ],
     [
       { text: '📍 Manzilimiz va Mo‘ljal' },
       { text: '📞 Aloqa / Telefon' }
@@ -163,7 +176,7 @@ function getMainKeyboard(userId) {
       { text: 'ℹ️ Biz haqimizda' },
       { text: '⏰ Ish vaqti' }
     ]
-  );
+  ];
 
   return {
     keyboard,
@@ -270,9 +283,20 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
     ]
   );
 
+  const groupConfig = getGroupConfig();
+  const recipients = [];
+  if (groupConfig?.groupId) {
+    recipients.push(String(groupConfig.groupId));
+  }
   for (const adminId of ADMIN_IDS) {
+    if (!recipients.includes(String(adminId))) {
+      recipients.push(String(adminId));
+    }
+  }
+
+  for (const targetId of recipients) {
     await tg('sendMessage', {
-      chat_id: adminId,
+      chat_id: targetId,
       text: messageText,
       parse_mode: 'Markdown',
       reply_markup: { inline_keyboard }
@@ -282,7 +306,7 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
     if (order.orderType === 'delivery' && hasCoords) {
       try {
         await tg('sendLocation', {
-          chat_id: adminId,
+          chat_id: targetId,
           latitude: Number(lat),
           longitude: Number(lon)
         });
@@ -298,6 +322,84 @@ async function handleMessage(msg) {
   const chatId = msg.chat.id;
   const text = (msg.text || '').trim();
   const firstName = msg.from?.first_name || 'Hurmatli mehmon';
+
+  // 0. Guruh xabarlari (group yoki supergroup)
+  if (msg.chat.type === 'group' || msg.chat.type === 'supergroup') {
+    const isOwner = ADMIN_IDS.includes(String(msg.from?.id));
+    const groupConfig = getGroupConfig();
+    const isCurrentConnectedGroup = groupConfig?.groupId && String(groupConfig.groupId) === String(chatId);
+
+    // 0.1 Yangi a'zolar qo'shilganda (bot guruhga qo'shilganda)
+    if (msg.new_chat_members) {
+      const botAdded = msg.new_chat_members.some((m) => m.is_bot && (m.id === 9141727536 || m.username === 'faizacafe_rishton_bot'));
+      if (botAdded) {
+        if (isOwner) {
+          saveGroupConfig({
+            groupId: chatId,
+            groupTitle: msg.chat.title || 'Faiza Cafe Guruh',
+            connectedBy: msg.from.id,
+            connectedAt: new Date().toISOString()
+          });
+          await tg('sendMessage', {
+            chat_id: chatId,
+            text: `🎉 *FAIZA CAFE — BUYURTMALAR GURUHI BIRIKTIRILDI!*
+━━━━━━━━━━━━━━━━━━━━
+Assalomu alaykum! Ushbu guruh muvaffaqiyatli buyurtmalar qabul qilish guruhi sifatida ulandi!
+
+📌 *Guruh nomi:* ${msg.chat.title}
+🆔 *Guruh ID:* \`${chatId}\`
+
+✅ *Endi mijozlar bergan barcha yangi buyurtmalar to‘g‘ridan-to‘g‘ri shu guruhga yuboriladi!*
+👥 Guruhdagi barcha xodimlar buyurtmalarni ko‘rib, tugmalar orqali holatini (Oshxona, Yetkazish, Yakun) boshqarishlari mumkin.`
+          });
+        } else {
+          // Begona odam o'z guruhiga qo'shgan bo'lsa - chiqib ketish (Anti-leak security)
+          await tg('sendMessage', {
+            chat_id: chatId,
+            text: '⛔ *Xavfsizlik tizimi:* Ushbu bot faqat "Faiza Cafe" rasmiy xodimlari uchun mo‘ljallangan. Ruxsatsiz guruhdan avtomatik chiqilmoqda...'
+          });
+          await tg('leaveChat', { chat_id: chatId });
+        }
+        return;
+      }
+    }
+
+    // 0.2 Guruhda /id, /setgroup yoki /group komandasi yuborilganda
+    if (text.startsWith('/id') || text.startsWith('/setgroup') || text.startsWith('/group')) {
+      if (isOwner) {
+        saveGroupConfig({
+          groupId: chatId,
+          groupTitle: msg.chat.title || 'Faiza Cafe Guruh',
+          connectedBy: msg.from.id,
+          connectedAt: new Date().toISOString()
+        });
+        await tg('sendMessage', {
+          chat_id: chatId,
+          text: `✅ *Ushbu guruh buyurtmalar guruhi sifatida saqlandi!*
+━━━━━━━━━━━━━━━━━━━━
+📌 *Guruh:* ${msg.chat.title}
+🆔 *Guruh ID:* \`${chatId}\`
+
+Barcha yangi buyurtmalar, GPS lokatsiyalar va boshqaruv tugmalari shu guruhga yuboriladi.`
+        });
+      } else {
+        await tg('sendMessage', {
+          chat_id: chatId,
+          text: `ℹ️ Ushbu guruh ID raqami: \`${chatId}\`\n(Faqat bot egasi buyurtmalar guruhini biriktirishi mumkin)`
+        });
+      }
+      return;
+    }
+
+    // 0.3 Begona guruh xavfsizlik tekshiruvi:
+    // Agar bot boshqa biror ruxsatsiz guruhda bo'lsa va egasi u yerda bo'lmasa:
+    if (!isCurrentConnectedGroup && !isOwner) {
+      await tg('leaveChat', { chat_id: chatId });
+      return;
+    }
+
+    return; // Guruhdagi boshqa oddiy suhbatlarga bot aralashmaydi
+  }
 
   // 1. Telefon raqam ulashilganda (request_contact orqali)
   if (msg.contact) {
@@ -601,12 +703,14 @@ Bizda:
   });
 }
 
-// Inline Callback Queries (Admin tugmalari bosilganda)
+// Inline Callback Queries (Admin va Guruh xodimlari tugmalari bosilganda)
 async function handleCallbackQuery(query) {
   const data = query.data || '';
   const message = query.message;
-  const adminChatId = message?.chat?.id;
+  const targetChatId = message?.chat?.id;
   const messageId = message?.message_id;
+  const senderName = query.from?.first_name || query.from?.username || 'Xodim';
+  const senderTag = query.from?.username ? `@${query.from.username}` : senderName;
 
   // 1. Buyurtma holatini o'zgartirish (st:prep:ID:CUST_ID, st:comp:ID:CUST_ID va h.k.)
   if (data.startsWith('st:')) {
@@ -626,27 +730,32 @@ async function handleCallbackQuery(query) {
     const statusObj = statusMap[action] || statusMap.comp;
     updateOrderStatusInDb(orderId, statusObj.key);
 
-    // Adminga darhol popup bildirishnoma
+    // Tugmani bosgan xodimga darhol popup bildirishnoma
     await tg('answerCallbackQuery', {
       callback_query_id: query.id,
-      text: `Buyurtma #${orderId} holati: ${statusObj.label}`
+      text: `Buyurtma #${orderId}: ${statusObj.statusText} (${senderName})`
     });
 
-    // Admin xabari matnini yangilash
+    // Guruh/Admin xabari matnini yangilash
     const now = new Date();
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     const oldText = message?.text || '';
 
-    // Holat qatorini almashtiramiz
     let updatedText = oldText;
+    const operatorInfo = `\n👤 *Xodim:* ${senderTag} (🕒 ${timeStr})`;
     if (updatedText.includes('📌 Holati:')) {
-      updatedText = updatedText.replace(/📌 Holati:.*$/m, `📌 Holati: ${statusObj.label} (🕒 ${timeStr})`);
+      updatedText = updatedText.replace(/📌 Holati:[\s\S]*?(?=(\n\n|$))/m, `📌 Holati: ${statusObj.label}${operatorInfo}`);
     } else {
-      updatedText += `\n\n📌 *Holati:* ${statusObj.label} (🕒 ${timeStr})`;
+      updatedText += `\n\n📌 *Holati:* ${statusObj.label}${operatorInfo}`;
     }
 
-    // Tugmalarni faol holat bilan yangilash
-    const updatedKeyboard = [
+    // Tugmalarni faol holat bilan yangilash (Xarita navigatsiya tugmasini saqlab qolgan holda)
+    const updatedKeyboard = [];
+    if (message?.reply_markup?.inline_keyboard?.[0]?.[0]?.url) {
+      updatedKeyboard.push([message.reply_markup.inline_keyboard[0][0]]);
+    }
+
+    updatedKeyboard.push(
       [
         {
           text: action === 'prep' ? '• 👨‍🍳 Qabul qilindi •' : '👨‍🍳 Qabul qilish',
@@ -673,10 +782,10 @@ async function handleCallbackQuery(query) {
           callback_data: `st:canc:${orderId}:${custChatId}`
         }
       ]
-    ];
+    );
 
     await tg('editMessageText', {
-      chat_id: adminChatId,
+      chat_id: targetChatId,
       message_id: messageId,
       text: updatedText,
       parse_mode: 'Markdown',
