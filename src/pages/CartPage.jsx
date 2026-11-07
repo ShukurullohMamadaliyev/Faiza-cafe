@@ -28,21 +28,13 @@ export default function CartPage() {
   const [promoInput, setPromoInput] = useState('');
   const [includeCutlery, setIncludeCutlery] = useState(true);
 
-  // Telegram native MainButton bilan sinxronizatsiya
+  // Telegram native MainButton har doim yashirin bo'ladi (chunki pastda o'zimizning chiroyli yashil tugmamiz bor)
   useEffect(() => {
-    if (cart.length > 0) {
-      telegram.showMainButton(
-        `${t.checkoutBtn} • ${cartTotal.toLocaleString('uz-UZ')} ${t.currency}`,
-        () => setIsCheckoutOpen(true)
-      );
-    } else {
-      telegram.hideMainButton();
-    }
-
+    telegram.hideMainButton();
     return () => {
       telegram.hideMainButton();
     };
-  }, [cart, cartTotal, telegram, setIsCheckoutOpen]);
+  }, [telegram]);
 
   const handleApplyPromo = (e) => {
     e.preventDefault();
