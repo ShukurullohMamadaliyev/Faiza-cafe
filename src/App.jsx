@@ -16,7 +16,7 @@ import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 
 export default function App() {
-  const { activeTab, toastMessage } = useApp();
+  const { activeTab, toastMessage, cart } = useApp();
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -36,6 +36,9 @@ export default function App() {
         return <HomePage />;
     }
   };
+
+  // Savatchada taomlar bo'lganda, pastki navigatsiya paneli o'rniga to'liq "Buyurtmani rasmiylashtirish" tugmasi chiqadi
+  const shouldShowBottomNav = activeTab !== 'admin' && !(activeTab === 'cart' && cart.length > 0);
 
   return (
     <div className="min-h-screen bg-[#F8FAF9] text-gray-900 flex justify-center selection:bg-emerald-500 selection:text-white">
@@ -62,8 +65,8 @@ export default function App() {
         {/* Floating Cart Indicator */}
         <FloatingCartPill />
 
-        {/* Bottom Navigation (Hidden on Admin screen) */}
-        {activeTab !== 'admin' && <BottomNav />}
+        {/* Bottom Navigation */}
+        {shouldShowBottomNav && <BottomNav />}
 
         {/* Modals & Overlays */}
         <ProductModal />

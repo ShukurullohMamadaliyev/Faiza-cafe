@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Trash2, Plus, Minus, Tag, Check, ShoppingBag, Sparkles } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -28,6 +28,22 @@ export default function CartPage() {
   const [promoInput, setPromoInput] = useState('');
   const [includeCutlery, setIncludeCutlery] = useState(true);
 
+  // Telegram native MainButton bilan sinxronizatsiya
+  useEffect(() => {
+    if (cart.length > 0) {
+      telegram.showMainButton(
+        `Buyurtma berish • ${cartTotal.toLocaleString('uz-UZ')} so'm`,
+        () => setIsCheckoutOpen(true)
+      );
+    } else {
+      telegram.hideMainButton();
+    }
+
+    return () => {
+      telegram.hideMainButton();
+    };
+  }, [cart, cartTotal, telegram, setIsCheckoutOpen]);
+
   const handleApplyPromo = (e) => {
     e.preventDefault();
     if (!promoInput.trim()) return;
@@ -37,13 +53,13 @@ export default function CartPage() {
   return (
     <div className="pb-36 min-h-screen bg-[#F8FAF9]">
       {/* Header matching screenshot 8 */}
-      <div className="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30 flex items-center justify-between shadow-xs">
         <button
           onClick={() => {
             telegram.triggerHaptic('light');
             setActiveTab('home');
           }}
-          className="flex items-center gap-2 font-black text-base text-[#0d3b2e]"
+          className="flex items-center gap-2 font-black text-base text-[#0d3b2e] hover:opacity-80 active:scale-95 transition"
         >
           <ArrowLeft size={20} />
           <span>{t.yourCart}</span>
@@ -52,7 +68,7 @@ export default function CartPage() {
         {cart.length > 0 && (
           <button
             onClick={clearCart}
-            className="text-xs font-semibold text-red-500 hover:text-red-700 flex items-center gap-1"
+            className="text-xs font-semibold text-red-500 hover:text-red-700 flex items-center gap-1 active:scale-95 transition"
           >
             <Trash2 size={14} />
             <span>{t.clearCart}</span>
@@ -60,11 +76,10 @@ export default function CartPage() {
         )}
       </div>
 
-      {/* Empty State (Exact matching screenshot 8) */}
+      {/* Empty State */}
       {cart.length === 0 ? (
         <div className="px-4 py-12 flex flex-col items-center justify-center text-center">
           <div className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-soft border border-gray-100 flex flex-col items-center space-y-4">
-            {/* 3D Gold / Emerald Coin Emblem */}
             <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-100 to-amber-100 flex items-center justify-center text-3xl shadow-inner">
               🥗
             </div>
@@ -94,9 +109,9 @@ export default function CartPage() {
         <div className="px-4 py-3 space-y-3">
           {/* Order Mode Summary Banner */}
           <div className="bg-white rounded-2xl p-3 border border-gray-100 shadow-card flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span className="font-bold text-gray-800">
+            <div className="flex items-center gap-2 min-w-0 pr-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 animate-pulse"></span>
+              <span className="font-bold text-gray-800 truncate">
                 {orderType === 'delivery'
                   ? `Yetkazib berish: ${deliveryAddress}`
                   : orderType === 'takeaway'
@@ -109,7 +124,7 @@ export default function CartPage() {
                 telegram.triggerHaptic('light');
                 setActiveTab('home');
               }}
-              className="text-emerald-700 font-bold hover:underline"
+              className="text-emerald-700 font-bold hover:underline shrink-0"
             >
               O'zgartirish
             </button>
@@ -127,7 +142,7 @@ export default function CartPage() {
                   <img
                     src={item.product.image}
                     alt={item.product.name}
-                    className="w-16 h-16 rounded-2xl object-cover shrink-0 border border-gray-100"
+                    className="w-16 h-16 rounded-2xl object-cover shrink-0 border border-gray-100 bg-gray-50"
                   />
 
                   <div className="flex-1 min-w-0">
@@ -231,12 +246,8 @@ export default function CartPage() {
             {orderType === 'delivery' && (
               <div className="flex justify-between text-gray-600 font-medium">
                 <span>{t.deliveryFee}</span>
-                <span>
-                  {deliveryFee === 0 ? (
-                    <span className="text-emerald-600 font-bold">Bepul (150 mingdan ortiq)</span>
-                  ) : (
-                    `${deliveryFee.toLocaleString('uz-UZ')} so'm`
-                  )}
+                <span className="text-emerald-700 font-bold">
+                  Bepul 🚖
                 </span>
               </div>
             )}
@@ -258,21 +269,26 @@ export default function CartPage() {
         </div>
       )}
 
-      {/* Sticky Bottom Checkout Action */}
+      {/* Sticky Bottom Checkout Action - 100% ochiq, ko'rinadigan va pastga to'liq qotirilgan */}
       {cart.length > 0 && (
-        <div className="fixed bottom-14 inset-x-0 z-30 bg-white/95 backdrop-blur-md p-3 px-4 border-t border-gray-100 shadow-lg">
-          <button
-            onClick={() => {
-              telegram.triggerHaptic('medium');
-              setIsCheckoutOpen(true);
-            }}
-            className="w-full py-3.5 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-extrabold text-sm rounded-2xl shadow-float transition flex items-center justify-between px-5"
-          >
-            <span>{t.checkoutBtn}</span>
-            <span className="bg-emerald-800/80 px-2.5 py-1 rounded-xl text-xs">
-              {cartTotal.toLocaleString('uz-UZ')} so'm
-            </span>
-          </button>
+        <div className="fixed bottom-0 inset-x-0 z-50 bg-white/98 backdrop-blur-md p-3 px-4 border-t border-gray-200/80 shadow-sheet safe-area-bottom">
+          <div className="max-w-md mx-auto">
+            <button
+              onClick={() => {
+                telegram.triggerHaptic('medium');
+                setIsCheckoutOpen(true);
+              }}
+              className="w-full py-3.5 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-black text-sm rounded-2xl shadow-float transition flex items-center justify-between px-5"
+            >
+              <div className="flex items-center gap-2">
+                <ShoppingBag size={18} className="text-emerald-300" />
+                <span>Buyurtmani rasmiylashtirish</span>
+              </div>
+              <span className="bg-emerald-800/90 text-gold-300 px-3 py-1 rounded-xl text-xs font-black shadow-xs">
+                {cartTotal.toLocaleString('uz-UZ')} so'm
+              </span>
+            </button>
+          </div>
         </div>
       )}
     </div>
