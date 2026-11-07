@@ -6,6 +6,7 @@ import FloatingCartPill from './components/FloatingCartPill';
 import ProductModal from './components/ProductModal';
 import CheckoutModal from './components/CheckoutModal';
 import OrderSuccessModal from './components/OrderSuccessModal';
+import LocationPromptModal from './components/LocationPromptModal';
 
 import HomePage from './pages/HomePage';
 import MenuPage from './pages/MenuPage';
@@ -40,7 +41,7 @@ export default function App() {
     <div className="min-h-screen bg-[#F8FAF9] text-gray-900 flex justify-center selection:bg-emerald-500 selection:text-white">
       {/* Mobile container constraint for preview on wide desktop screens */}
       <div className="w-full max-w-md bg-white min-h-screen shadow-2xl relative flex flex-col">
-        {/* Telegram Top Bar */}
+        {/* Telegram Top Bar (Faqat tashqi brauzerda chiqadi, mobil Telegram ichida ortiqcha dublikat bo'lmasligi uchun yashiriladi) */}
         <TelegramHeader />
 
         {/* Global Toast Notification */}
@@ -68,6 +69,7 @@ export default function App() {
         <ProductModal />
         <CheckoutModal />
         <OrderSuccessModal />
+        <LocationPromptModal />
       </div>
     </div>
   );

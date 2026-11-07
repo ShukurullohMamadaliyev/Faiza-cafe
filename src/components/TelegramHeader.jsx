@@ -5,6 +5,13 @@ import { useApp } from '../context/AppContext';
 export default function TelegramHeader() {
   const { telegram } = useApp();
 
+  // Agar foydalanuvchi haqiqiy Telegram ilovasi ichida bo'lsa,
+  // Telegram o'zining tepasidagi sarlavhasini (X va ...) ko'rsatadi.
+  // Shuning uchun ikkinchi qavat dublikat chiqmasligi uchun uni yashiramiz!
+  if (telegram.isInsideTelegram) {
+    return null;
+  }
+
   return (
     <div className="sticky top-0 z-40 bg-[#0d3b2e] text-white px-4 py-2.5 flex items-center justify-between select-none shadow-md">
       <button

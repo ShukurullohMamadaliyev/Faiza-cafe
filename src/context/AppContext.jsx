@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo } from '
 import { PRODUCTS, BRANCHES, INITIAL_ORDERS } from '../data/mockData';
 import { translations } from '../data/translations';
 import { useTelegram } from '../hooks/useTelegram';
+import { getCurrentCoordinates, reverseGeocode } from '../utils/geoUtils';
 import confetti from 'canvas-confetti';
 
 const AppContext = createContext();
@@ -12,13 +13,23 @@ export function AppProvider({ children }) {
   const t = translations[lang] || translations.uz;
 
   // Active view tab
-  const [activeTab, setActiveTab] = useState('home'); // 'home' | 'menu' | 'cart' | 'orders' | 'profile' | 'admin'
+  const [activeTab, setActiveTab] = useState('home');
 
   // Order Delivery Settings
   const [orderType, setOrderType] = useState('delivery'); // 'delivery' | 'takeaway' | 'dineIn'
   const [selectedBranch, setSelectedBranch] = useState(BRANCHES[0]);
   const [tableNumber, setTableNumber] = useState('5');
-  const [deliveryAddress, setDeliveryAddress] = useState('Chilonzor tumani, 9-mavze, 14-uy');
+
+  // Geolocation & Delivery Address
+  const savedAddress = typeof window !== 'undefined' ? localStorage.getItem('faiza_cafe_address') : null;
+  const savedCoords = typeof window !== 'undefined' && localStorage.getItem('faiza_cafe_coords')
+    ? JSON.parse(localStorage.getItem('faiza_cafe_coords'))
+    : null;
+
+  const [deliveryAddress, setDeliveryAddress] = useState(savedAddress || "Rishton tumani (Joriy joylashuv)");
+  const [userCoords, setUserCoords] = useState(savedCoords);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [showLocationPrompt, setShowLocationPrompt] = useState(!savedAddress);
 
   // Search & Filter
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,17 +40,17 @@ export function AppProvider({ children }) {
   const [appliedPromo, setAppliedPromo] = useState(null);
 
   // Favorites
-  const [favorites, setFavorites] = useState(['ff-1', 'pz-1']);
+  const [favorites, setFavorites] = useState(['ff-lavash-tandir', 'pz-qazi-med']);
 
   // Modals & Bottom Sheets
-  const [selectedProduct, setSelectedProduct] = useState(null); // for bottom sheet
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [placedOrder, setPlacedOrder] = useState(null); // for success screen
+  const [placedOrder, setPlacedOrder] = useState(null);
 
-  // Orders State (for client and admin)
+  // Orders State
   const [orders, setOrders] = useState(INITIAL_ORDERS);
 
-  // Admin Products state (so admin can toggle availability or edit)
+  // Admin Products state
   const [productList, setProductList] = useState(PRODUCTS);
 
   // Toast notification
@@ -47,8 +58,53 @@ export function AppProvider({ children }) {
 
   const showToast = (msg) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
+    setTimeout(() => setToastMessage(null), 3000);
   };
+
+  // GPS orqali manzilni aniqlash funksiyasi
+  const detectAndSetLocation = async (silent = false) => {
+    setIsDetectingLocation(true);
+    if (!silent) telegram.triggerHaptic('medium');
+
+    try {
+      const coords = await getCurrentCoordinates();
+      const geoResult = await reverseGeocode(coords.latitude, coords.longitude);
+
+      const detectedAddr = geoResult.formattedAddress;
+      setDeliveryAddress(detectedAddr);
+      setUserCoords(geoResult.coords);
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('faiza_cafe_address', detectedAddr);
+        localStorage.setItem('faiza_cafe_coords', JSON.stringify(geoResult.coords));
+      }
+
+      setShowLocationPrompt(false);
+      telegram.triggerHaptic('success');
+      showToast(`📍 Manzilingiz aniqlandi: ${detectedAddr}`);
+      return { success: true, address: detectedAddr };
+    } catch (err) {
+      console.warn("GPS xatoligi:", err);
+      if (!silent) {
+        telegram.triggerHaptic('warning');
+        showToast(err.message || "GPS orqali manzilni aniqlab bo'lmadi");
+      }
+      return { success: false, error: err.message };
+    } finally {
+      setIsDetectingLocation(false);
+    }
+  };
+
+  // Ilova ochilganda avtomatik GPS so'rash (agar saqlangan manzil bo'lmasa)
+  useEffect(() => {
+    if (!savedAddress) {
+      // Birinchi marta kirganda 500ms kutib avtomatik GPS ruxsatini so'raymiz
+      const timer = setTimeout(() => {
+        detectAndSetLocation(true);
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Cart Calculations
   const cartSubtotal = useMemo(() => {
@@ -59,11 +115,8 @@ export function AppProvider({ children }) {
     return cart.reduce((acc, item) => acc + item.quantity, 0);
   }, [cart]);
 
-  const deliveryFee = useMemo(() => {
-    if (orderType !== 'delivery') return 0;
-    if (cartSubtotal >= 150000) return 0; // Free delivery over 150k
-    return cartSubtotal > 0 ? 12000 : 0;
-  }, [orderType, cartSubtotal]);
+  // Faiza Cafe'da Rishton bo'ylab yetkazib berish BEPUL!
+  const deliveryFee = 0;
 
   const discountAmount = useMemo(() => {
     if (!appliedPromo) return 0;
@@ -81,8 +134,6 @@ export function AppProvider({ children }) {
   // Cart Actions
   const addToCart = (product, selectedModifiers = [], quantity = 1) => {
     telegram.triggerHaptic('medium');
-    
-    // Calculate unit price: product.price + sum(modifiers)
     const modifiersTotal = selectedModifiers.reduce((acc, m) => acc + m.price, 0);
     const unitPrice = product.price + modifiersTotal;
     const sortedModIds = [...selectedModifiers].map(m => m.id).sort().join('_');
@@ -148,16 +199,13 @@ export function AppProvider({ children }) {
     setAppliedPromo(null);
   };
 
-  // Helper to check if simple product is in cart and get its count
   const getProductCartCount = (productId) => {
     return cart
       .filter(item => item.product.id === productId)
       .reduce((acc, item) => acc + item.quantity, 0);
   };
 
-  // Quick increment/decrement from food card
   const quickAddToCart = (product) => {
-    // If product has modifiers, better open modal for customization
     if (product.modifiers && product.modifiers.length > 0) {
       setSelectedProduct(product);
     } else {
@@ -187,7 +235,6 @@ export function AppProvider({ children }) {
     });
   };
 
-  // Favorites
   const toggleFavorite = (productId, e) => {
     if (e) e.stopPropagation();
     telegram.triggerHaptic('selection');
@@ -200,7 +247,6 @@ export function AppProvider({ children }) {
     });
   };
 
-  // Apply Promocode
   const applyPromoCode = (code) => {
     const cleanCode = code.trim().toUpperCase();
     if (cleanCode === 'FAYZ10' || cleanCode === 'XUSH_KELIBSIZ') {
@@ -217,7 +263,6 @@ export function AppProvider({ children }) {
     }
   };
 
-  // Place Order
   const submitOrder = (customerDetails) => {
     telegram.triggerHaptic('success');
     const newOrderId = `FC-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -227,13 +272,13 @@ export function AppProvider({ children }) {
     const newOrder = {
       id: newOrderId,
       date: dateStr,
-      status: 'new', // 'new' | 'preparing' | 'delivering' | 'completed'
+      status: 'new',
       statusText: 'Qabul qilindi',
       orderType,
       orderTypeName: orderType === 'delivery' ? 'Yetkazib berish' : orderType === 'takeaway' ? 'Olib ketish' : 'Stolda',
       customer: {
         name: customerDetails.name || telegram.user.first_name || 'Mijoz',
-        phone: customerDetails.phone || '+998 90 000 00 00',
+        phone: customerDetails.phone || '+998 90 377 30 00',
         address: orderType === 'delivery' ? customerDetails.address || deliveryAddress : undefined,
         branch: orderType === 'takeaway' ? selectedBranch.name : undefined,
         table: orderType === 'dineIn' ? customerDetails.table || tableNumber : undefined,
@@ -251,7 +296,7 @@ export function AppProvider({ children }) {
       deliveryFee,
       discount: discountAmount,
       total: cartTotal,
-      estimatedTime: orderType === 'delivery' ? '30-40 daqiqa' : '15-20 daqiqa'
+      estimatedTime: '25-35 daqiqa'
     };
 
     setOrders(prev => [newOrder, ...prev]);
@@ -259,7 +304,20 @@ export function AppProvider({ children }) {
     setIsCheckoutOpen(false);
     clearCart();
 
-    // Trigger confetti
+    // Telegram botga WebApp orqali buyurtma yuborish
+    if (telegram.tg?.sendData) {
+      try {
+        telegram.tg.sendData(JSON.stringify({
+          id: newOrderId,
+          total: cartTotal,
+          orderType,
+          address: orderType === 'delivery' ? customerDetails.address || deliveryAddress : undefined
+        }));
+      } catch (e) {
+        console.warn("Telegram sendData xatoligi:", e);
+      }
+    }
+
     try {
       confetti({
         particleCount: 80,
@@ -271,7 +329,6 @@ export function AppProvider({ children }) {
     }
   };
 
-  // Admin order status update
   const updateOrderStatus = (orderId, newStatus) => {
     telegram.triggerHaptic('medium');
     const statusLabels = {
@@ -295,7 +352,6 @@ export function AppProvider({ children }) {
     showToast(`Buyurtma #${orderId} holati: ${statusLabels[newStatus]}`);
   };
 
-  // Admin Product availability toggle
   const toggleProductStock = (productId) => {
     setProductList(prev => prev.map(p => {
       if (p.id === productId) {
@@ -324,6 +380,11 @@ export function AppProvider({ children }) {
         setTableNumber,
         deliveryAddress,
         setDeliveryAddress,
+        userCoords,
+        isDetectingLocation,
+        detectAndSetLocation,
+        showLocationPrompt,
+        setShowLocationPrompt,
         searchQuery,
         setSearchQuery,
         selectedCategory,

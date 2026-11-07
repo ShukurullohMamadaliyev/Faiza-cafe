@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bike, ShoppingBag, UtensilsCrossed, ChevronDown, MapPin, Search, X, Clock } from 'lucide-react';
+import { Bike, ShoppingBag, UtensilsCrossed, ChevronDown, MapPin, Search, X, Clock, Navigation, Loader2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { BRANCHES } from '../data/mockData';
 
@@ -14,6 +14,8 @@ export default function Header({ showSearch = true }) {
     setTableNumber,
     deliveryAddress,
     setDeliveryAddress,
+    isDetectingLocation,
+    detectAndSetLocation,
     searchQuery,
     setSearchQuery,
     telegram
@@ -25,6 +27,11 @@ export default function Header({ showSearch = true }) {
   const handleOrderTypeChange = (type) => {
     telegram.triggerHaptic('light');
     setOrderType(type);
+  };
+
+  const handleGpsClick = async (e) => {
+    e.stopPropagation();
+    await detectAndSetLocation();
   };
 
   return (
@@ -47,9 +54,9 @@ export default function Header({ showSearch = true }) {
               </span>
             </h1>
             <div className="flex items-center gap-1.5 text-[11px] text-gray-500 mt-1 font-medium">
-              <span className="flex items-center gap-1 text-emerald-700">
+              <span className="flex items-center gap-1 text-emerald-700 font-semibold">
                 <Clock size={11} className="text-emerald-600" />
-                10:00 – 23:00
+                08:00 – 03:00
               </span>
               <span>•</span>
               <span className="text-gray-400">Halol</span>
@@ -65,18 +72,19 @@ export default function Header({ showSearch = true }) {
       </div>
 
       {/* Mode Location Selector Pill (Clickable) */}
-      <button
-        onClick={() => {
-          telegram.triggerHaptic('selection');
-          setIsBranchModalOpen(true);
-        }}
-        className="w-full flex items-center justify-between bg-emerald-50/60 hover:bg-emerald-50 border border-emerald-200/70 rounded-2xl px-3 py-2 text-left transition group active:scale-99"
-      >
-        <div className="flex items-center gap-2.5 min-w-0">
+      <div className="w-full flex items-center justify-between bg-emerald-50/60 hover:bg-emerald-50 border border-emerald-200/70 rounded-2xl px-3 py-2 text-left transition group">
+        <button
+          onClick={() => {
+            telegram.triggerHaptic('selection');
+            setTempAddress(deliveryAddress);
+            setIsBranchModalOpen(true);
+          }}
+          className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
+        >
           <div className="w-7 h-7 rounded-full bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-xs">
             <MapPin size={15} />
           </div>
-          <div className="leading-tight truncate">
+          <div className="leading-tight truncate pr-1">
             <div className="text-[10px] font-extrabold text-brand-700 uppercase tracking-wider">
               {orderType === 'delivery'
                 ? 'Yetkazib berish manzili'
@@ -92,12 +100,37 @@ export default function Header({ showSearch = true }) {
                 : `${tableNumber}-stol (Zalda)`}
             </div>
           </div>
-        </div>
-        <div className="flex items-center gap-1 text-xs font-semibold text-brand-700 pl-2 shrink-0">
+        </button>
+
+        {/* Quick GPS auto-detect button inside header */}
+        {orderType === 'delivery' && (
+          <button
+            onClick={handleGpsClick}
+            disabled={isDetectingLocation}
+            title="GPS orqali aniqlash"
+            className="flex items-center gap-1 bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold px-2.5 py-1.5 rounded-xl shadow-xs shrink-0 active:scale-95 transition"
+          >
+            {isDetectingLocation ? (
+              <Loader2 size={13} className="animate-spin text-emerald-600" />
+            ) : (
+              <Navigation size={12} className="text-emerald-700" />
+            )}
+            <span>GPS</span>
+          </button>
+        )}
+
+        <button
+          onClick={() => {
+            telegram.triggerHaptic('selection');
+            setTempAddress(deliveryAddress);
+            setIsBranchModalOpen(true);
+          }}
+          className="flex items-center gap-1 text-xs font-semibold text-brand-700 pl-2 shrink-0 cursor-pointer"
+        >
           <span>O'zgartirish</span>
           <ChevronDown size={14} className="text-brand-600 group-hover:translate-y-0.5 transition-transform" />
-        </div>
-      </button>
+        </button>
+      </div>
 
       {/* Order Mode Switcher (Delivery 🛵 / Takeaway 🛍️ / Dine-In 🍽️) */}
       <div className="grid grid-cols-3 gap-1.5 bg-gray-100 p-1 rounded-2xl">
@@ -174,7 +207,7 @@ export default function Header({ showSearch = true }) {
                 {orderType === 'delivery'
                   ? 'Yetkazib berish manzilini kiriting'
                   : orderType === 'takeaway'
-                  ? 'Fayz Cafe filialini tanlang'
+                  ? 'Faiza Cafe filialini tanlang'
                   : 'Stol raqamini tanlang'}
               </h3>
               <button
@@ -187,17 +220,82 @@ export default function Header({ showSearch = true }) {
 
             {orderType === 'delivery' && (
               <div className="space-y-3">
-                <label className="text-xs font-semibold text-gray-500">Yetkazish manzilingiz:</label>
-                <input
-                  type="text"
-                  value={tempAddress}
-                  onChange={(e) => setTempAddress(e.target.value)}
-                  placeholder="Shahar, ko‘cha, xonadon, qavat..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
-                />
+                {/* GPS orqali bir bosishda aniqlash tugmasi */}
                 <button
+                  type="button"
+                  onClick={async () => {
+                    const res = await detectAndSetLocation();
+                    if (res?.success) {
+                      setTempAddress(res.address);
+                      setIsBranchModalOpen(false);
+                    }
+                  }}
+                  disabled={isDetectingLocation}
+                  className="w-full py-3 bg-emerald-50 hover:bg-emerald-100 active:scale-98 border border-emerald-300 text-emerald-900 font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 transition"
+                >
+                  {isDetectingLocation ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin text-emerald-700" />
+                      <span>GPS orqali joylashuv aniqlanmoqda...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Navigation size={15} className="text-emerald-700" />
+                      <span>📍 Mening joriy joylashuvimni aniqlash (GPS)</span>
+                    </>
+                  )}
+                </button>
+
+                <div className="relative flex items-center">
+                  <div className="flex-grow border-t border-gray-200"></div>
+                  <span className="shrink mx-2 text-[11px] text-gray-400 font-medium">yoki qo‘lda kiriting</span>
+                  <div className="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-gray-600 block mb-1">
+                    Aniq manzil yoki mo‘ljal:
+                  </label>
+                  <input
+                    type="text"
+                    value={tempAddress}
+                    onChange={(e) => setTempAddress(e.target.value)}
+                    placeholder="Masalan: Rishton, Mustaqillik ko‘chasi, 15-uy..."
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 font-medium"
+                  />
+                </div>
+
+                {/* Rishton tezkor manzillar */}
+                <div className="space-y-1.5 pt-1">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">
+                    Ommabop mo‘ljallar:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      'Rishton markaz, Milliy bank ro‘parasi',
+                      'Rishton buyum bozori',
+                      'Rishton kulollar markazi',
+                      'Rashidov ko‘chasi'
+                    ].map((loc) => (
+                      <button
+                        key={loc}
+                        type="button"
+                        onClick={() => setTempAddress(loc)}
+                        className="text-[11px] font-semibold bg-gray-100 hover:bg-emerald-50 hover:text-emerald-800 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-200 transition"
+                      >
+                        {loc}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
                   onClick={() => {
                     setDeliveryAddress(tempAddress);
+                    if (typeof window !== 'undefined') {
+                      localStorage.setItem('faiza_cafe_address', tempAddress);
+                    }
                     setIsBranchModalOpen(false);
                     telegram.triggerHaptic('medium');
                   }}
