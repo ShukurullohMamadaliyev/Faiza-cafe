@@ -187,6 +187,21 @@ export default function AdminPage() {
                           Izoh: "{order.customer.note}"
                         </div>
                       )}
+                      {(order.coords || order.customer?.coords || order.mapsUrl) && (
+                        <div className="pt-1.5 flex items-center gap-2">
+                          <a
+                            href={
+                              order.mapsUrl ||
+                              `https://maps.google.com/?q=${(order.coords || order.customer?.coords)?.lat || (order.coords || order.customer?.coords)?.latitude},${(order.coords || order.customer?.coords)?.lon || (order.coords || order.customer?.coords)?.longitude}`
+                            }
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold transition"
+                          >
+                            <span>🗺️ Xaritada ko‘rish (GPS Navigatsiya)</span>
+                          </a>
+                        </div>
+                      )}
                     </div>
 
                     {/* Items */}

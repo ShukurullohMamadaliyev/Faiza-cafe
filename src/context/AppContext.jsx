@@ -131,18 +131,25 @@ export function AppProvider({ children }) {
       const geoResult = await reverseGeocode(coords.latitude, coords.longitude);
 
       const detectedAddr = geoResult.formattedAddress;
+      const normalizedCoords = {
+        lat: Number(coords.latitude),
+        lon: Number(coords.longitude),
+        latitude: Number(coords.latitude),
+        longitude: Number(coords.longitude)
+      };
+
       setDeliveryAddress(detectedAddr);
-      setUserCoords(geoResult.coords);
+      setUserCoords(normalizedCoords);
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('faiza_cafe_address', detectedAddr);
-        localStorage.setItem('faiza_cafe_coords', JSON.stringify(geoResult.coords));
+        localStorage.setItem('faiza_cafe_coords', JSON.stringify(normalizedCoords));
       }
 
       setShowLocationPrompt(false);
       telegram.triggerHaptic('success');
       showToast(`📍 Manzilingiz aniqlandi: ${detectedAddr}`);
-      return { success: true, address: detectedAddr };
+      return { success: true, address: detectedAddr, coords: normalizedCoords };
     } catch (err) {
       console.warn("GPS xatoligi:", err);
       if (!silent) {
@@ -408,6 +415,17 @@ export function AppProvider({ children }) {
     const now = new Date();
     const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
+    const finalCoords = customerDetails.coords || userCoords;
+    const lat = finalCoords?.lat || finalCoords?.latitude;
+    const lon = finalCoords?.lon || finalCoords?.longitude;
+    const validCoords = (lat && lon) ? {
+      lat: Number(lat),
+      lon: Number(lon),
+      latitude: Number(lat),
+      longitude: Number(lon)
+    } : null;
+    const mapsUrl = validCoords ? `https://maps.google.com/?q=${validCoords.lat},${validCoords.lon}` : null;
+
     const newOrder = {
       id: newOrderId,
       date: dateStr,
@@ -415,15 +433,19 @@ export function AppProvider({ children }) {
       statusText: 'Qabul qilindi',
       orderType,
       orderTypeName: orderType === 'delivery' ? 'Yetkazib berish' : orderType === 'takeaway' ? 'Olib ketish' : 'Stolda',
+      coords: validCoords,
+      mapsUrl,
       telegramUser: {
         id: telegram.user?.id || null,
         first_name: telegram.user?.first_name || '',
         username: telegram.user?.username || ''
       },
       customer: {
-        name: customerDetails.name || userName || telegram.user.first_name || 'Mijoz',
+        name: customerDetails.name || userName || telegram.user?.first_name || 'Mijoz',
         phone: customerDetails.phone || userPhone || '+998 90 377 30 00',
         address: orderType === 'delivery' ? customerDetails.address || deliveryAddress : undefined,
+        coords: validCoords,
+        mapsUrl,
         branch: orderType === 'takeaway' ? selectedBranch.name : undefined,
         table: orderType === 'dineIn' ? customerDetails.table || tableNumber : undefined,
         note: customerDetails.note || ''
@@ -531,6 +553,7 @@ export function AppProvider({ children }) {
         deliveryAddress,
         setDeliveryAddress,
         userCoords,
+        setUserCoords,
         isDetectingLocation,
         detectAndSetLocation,
         showLocationPrompt,

@@ -217,12 +217,21 @@ async function notifyAdminsAboutOrder(order, custChatId = 0) {
     : 'Web';
   const validCustChatId = custChatId || tgUser.id || 0;
 
-  const addressInfo =
+  const coords = order.coords || customerInfo.coords;
+  const lat = coords?.lat || coords?.latitude;
+  const lon = coords?.lon || coords?.longitude;
+  const hasCoords = Boolean(lat && lon);
+
+  let addressInfo =
     order.orderType === 'delivery'
       ? `🚗 *Yetkazib berish:* ${customerInfo.address || 'Rishton'}`
       : order.orderType === 'takeaway'
       ? `🛍 *Olib ketish:* ${customerInfo.branch || 'Faiza Cafe (Markaz)'}`
       : `🍽 *Kafeda:* ${customerInfo.table || '1'}-stol`;
+
+  if (order.orderType === 'delivery' && hasCoords) {
+    addressInfo += `\n📍 *GPS koordinatalar:* \`${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}\`\n🗺 *Navigatsiya:* [Google Maps orqali ochish](https://maps.google.com/?q=${lat},${lon})`;
+  }
 
   const messageText = `🔔 *YANGI BUYURTMA! #${order.id}*
 ━━━━━━━━━━━━━━━━━━━━
@@ -240,7 +249,14 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
 ━━━━━━━━━━━━━━━━━━━━
 📌 *Holati:* 🟡 *Yangi (Kutilmoqda)*`;
 
-  const inline_keyboard = [
+  const inline_keyboard = [];
+  if (order.orderType === 'delivery' && hasCoords) {
+    inline_keyboard.push([
+      { text: '🗺 Xaritada ochish (Navigatsiya)', url: `https://maps.google.com/?q=${lat},${lon}` }
+    ]);
+  }
+
+  inline_keyboard.push(
     [
       { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${order.id}:${validCustChatId}` },
       { text: '🍳 Tayyorlanmoqda', callback_data: `st:cook:${order.id}:${validCustChatId}` }
@@ -252,7 +268,7 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
     [
       { text: '❌ Bekor qilish', callback_data: `st:canc:${order.id}:${validCustChatId}` }
     ]
-  ];
+  );
 
   for (const adminId of ADMIN_IDS) {
     await tg('sendMessage', {
@@ -261,6 +277,19 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
       parse_mode: 'Markdown',
       reply_markup: { inline_keyboard }
     });
+
+    // Aniq GPS nuqtani xarita pin sifatida yuborish
+    if (order.orderType === 'delivery' && hasCoords) {
+      try {
+        await tg('sendLocation', {
+          chat_id: adminId,
+          latitude: Number(lat),
+          longitude: Number(lon)
+        });
+      } catch (locErr) {
+        console.warn('sendLocation error in bot:', locErr);
+      }
+    }
   }
 }
 

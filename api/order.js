@@ -47,12 +47,21 @@ export default async function handler(req, res) {
       : 'Web-mijoz';
     const custChatId = tgUser.id || 0;
 
-    const addressInfo =
+    const coords = order.coords || customerInfo.coords;
+    const lat = coords?.lat || coords?.latitude;
+    const lon = coords?.lon || coords?.longitude;
+    const hasCoords = Boolean(lat && lon);
+
+    let addressInfo =
       order.orderType === 'delivery'
         ? `🚗 *Yetkazib berish:* ${customerInfo.address || 'Rishton'}`
         : order.orderType === 'takeaway'
         ? `🛍 *Olib ketish:* ${customerInfo.branch || 'Faiza Cafe (Markaz)'}`
         : `🍽 *Kafeda:* ${customerInfo.table || '1'}-stol`;
+
+    if (order.orderType === 'delivery' && hasCoords) {
+      addressInfo += `\n📍 *GPS koordinatalar:* \`${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}\`\n🗺 *Navigatsiya:* [Google Maps orqali ochish](https://maps.google.com/?q=${lat},${lon})`;
+    }
 
     const messageText = `🔔 *YANGI BUYURTMA! #${order.id}*
 ━━━━━━━━━━━━━━━━━━━━
@@ -71,7 +80,16 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
 📌 *Holati:* 🟡 *Yangi (Kutilmoqda)*`;
 
     // Admin boshqaruv tugmalari (Inline Buttons)
-    const inline_keyboard = [
+    const inline_keyboard = [];
+
+    // Agar aniq lokatsiya bo'lsa xaritada ochish tugmasini yuqoriga qo'shamiz
+    if (order.orderType === 'delivery' && hasCoords) {
+      inline_keyboard.push([
+        { text: '🗺 Xaritada ochish (Navigatsiya)', url: `https://maps.google.com/?q=${lat},${lon}` }
+      ]);
+    }
+
+    inline_keyboard.push(
       [
         { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${order.id}:${custChatId}` },
         { text: '🍳 Tayyorlanmoqda', callback_data: `st:cook:${order.id}:${custChatId}` }
@@ -83,7 +101,7 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
       [
         { text: '❌ Bekor qilish', callback_data: `st:canc:${order.id}:${custChatId}` }
       ]
-    ];
+    );
 
     // Har bir adminga (8340079081) xabar yuborish
     const sendPromises = adminIds.map((adminId) =>
@@ -100,6 +118,25 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
     );
 
     const results = await Promise.all(sendPromises);
+
+    // Agar yetkazib berish va GPS mavjud bo'lsa, Telegram orqali xaritadagi lokatsiya pinini jo'natamiz
+    if (order.orderType === 'delivery' && hasCoords) {
+      for (const adminId of adminIds) {
+        try {
+          await fetch(`https://api.telegram.org/bot${token}/sendLocation`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: adminId,
+              latitude: Number(lat),
+              longitude: Number(lon)
+            })
+          });
+        } catch (locErr) {
+          console.warn('sendLocation error:', locErr);
+        }
+      }
+    }
 
     return res.status(200).json({
       success: true,

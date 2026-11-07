@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Check, CreditCard, Banknote, MapPin, Bike, ShoppingBag, UtensilsCrossed } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Check, CreditCard, Banknote, MapPin, Bike, ShoppingBag, UtensilsCrossed, RefreshCw } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export default function CheckoutModal() {
@@ -19,7 +19,10 @@ export default function CheckoutModal() {
     t,
     telegram,
     userPhone,
-    userName
+    userName,
+    userCoords,
+    detectAndSetLocation,
+    isDetectingLocation
   } = useApp();
 
   const [name, setName] = useState(userName || telegram.user?.first_name || 'Mijoz');
@@ -28,18 +31,63 @@ export default function CheckoutModal() {
   const [table, setTable] = useState(tableNumber);
   const [note, setNote] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('Naqd');
+  const [isVerifyingGps, setIsVerifyingGps] = useState(false);
+
+  // Foydalanuvchi ma'lumotlari yoki manzil yangilanganda state ni yangilash
+  useEffect(() => {
+    if (userName) setName(userName);
+  }, [userName]);
+
+  useEffect(() => {
+    if (userPhone) setPhone(userPhone);
+  }, [userPhone]);
+
+  useEffect(() => {
+    if (deliveryAddress) setAddress(deliveryAddress);
+  }, [deliveryAddress]);
+
+  // Har safar buyurtma oynasi ochilganda aniq GPS koordinatasini avtomatik yangilash
+  useEffect(() => {
+    if (isCheckoutOpen && orderType === 'delivery') {
+      detectAndSetLocation(true).then((res) => {
+        if (res?.address) {
+          setAddress(res.address);
+        }
+      });
+    }
+  }, [isCheckoutOpen, orderType]);
+
+  const handleRefreshGps = async () => {
+    setIsVerifyingGps(true);
+    const res = await detectAndSetLocation(false);
+    if (res?.address) {
+      setAddress(res.address);
+    }
+    setIsVerifyingGps(false);
+  };
 
   if (!isCheckoutOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    let currentCoords = userCoords;
+    if (orderType === 'delivery' && !currentCoords) {
+      setIsVerifyingGps(true);
+      const res = await detectAndSetLocation(true);
+      if (res?.coords) {
+        currentCoords = res.coords;
+      }
+      setIsVerifyingGps(false);
+    }
+
     submitOrder({
       name,
       phone,
       address,
       table,
       note,
-      paymentMethod
+      paymentMethod,
+      coords: currentCoords
     });
   };
 
@@ -118,10 +166,27 @@ export default function CheckoutModal() {
             </h4>
 
             {orderType === 'delivery' && (
-              <div>
-                <label className="text-xs font-semibold text-gray-700 block mb-1">
-                  {t.address}
-                </label>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-gray-700 block">
+                    {t.address}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleRefreshGps}
+                    disabled={isDetectingLocation || isVerifyingGps}
+                    className="text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-xl border border-emerald-200 transition flex items-center gap-1 active:scale-95"
+                  >
+                    <RefreshCw
+                      size={12}
+                      className={isDetectingLocation || isVerifyingGps ? 'animate-spin text-emerald-700' : 'text-emerald-700'}
+                    />
+                    <span>
+                      {isDetectingLocation || isVerifyingGps ? 'GPS aniqlanmoqda...' : 'GPS lokatsiyani yangilash'}
+                    </span>
+                  </button>
+                </div>
+
                 <div className="relative">
                   <input
                     type="text"
@@ -132,6 +197,31 @@ export default function CheckoutModal() {
                     className="w-full px-3.5 py-2.5 pl-9 rounded-xl border border-gray-200 text-sm font-medium text-gray-800 focus:outline-none focus:border-emerald-600"
                   />
                   <MapPin size={16} className="absolute left-3 top-3 text-emerald-600" />
+                </div>
+
+                {/* Live GPS badge indicator */}
+                <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-xl px-3 py-2 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-emerald-950 text-xs">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    {userCoords ? (
+                      <span className="font-mono text-[11px]">
+                        📍 GPS: {(userCoords.lat || userCoords.latitude)?.toFixed(4)}, {(userCoords.lon || userCoords.longitude)?.toFixed(4)}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-gray-600">GPS koordinata aniqlanmoqda...</span>
+                    )}
+                  </div>
+                  {userCoords && (
+                    <a
+                      href={`https://maps.google.com/?q=${userCoords.lat || userCoords.latitude},${userCoords.lon || userCoords.longitude}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[11px] text-emerald-700 hover:text-emerald-900 font-bold underline flex items-center gap-0.5"
+                    >
+                      <span>Xaritada tekshirish</span>
+                      <span>↗</span>
+                    </a>
+                  )}
                 </div>
               </div>
             )}
