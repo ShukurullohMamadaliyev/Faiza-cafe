@@ -6,7 +6,7 @@ dotenv.config();
 
 const token = process.env.BOT_TOKEN;
 const myBotId = token ? Number(token.split(':')[0]) : null;
-const webAppUrl = process.env.WEBAPP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://faiza-cafe.vercel.app');
+const webAppUrl = process.env.WEBAPP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://ibrohimota-choyxonasi.vercel.app');
 const ADMIN_IDS = (process.env.ADMIN_IDS || '8340079081').split(',').map((id) => id.trim()).filter(Boolean);
 
 if (!token) {
