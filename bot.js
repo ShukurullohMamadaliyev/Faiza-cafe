@@ -745,7 +745,7 @@ async function initBotSettings() {
 
     // 2. Short Description (Bio)
     await tg('setMyShortDescription', {
-      short_description: `Ibrohim Ota Choyxonasi rasmiy boti. Milliy taomlar, tandir shashliklar va yetkazib berish xizmati! 🫖🔥 Tel: +998 20 000 01 49`
+      short_description: `Milliy taomlar, tandir shashliklar va yetkazib berish xizmati! 🫖🔥 Buyurtma: +998 20 000 01 49`
     });
 
     // 3. Mini App Menu Button

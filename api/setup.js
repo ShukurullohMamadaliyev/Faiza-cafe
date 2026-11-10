@@ -53,8 +53,8 @@ Boshlash uchun pastdagi "Start" tugmasini bosing! 👇`;
     description: descriptionText
   });
 
-  // 3. Bot Biosi (Short Description)
-  const shortDescriptionText = `Ibrohim Ota Choyxonasi rasmiy boti. Milliy taomlar, tandir shashliklar va yetkazib berish xizmati! 🫖🔥 Tel: +998 20 000 01 49`;
+  // 3. Bot Biosi (Short Description - max 120 belgilar)
+  const shortDescriptionText = `Milliy taomlar, tandir shashliklar va yetkazib berish xizmati! 🫖🔥 Buyurtma: +998 20 000 01 49`;
 
   results.setShortDescription = await callTg('setMyShortDescription', {
     short_description: shortDescriptionText
