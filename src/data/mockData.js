@@ -13,8 +13,8 @@ export const CATEGORIES = [
 export const BANNERS = [
   {
     id: 'b1',
-    title: 'Choyxona To‘y Oshi',
-    subtitle: 'Devzira guruch, mayin go‘sht, sariq sabzi va no‘xat',
+    title: "Choyxona To'y Oshi",
+    subtitle: "Devzira guruch, mayin go'sht, sariq sabzi va no'xat",
     price: '35 000',
     oldPrice: '40 000',
     badge: '🔥 Bosh Taom',
@@ -30,7 +30,7 @@ export const BANNERS = [
   {
     id: 'b2',
     title: 'Polvon Qiyma Shashlik',
-    subtitle: 'Ko‘mir cho‘g‘ida pishirilgan ulkan va shirali go‘sht kabobi',
+    subtitle: "Ko'mir cho'g'ida pishirilgan ulkan va shirali go'sht kabobi",
     price: '22 000',
     oldPrice: '26 000',
     badge: '🥩 Maxsus Kabob',
@@ -45,8 +45,8 @@ export const BANNERS = [
   },
   {
     id: 'b3',
-    title: 'Go‘shtli Tandir Somsa',
-    subtitle: 'Tandirdan uzilgan qarsildoq xamir va shira to‘la mol go‘shti',
+    title: "Go'shtli Tandir Somsa",
+    subtitle: "Tandirdan uzilgan qarsildoq xamir va shira to'la mol go'shti",
     price: '12 000',
     oldPrice: '15 000',
     badge: '🥟 Tandir Xit',
@@ -62,10 +62,10 @@ export const BANNERS = [
   {
     id: 'b4',
     title: 'Katta Shirali Lavash',
-    subtitle: 'Yupqa xamirda saralangan go‘sht, sabzavotlar va maxsus sous',
+    subtitle: "Yupqa xamirda saralangan go'sht, sabzavotlar va maxsus sous",
     price: '34 000',
     oldPrice: '38 000',
-    badge: '🌯 To‘yimli Fastfud',
+    badge: "🌯 To'yimli Fastfud",
     tag: 'Sevimli',
     category: 'fastfood',
     productId: 'ff-lavash-katta',
