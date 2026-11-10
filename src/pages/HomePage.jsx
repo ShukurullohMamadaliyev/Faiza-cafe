@@ -36,24 +36,27 @@ export default function HomePage() {
     setActiveTab('menu');
   };
 
+  const userNickname = telegram.user?.first_name || telegram.user?.username || userName || 'Mehmon';
+
   return (
     <div className="pb-28 px-4 pt-3 space-y-4">
-      {/* Top Header matching Screenshot 1 */}
+      {/* Top Header matching Reference 2 */}
       <div className="flex items-center gap-3 pt-1">
-        <div className="w-13 h-13 rounded-2xl bg-[#2a070b] border border-amber-400/40 p-1 flex items-center justify-center shadow-lg shadow-black/40 shrink-0">
-          <img
-            src="/logo.svg"
-            alt="Ibrohim Ota Logo"
-            className="w-full h-full object-contain"
-          />
+        {/* Luxury Gold Framed "I" Emblem */}
+        <div className="w-12 h-12 rounded-2xl bg-[#28080c] border border-[#d4af37]/60 p-0.5 flex items-center justify-center shrink-0 shadow-md">
+          <div className="w-full h-full rounded-[12px] border border-[#d4af37]/40 flex items-center justify-center bg-gradient-to-b from-[#380d12] to-[#1f0508]">
+            <span className="font-serif font-bold text-2xl text-[#f3ce66] leading-none select-none">
+              I
+            </span>
+          </div>
         </div>
 
-        <div className="min-w-0">
-          <p className="text-amber-200/80 text-xs font-serif italic truncate">
-            Assalomu alaykum, {userName || 'Mehmon'}
+        <div className="min-w-0 flex-1">
+          <p className="text-stone-300 text-xs font-medium leading-tight truncate">
+            Assalomu alaykum, <span className="text-amber-200 font-semibold">{userNickname}</span>
           </p>
-          <h1 className="text-2xl font-serif font-black text-amber-400 tracking-wide leading-tight">
-            Ibrohim Ota
+          <h1 className="text-xl sm:text-2xl font-serif font-black text-[#f3ce66] tracking-wide leading-tight truncate mt-0.5">
+            Ibrohim Ota choyxonasi
           </h1>
         </div>
       </div>

@@ -20,12 +20,12 @@ export function useTelegram() {
         setColorScheme(telegram.colorScheme);
       }
 
-      // Sync header color with theme
+      // Sync header color with dark theme
       if (telegram.setHeaderColor) {
-        telegram.setHeaderColor('#F8F9FA');
+        telegram.setHeaderColor('#150305');
       }
       if (telegram.setBackgroundColor) {
-        telegram.setBackgroundColor('#F8F9FA');
+        telegram.setBackgroundColor('#150305');
       }
     }
   }, []);

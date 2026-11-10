@@ -93,8 +93,8 @@ export default function ProfilePage() {
       {/* User Card matching Screenshot 5 */}
       <div className="bg-[#28080b]/90 border border-amber-500/20 rounded-3xl p-4 shadow-xl shadow-black/40 flex items-center justify-between">
         <div className="flex items-center gap-3.5 min-w-0">
-          <div className="w-13 h-13 rounded-2xl bg-[#1c0507] border border-amber-400/40 flex items-center justify-center font-serif text-xl font-black text-amber-400 shrink-0 shadow-md">
-            {userName ? userName.charAt(0).toUpperCase() : 'M'}
+          <div className="w-12 h-12 rounded-2xl bg-[#1c0507] border border-amber-400/40 flex items-center justify-center font-serif text-xl font-black text-amber-400 shrink-0 shadow-md">
+            {(telegram.user?.first_name || userName || 'M').charAt(0).toUpperCase()}
           </div>
 
           <div className="min-w-0 flex-1">
@@ -117,11 +117,11 @@ export default function ProfilePage() {
             ) : (
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-serif font-bold text-amber-300 truncate">
-                  {userName || 'Mehmon'}
+                  {telegram.user?.first_name || userName || 'Mehmon'}
                 </h2>
                 <button
                   onClick={() => {
-                    setNameInput(userName);
+                    setNameInput(telegram.user?.first_name || userName || '');
                     setIsEditingName(true);
                   }}
                   className="text-stone-400 hover:text-amber-400"
