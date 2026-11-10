@@ -9,8 +9,37 @@ const token = process.env.BOT_TOKEN || '9229821218:AAGEk0sZA4W27UIw5Sbh4E2bADK6I
 const myBotId = token ? Number(token.split(':')[0]) : null;
 const webAppUrl = process.env.WEBAPP_URL || 'https://ibrohimota-choyxonasi.vercel.app';
 const ADMIN_IDS = (process.env.ADMIN_IDS || '8340079081').split(',').map((id) => id.trim()).filter(Boolean);
-const ORDER_GROUP_ID = process.env.ORDER_GROUP_ID || '-1003577268173';
 const API_BASE = `https://api.telegram.org/bot${token}`;
+
+function getOrderGroupId() {
+  if (process.env.ORDER_GROUP_ID && String(process.env.ORDER_GROUP_ID) !== '-1003577268173') {
+    return process.env.ORDER_GROUP_ID;
+  }
+  try {
+    if (fs.existsSync('/tmp/current_group.json')) {
+      const live = JSON.parse(fs.readFileSync('/tmp/current_group.json', 'utf-8'));
+      if (live?.groupId) return live.groupId;
+    }
+  } catch (e) {}
+  try {
+    const cfgPath = path.resolve(process.cwd(), 'group_config.json');
+    if (fs.existsSync(cfgPath)) {
+      const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf-8'));
+      if (cfg?.groupId && String(cfg.groupId) !== '-1003577268173') return cfg.groupId;
+    }
+  } catch (e) {}
+  return null;
+}
+
+function saveCurrentGroup(chatId, title) {
+  try {
+    fs.writeFileSync('/tmp/current_group.json', JSON.stringify({
+      groupId: chatId,
+      groupTitle: title,
+      updatedAt: new Date().toISOString()
+    }), 'utf-8');
+  } catch (e) {}
+}
 
 const TMP_USERS_FILE = '/tmp/ibrohim_users.json';
 let inMemoryUsers = { ...SEED_USERS };
@@ -195,7 +224,11 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
     ]
   );
 
-  const targetChatId = ORDER_GROUP_ID;
+  const targetChatId = getOrderGroupId();
+  if (!targetChatId) {
+    console.warn('Guruh biriktirilmagan');
+    return;
+  }
 
   await tg('sendMessage', {
     chat_id: targetChatId,
@@ -222,41 +255,22 @@ async function handleMessage(msg) {
 
   // 0. Guruh xabarlari
   if (msg.chat.type === 'group' || msg.chat.type === 'supergroup') {
-    const isOwner = ADMIN_IDS.includes(String(msg.from?.id));
-    const isAuthorizedGroup = String(chatId) === String(ORDER_GROUP_ID);
+    saveCurrentGroup(chatId, msg.chat.title || 'Dastafka buyurtmalar');
 
-    if (msg.new_chat_members) {
-      const botAdded = msg.new_chat_members.some((m) => m.is_bot && (m.id === myBotId || m.is_bot));
-      if (botAdded) {
-        if (isOwner || isAuthorizedGroup) {
-          await tg('sendMessage', {
-            chat_id: chatId,
-            text: `🎉 *IBROHIM OTA CHOYXONASI — BUYURTMALAR GURUHI BIRIKTIRILDI!*\n━━━━━━━━━━━━━━━━━━━━\n📌 *Guruh:* ${msg.chat.title}\n🆔 *Guruh ID:* \`${chatId}\`\n\n✅ Yangi buyurtmalar avtomatik ravishda ushbu guruhga tushadi!`
-          });
-        } else {
-          await tg('sendMessage', {
-            chat_id: chatId,
-            text: '⛔ *Xavfsizlik tizimi:* Ushbu bot faqat "Ibrohim Ota Choyxonasi" maʼmuriyati uchun mo‘ljallangan.'
-          });
-          await tg('leaveChat', { chat_id: chatId });
-        }
-        return;
-      }
-    }
+    const isCommand =
+      text.startsWith('/id') ||
+      text.startsWith('/setgroup') ||
+      text.startsWith('/group') ||
+      text.startsWith('/start') ||
+      text.toLowerCase().includes('bot') ||
+      msg.new_chat_members;
 
-    if (text.startsWith('/id') || text.startsWith('/setgroup') || text.startsWith('/group')) {
+    if (isCommand) {
       await tg('sendMessage', {
         chat_id: chatId,
-        text: `📌 *Guruh:* ${msg.chat.title}\n🆔 *Guruh ID:* \`${chatId}\`\n\n${isAuthorizedGroup ? '✅ Ushbu guruh rasmiy buyurtmalar guruhi sifatida faol ishlamoqda!' : '⚠️ Ushbu guruh ID raqamini biriktirish uchun adminga murojaat qiling.'}`
+        text: `🎉 *IBROHIM OTA CHOYXONASI — BUYURTMALAR GURUHI BIRIKTIRILDI!*\n━━━━━━━━━━━━━━━━━━━━\n📌 *Guruh:* ${msg.chat.title || 'Dastafka buyurtmalar'}\n🆔 *Guruh ID:* \`${chatId}\`\n\n✅ Yangi buyurtmalar avtomatik ravishda ushbu guruhga tushadi!`
       });
-      return;
     }
-
-    if (!isAuthorizedGroup && !isOwner) {
-      await tg('leaveChat', { chat_id: chatId });
-      return;
-    }
-
     return;
   }
 
@@ -650,6 +664,15 @@ export default async function handler(req, res) {
       await handleMessage(update.message);
     } else if (update.callback_query) {
       await handleCallbackQuery(update.callback_query);
+    } else if (update.my_chat_member) {
+      const chat = update.my_chat_member.chat;
+      if (chat && (chat.type === 'group' || chat.type === 'supergroup')) {
+        saveCurrentGroup(chat.id, chat.title || 'Dastafka buyurtmalar');
+        await tg('sendMessage', {
+          chat_id: chat.id,
+          text: `🎉 *IBROHIM OTA CHOYXONASI — BUYURTMALAR GURUHI BIRIKTIRILDI!*\n━━━━━━━━━━━━━━━━━━━━\n📌 *Guruh:* ${chat.title || 'Dastafka buyurtmalar'}\n🆔 *Guruh ID:* \`${chat.id}\`\n\n✅ Yangi buyurtmalar avtomatik ravishda ushbu guruhga tushadi!`
+        });
+      }
     }
 
     return res.status(200).json({ ok: true });

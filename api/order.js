@@ -20,9 +20,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const token = process.env.BOT_TOKEN;
+  const token = process.env.BOT_TOKEN || '9229821218:AAGEk0sZA4W27UIw5Sbh4E2bADK6IpQZ6G8';
   const adminIdsStr = process.env.ADMIN_IDS || '8340079081';
-  let orderGroupId = process.env.ORDER_GROUP_ID || '-1003577268173';
+  let orderGroupId = process.env.ORDER_GROUP_ID || null;
 
   try {
     const fs = await import('fs');
@@ -30,16 +30,28 @@ export default async function handler(req, res) {
     const cfgPath = path.resolve(process.cwd(), 'group_config.json');
     if (fs.existsSync(cfgPath)) {
       const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf-8'));
-      if (cfg?.groupId) orderGroupId = cfg.groupId;
+      if (cfg?.groupId && String(cfg.groupId) !== '-1003577268173') {
+        orderGroupId = cfg.groupId;
+      }
+    }
+  } catch (e) {}
+
+  // /tmp dagi eng so'nggi biriktirilgan guruhni ham tekshiramiz
+  try {
+    const fs = await import('fs');
+    if (fs.existsSync('/tmp/current_group.json')) {
+      const liveCfg = JSON.parse(fs.readFileSync('/tmp/current_group.json', 'utf-8'));
+      if (liveCfg?.groupId) orderGroupId = liveCfg.groupId;
     }
   } catch (e) {}
 
   const recipients = [];
-  if (orderGroupId) {
-    // Agar guruh ulangan bo'lsa, buyurtma FAQAT guruhga yuboriladi
+  if (orderGroupId && String(orderGroupId) !== '-1003577268173') {
     recipients.push(String(orderGroupId));
-  } else {
-    // Guruh belgilanmagan bo'lsagina adminga yuboriladi
+  }
+
+  // Agar guruh hali biriktirilmagan bo'lsa, zaxira sifatida adminga yuboramiz
+  if (recipients.length === 0) {
     adminIdsStr
       .split(',')
       .map((id) => id.trim())

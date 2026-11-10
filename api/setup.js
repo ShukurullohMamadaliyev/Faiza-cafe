@@ -83,7 +83,7 @@ Boshlash uchun pastdagi "Start" tugmasini bosing! 👇`;
   // 6. Webhookni Vercel serverless manziliga ulash
   results.setWebhook = await callTg('setWebhook', {
     url: webhookUrl,
-    allowed_updates: ['message', 'callback_query']
+    allowed_updates: ['message', 'callback_query', 'my_chat_member', 'chat_member']
   });
 
   return res.status(200).json({
