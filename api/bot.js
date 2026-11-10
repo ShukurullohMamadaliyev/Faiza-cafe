@@ -7,7 +7,7 @@ import { SEED_USERS } from './usersDb.js';
 
 const token = process.env.BOT_TOKEN || '9229821218:AAGEk0sZA4W27UIw5Sbh4E2bADK6IpQZ6G8';
 const myBotId = token ? Number(token.split(':')[0]) : null;
-const webAppUrl = process.env.WEBAPP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://ibrohimota-choyxonasi.vercel.app');
+const webAppUrl = process.env.WEBAPP_URL || 'https://ibrohimota-choyxonasi.vercel.app';
 const ADMIN_IDS = (process.env.ADMIN_IDS || '8340079081').split(',').map((id) => id.trim()).filter(Boolean);
 const ORDER_GROUP_ID = process.env.ORDER_GROUP_ID || '-1003577268173';
 const API_BASE = `https://api.telegram.org/bot${token}`;

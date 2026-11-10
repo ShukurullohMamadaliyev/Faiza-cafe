@@ -10,10 +10,10 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, error: 'BOT_TOKEN topilmadi' });
   }
 
-  const host = req.headers['x-forwarded-host'] || req.headers.host || 'faiza-cafe.vercel.app';
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'ibrohimota-choyxonasi.vercel.app';
   const proto = req.headers['x-forwarded-proto'] || 'https';
-  const currentBaseUrl = `${proto}://${host}`;
-  const webAppUrl = process.env.WEBAPP_URL || currentBaseUrl;
+  const currentBaseUrl = `https://${host}`;
+  const webAppUrl = process.env.WEBAPP_URL || 'https://ibrohimota-choyxonasi.vercel.app';
   const webhookUrl = `${currentBaseUrl}/api/bot`;
 
   const API_BASE = `https://api.telegram.org/bot${token}`;
