@@ -268,9 +268,29 @@ async function handleMessage(msg) {
     if (isCommand) {
       await tg('sendMessage', {
         chat_id: chatId,
-        text: `🎉 *IBROHIM OTA CHOYXONASI — BUYURTMALAR GURUHI BIRIKTIRILDI!*\n━━━━━━━━━━━━━━━━━━━━\n📌 *Guruh:* ${msg.chat.title || 'Dastafka buyurtmalar'}\n🆔 *Guruh ID:* \`${chatId}\`\n\n✅ Yangi buyurtmalar avtomatik ravishda ushbu guruhga tushadi!`
+        text: `🎉 *IBROHIM OTA CHOYXONASI — BUYURTMALAR GURUHI!*\n━━━━━━━━━━━━━━━━━━━━\n📌 *Guruh:* ${msg.chat.title || 'Dastafka buyurtmalar'}\n🆔 *Guruh ID:* \`${chatId}\`\n\n✅ Guruh muvaffaqiyatli tanildi! Ushbu ID raqamini nusxalab oling: \`${chatId}\``
       });
     }
+    return;
+  }
+
+  // Guruhdan forward qilingan xabar aniqlansa (Guruh ID sini 1 soniyada aniqlash)
+  if (msg.forward_from_chat) {
+    const fwdChat = msg.forward_from_chat;
+    saveCurrentGroup(fwdChat.id, fwdChat.title || 'Dastafka buyurtmalar');
+    await tg('sendMessage', {
+      chat_id: chatId,
+      text: `🎉 *GURUH ANIQLANDI!*\n━━━━━━━━━━━━━━━━━━━━\n📌 *Guruh:* ${fwdChat.title || 'Dastafka buyurtmalar'}\n🆔 *Guruh ID:* \`${fwdChat.id}\`\n\n✅ Ushbu guruh ID raqami: \`${fwdChat.id}\``
+    });
+    return;
+  }
+
+  // /id buyrug'i
+  if (text === '/id' || text === '/myid') {
+    await tg('sendMessage', {
+      chat_id: chatId,
+      text: `🆔 *Sizning Telegram ID:* \`${chatId}\`\n👤 *Ism:* ${firstName}`
+    });
     return;
   }
 

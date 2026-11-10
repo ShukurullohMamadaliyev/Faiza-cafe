@@ -26,6 +26,7 @@ export default function ProfilePage() {
     secondaryPhone,
     updateSecondaryPhone,
     deliveryAddress,
+    updateDeliveryAddress,
     userCoords,
     detectAndSetLocation,
     isDetectingLocation,
@@ -42,6 +43,19 @@ export default function ProfilePage() {
 
   const [isEditingSecPhone, setIsEditingSecPhone] = useState(false);
   const [secPhoneInput, setSecPhoneInput] = useState(secondaryPhone || '');
+
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [addressInput, setAddressInput] = useState(deliveryAddress || '');
+
+  const handleSaveAddress = () => {
+    if (!addressInput.trim()) {
+      showToast("Iltimos, manzilni kiriting");
+      return;
+    }
+    updateDeliveryAddress(addressInput.trim());
+    showToast("Manzil saqlandi");
+    setIsEditingAddress(false);
+  };
 
   // Profil ochilganda GPS manzilni avtomatik ravishda 2 martalab tekshirib olish
   useEffect(() => {
@@ -232,7 +246,7 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Avtomatik GPS Lokatsiya (2 martalab tekshirish) */}
+      {/* Yetkazib berish manzili (GPS yoki qo'lda kiritish) */}
       <div className="bg-[#28080b]/90 border border-amber-500/20 rounded-3xl p-4 shadow-md space-y-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -241,45 +255,95 @@ export default function ProfilePage() {
             </div>
             <div>
               <h3 className="text-xs font-bold text-amber-200">
-                Aniq GPS Manzilingiz
+                Yetkazib berish manzili
               </h3>
               <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold mt-0.5">
-                <CheckCircle2 size={11} />
-                <span>2 marta tekshirildi (Yuqori aniqlikda)</span>
+                {userCoords ? (
+                  <>
+                    <CheckCircle2 size={11} />
+                    <span>GPS aniqlangan</span>
+                  </>
+                ) : (
+                  <span className="text-stone-400">Qo'lda kiritilgan yoki aniqlanmoqda</span>
+                )}
               </div>
             </div>
           </div>
 
-          <button
-            onClick={handleLocationRefresh}
-            disabled={isDetectingLocation}
-            className="flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 px-2.5 py-1.5 rounded-xl border border-amber-500/20 active:scale-95 transition"
-          >
-            <RotateCw size={12} className={isDetectingLocation ? 'animate-spin' : ''} />
-            <span>{isDetectingLocation ? 'Aniqlanmoqda...' : 'Qayta tekshirish'}</span>
-          </button>
-        </div>
-
-        <div className="bg-[#150305]/80 p-3 rounded-2xl border border-amber-500/10 space-y-1.5">
-          <p className="text-xs font-bold text-stone-100 leading-relaxed">
-            {deliveryAddress || 'Manzil aniqlanmoqda...'}
-          </p>
-
-          {userCoords && (
-            <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1 border-t border-white/5">
-              <span>GPS: {Number(userCoords.lat || userCoords.latitude).toFixed(5)}, {Number(userCoords.lon || userCoords.longitude).toFixed(5)}</span>
-              <a
-                href={`https://maps.google.com/?q=${userCoords.lat || userCoords.latitude},${userCoords.lon || userCoords.longitude}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-amber-400 font-bold hover:underline inline-flex items-center gap-0.5"
+          <div className="flex items-center gap-1.5">
+            {!isEditingAddress && (
+              <button
+                onClick={() => {
+                  setAddressInput(deliveryAddress || '');
+                  setIsEditingAddress(true);
+                }}
+                className="text-xs font-bold text-stone-300 hover:text-white bg-white/5 px-2.5 py-1.5 rounded-xl border border-white/10"
               >
-                <span>Xarita</span>
-                <ExternalLink size={10} />
-              </a>
-            </div>
-          )}
+                O'zgartirish
+              </button>
+            )}
+
+            <button
+              onClick={handleLocationRefresh}
+              disabled={isDetectingLocation}
+              className="flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 px-2.5 py-1.5 rounded-xl border border-amber-500/20 active:scale-95 transition"
+              title="GPS orqali avtomatik aniqlash"
+            >
+              <RotateCw size={12} className={isDetectingLocation ? 'animate-spin' : ''} />
+              <span>{isDetectingLocation ? 'GPS...' : 'GPS'}</span>
+            </button>
+          </div>
         </div>
+
+        {isEditingAddress ? (
+          <div className="space-y-2 pt-1">
+            <div className="relative">
+              <input
+                type="text"
+                value={addressInput}
+                onChange={(e) => setAddressInput(e.target.value)}
+                placeholder="Masalan: Rishton, Yangi hayot MFY, 15-uy..."
+                className="w-full bg-[#150305] border border-amber-400 text-stone-100 placeholder-stone-500 text-xs rounded-xl px-3 py-2.5 focus:outline-none"
+                autoFocus
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSaveAddress}
+                className="flex-1 py-2 bg-amber-500 text-stone-950 font-bold text-xs rounded-xl shadow-md text-center"
+              >
+                Saqlash
+              </button>
+              <button
+                onClick={() => setIsEditingAddress(false)}
+                className="px-3 py-2 text-stone-400 hover:text-white text-xs"
+              >
+                Bekor
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-[#150305]/80 p-3 rounded-2xl border border-amber-500/10 space-y-1.5">
+            <p className="text-xs font-bold text-stone-100 leading-relaxed">
+              {deliveryAddress || "Manzil belgilanmagan. 'O'zgartirish' yoki 'GPS' tugmasini bosing."}
+            </p>
+
+            {userCoords && (
+              <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1 border-t border-white/5">
+                <span>GPS: {Number(userCoords.lat || userCoords.latitude).toFixed(5)}, {Number(userCoords.lon || userCoords.longitude).toFixed(5)}</span>
+                <a
+                  href={`https://maps.google.com/?q=${userCoords.lat || userCoords.latitude},${userCoords.lon || userCoords.longitude}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-amber-400 font-bold hover:underline inline-flex items-center gap-0.5"
+                >
+                  <span>Google Maps</span>
+                  <ExternalLink size={10} />
+                </a>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Buyurtmalarim Section matching Screenshot 5 */}

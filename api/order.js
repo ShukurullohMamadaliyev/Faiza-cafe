@@ -50,16 +50,14 @@ export default async function handler(req, res) {
     recipients.push(String(orderGroupId));
   }
 
-  // Agar guruh hali biriktirilmagan bo'lsa, zaxira sifatida adminga yuboramiz
-  if (recipients.length === 0) {
-    adminIdsStr
-      .split(',')
-      .map((id) => id.trim())
-      .filter(Boolean)
-      .forEach((id) => {
-        if (!recipients.includes(id)) recipients.push(id);
-      });
-  }
+  // Adminlar ro'yxatini ham qo'shamiz
+  adminIdsStr
+    .split(',')
+    .map((id) => id.trim())
+    .filter(Boolean)
+    .forEach((id) => {
+      if (!recipients.includes(id)) recipients.push(id);
+    });
 
   try {
     const order = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
@@ -143,6 +141,11 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
         { text: '❌ Bekor qilish', callback_data: `st:canc:${order.id}:${custChatId}` }
       ]
     );
+
+    // Agar buyurtma beruvchi Telegram foydalanuvchisi bo'lsa, xabardor qilamiz
+    if (custChatId && custChatId > 0 && !recipients.includes(String(custChatId))) {
+      recipients.push(String(custChatId));
+    }
 
     // Guruh va adminga buyurtma bildirishnomasini yuborish
     const sendPromises = recipients.map((targetId) =>

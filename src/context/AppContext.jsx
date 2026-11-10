@@ -85,10 +85,24 @@ export function AppProvider({ children }) {
     ? JSON.parse(localStorage.getItem('ibrohim_ota_coords'))
     : null;
 
-  const [deliveryAddress, setDeliveryAddress] = useState(savedAddress || "Rishton tumani (Joriy joylashuv)");
+  const [deliveryAddress, setDeliveryAddress] = useState(savedAddress || "");
   const [userCoords, setUserCoords] = useState(savedCoords);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
-  const [showLocationPrompt, setShowLocationPrompt] = useState(!savedAddress);
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+
+  const updateDeliveryAddress = (newAddr, newCoords = null) => {
+    const trimmed = (newAddr || '').trim();
+    setDeliveryAddress(trimmed);
+    if (newCoords) {
+      setUserCoords(newCoords);
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('ibrohim_ota_address', trimmed);
+      if (newCoords) {
+        localStorage.setItem('ibrohim_ota_coords', JSON.stringify(newCoords));
+      }
+    }
+  };
 
   // Search & Filter
   const [searchQuery, setSearchQuery] = useState('');
@@ -149,24 +163,13 @@ export function AppProvider({ children }) {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // GPS orqali manzilni 2 martalab tekshirib aniqlash funksiyasi
+  // GPS orqali manzilni tezkor va aniq aniqlash funksiyasi
   const detectAndSetLocation = async (silent = false) => {
     setIsDetectingLocation(true);
     if (!silent) telegram.triggerHaptic('medium');
 
     try {
-      // 1-tekshirish: Dastlabki koordinatalar
-      let coords = await getCurrentCoordinates();
-
-      // 2-tekshirish: Aniqlikni qayta tekshirish va barqarorlashtirish
-      try {
-        await new Promise((r) => setTimeout(r, 450));
-        const secondCoords = await getCurrentCoordinates();
-        if (secondCoords?.latitude && secondCoords?.longitude) {
-          coords = secondCoords;
-        }
-      } catch (e2) {}
-
+      const coords = await getCurrentCoordinates();
       const geoResult = await reverseGeocode(coords.latitude, coords.longitude);
 
       const detectedAddr = geoResult.formattedAddress;
@@ -187,7 +190,7 @@ export function AppProvider({ children }) {
 
       setShowLocationPrompt(false);
       telegram.triggerHaptic('success');
-      showToast(`📍 Manzilingiz aniqlandi (2x tekshirildi): ${detectedAddr}`);
+      showToast(`📍 Manzil aniqlandi: ${detectedAddr}`);
       return { success: true, address: detectedAddr, coords: normalizedCoords };
     } catch (err) {
       console.warn("GPS xatoligi:", err);
@@ -592,6 +595,7 @@ export function AppProvider({ children }) {
         setTableNumber,
         deliveryAddress,
         setDeliveryAddress,
+        updateDeliveryAddress,
         userCoords,
         setUserCoords,
         isDetectingLocation,
