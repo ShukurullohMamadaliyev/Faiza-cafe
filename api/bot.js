@@ -197,26 +197,15 @@ async function sendOrderToGroup(order, custChatId = 0) {
 
   const messageText = lines.join('\n');
 
-  const inline_keyboard = [];
-  if (order.orderType === 'delivery' && hasCoords) {
-    inline_keyboard.push([
-      { text: '🗺 Xaritada ochish (Navigatsiya)', url: `https://maps.google.com/?q=${lat},${lon}` }
-    ]);
-  }
-
-  inline_keyboard.push(
+  const inline_keyboard = [
     [
-      { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${cleanId}:${validCustChatId}` },
-      { text: '🍳 Oshxonada', callback_data: `st:cook:${cleanId}:${validCustChatId}` }
-    ],
-    [
-      { text: '🛵 Yetkazilmoqda', callback_data: `st:delv:${cleanId}:${validCustChatId}` },
-      { text: '✅ Yetkazildi', callback_data: `st:comp:${cleanId}:${validCustChatId}` }
+      { text: '🍳 Tayyorlanmoqda', callback_data: `st:cook:${cleanId}:${validCustChatId}` },
+      { text: '✅ Yetkazib berildi', callback_data: `st:comp:${cleanId}:${validCustChatId}` }
     ],
     [
       { text: '❌ Bekor qilish', callback_data: `st:canc:${cleanId}:${validCustChatId}` }
     ]
-  );
+  ];
 
   const targetChatId = getOrderGroupId();
   if (!targetChatId) {
@@ -558,10 +547,8 @@ async function handleCallbackQuery(query) {
     const custChatId = parts[3] ? parseInt(parts[3], 10) : 0;
 
     const statusMap = {
-      prep: { key: 'preparing', label: '👨‍🍳 Qabul qilindi', statusText: 'Qabul qilindi' },
-      cook: { key: 'preparing', label: '🍳 Oshxonada tayyorlanmoqda', statusText: 'Oshxonada tayyorlanmoqda' },
-      delv: { key: 'delivering', label: '🛵 Yetkazilmoqda (Yo‘lda)', statusText: 'Yetkazilmoqda' },
-      comp: { key: 'completed', label: '✅ Yetkazildi (Yakunlandi)', statusText: 'Yetkazildi' },
+      cook: { key: 'preparing', label: '🍳 Tayyorlanmoqda', statusText: 'Tayyorlanmoqda' },
+      comp: { key: 'completed', label: '✅ Yetkazib berildi', statusText: 'Yetkazib berildi' },
       canc: { key: 'cancelled', label: '❌ Bekor qilindi', statusText: 'Bekor qilindi' }
     };
 
@@ -584,29 +571,14 @@ async function handleCallbackQuery(query) {
       updatedText += `\n\n📌 *Holati:* ${statusObj.label}${operatorInfo}`;
     }
 
-    const updatedKeyboard = [];
-    if (message?.reply_markup?.inline_keyboard?.[0]?.[0]?.url) {
-      updatedKeyboard.push([message.reply_markup.inline_keyboard[0][0]]);
-    }
-
-    updatedKeyboard.push(
+    const updatedKeyboard = [
       [
         {
-          text: action === 'prep' ? '• 👨‍🍳 Qabul qilindi •' : '👨‍🍳 Qabul qilish',
-          callback_data: `st:prep:${orderId}:${custChatId}`
-        },
-        {
-          text: action === 'cook' ? '• 🍳 Oshxonada •' : '🍳 Oshxonada',
+          text: action === 'cook' ? '• 🍳 Tayyorlanmoqda •' : '🍳 Tayyorlanmoqda',
           callback_data: `st:cook:${orderId}:${custChatId}`
-        }
-      ],
-      [
-        {
-          text: action === 'delv' ? '• 🛵 Yetkazilmoqda •' : '🛵 Yetkazilmoqda',
-          callback_data: `st:delv:${orderId}:${custChatId}`
         },
         {
-          text: action === 'comp' ? '• ✅ Yetkazildi •' : '✅ Yetkazildi',
+          text: action === 'comp' ? '• ✅ Yetkazib berildi •' : '✅ Yetkazib berildi',
           callback_data: `st:comp:${orderId}:${custChatId}`
         }
       ],
@@ -616,7 +588,7 @@ async function handleCallbackQuery(query) {
           callback_data: `st:canc:${orderId}:${custChatId}`
         }
       ]
-    );
+    ];
 
     await tg('editMessageText', {
       chat_id: targetChatId,

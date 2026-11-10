@@ -99,29 +99,16 @@ export default async function handler(req, res) {
 
     const messageText = lines.join('\n');
 
-    // Admin boshqaruv tugmalari (Inline Buttons)
-    const inline_keyboard = [];
-
-    // Faqat yetkazib berish va koordinata bo'lgandagina Google Maps tugmasi
-    if (order.orderType === 'delivery' && hasCoords) {
-      inline_keyboard.push([
-        { text: '🗺 Xaritada ochish (Navigatsiya)', url: `https://maps.google.com/?q=${lat},${lon}` }
-      ]);
-    }
-
-    inline_keyboard.push(
+    // Guruh boshqaruv tugmalari (Faqat 3 ta asosiy tugma)
+    const inline_keyboard = [
       [
-        { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${cleanId}:${custChatId}` },
-        { text: '🍳 Oshxonada', callback_data: `st:cook:${cleanId}:${custChatId}` }
-      ],
-      [
-        { text: '🛵 Yetkazilmoqda', callback_data: `st:delv:${cleanId}:${custChatId}` },
-        { text: '✅ Yetkazildi', callback_data: `st:comp:${cleanId}:${custChatId}` }
+        { text: '🍳 Tayyorlanmoqda', callback_data: `st:cook:${cleanId}:${custChatId}` },
+        { text: '✅ Yetkazib berildi', callback_data: `st:comp:${cleanId}:${custChatId}` }
       ],
       [
         { text: '❌ Bekor qilish', callback_data: `st:canc:${cleanId}:${custChatId}` }
       ]
-    );
+    ];
 
     // Buyurtma bildirishnomasini FAQAT guruhga yuborish
     const sendPromises = recipients.map((targetId) =>
