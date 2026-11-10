@@ -115,7 +115,7 @@ export function AppProvider({ children }) {
   const [appliedPromo, setAppliedPromo] = useState(null);
 
   // Favorites
-  const [favorites, setFavorites] = useState(['ff-lavash-tandir', 'pz-qazi-med']);
+  const [favorites, setFavorites] = useState(['hd-osh-choyxona', 'sh-polvon-qiyma']);
 
   // Modals & Bottom Sheets
   const [selectedProduct, setSelectedProduct] = useState(null);

@@ -1,477 +1,263 @@
 [
   {
-    "id": "ff-lavash-classic",
-    "category": "fastfood",
-    "name": "Обычный лаваш",
-    "description": "Yupqa xamirda tovuq yoki mol go'shti, barra pomidor, bodring, pishloq va mualliflik sousi",
+    "id": "hd-tandir-somsa",
+    "category": "hotdishes",
+    "name": "Go‘shtli tandir somsa",
+    "description": "Tandirda qizargan qarsildoq xamir, mayin mol go‘shti va xushbo‘y piyozli shirali tandir somsa",
+    "price": 12000,
+    "image": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80",
+    "badge": "Tandir Xit"
+  },
+  {
+    "id": "hd-osh-choyxona",
+    "category": "hotdishes",
+    "name": "Osh (Choyxona Palov)",
+    "description": "Devzira/lazer guruchidan tayyorlangan mayin mol go‘shti, sariq sabzi va no‘xatli an’anaviy choyxona oshi",
+    "price": 35000,
+    "image": "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=600&q=80",
+    "badge": "Bosh Taom"
+  },
+  {
+    "id": "hd-lagmon",
+    "category": "hotdishes",
+    "name": "Lag‘mon (Cho‘zma)",
+    "description": "Qo‘lda cho‘zilgan yangi xamir, shirali go‘sht, sabzavotlar va xushbo‘y sousli to‘yimli milliy lag‘mon",
+    "price": 32000,
+    "image": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80",
+    "badge": "Issiq & To‘yimli"
+  },
+  {
+    "id": "hd-masta-va",
+    "category": "hotdishes",
+    "name": "Mastava",
+    "description": "Qaynoq sho‘rva, mayda to‘g‘ralgan go‘sht, guruch, sabzavotlar va qatiq bilan tortiladigan xushxo‘r mastava",
     "price": 28000,
-    "image": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80",
+    "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=600&q=80",
+    "badge": "Qaynoq"
+  },
+  {
+    "id": "sh-polvon-qiyma",
+    "category": "shashlik",
+    "name": "Polvon qiyma shashlik",
+    "description": "Maxsus retsept asosida tayyorlangan, katta va shirali polvonona qiyma go‘sht kabobi",
+    "price": 22000,
+    "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80",
+    "badge": "Eng Katta"
+  },
+  {
+    "id": "sh-oddiy-qiyma",
+    "category": "shashlik",
+    "name": "Oddiy qiyma shashlik",
+    "description": "Mayin mol go‘shti va dumba yog‘i uyg‘unligida ko‘mirda qovurilgan klassik qiyma shashlik",
+    "price": 16000,
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
     "badge": "Klassik"
   },
   {
-    "id": "ff-lavash-tandir",
-    "category": "fastfood",
-    "name": "Тандир лаваш",
-    "description": "Tandirda pishirilgan xushta'm lavash xamiri, shira to'la go'sht va sabzavotlar",
-    "price": 30000,
-    "image": "https://images.unsplash.com/photo-1644704170910-a0cdf183649b?auto=format&fit=crop&w=600&q=80",
-    "badge": "Xit"
-  },
-  {
-    "id": "ff-lavash-cheese",
-    "category": "fastfood",
-    "name": "Сырный лаваш",
-    "description": "Ko'p miqdorda erigan sariyog'li mayin pishloq, tovuq filesi va bodring-pomidor",
-    "price": 32000,
-    "image": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80",
-    "badge": "Pishloqli"
-  },
-  {
-    "id": "ff-lavash-mini",
-    "category": "fastfood",
-    "name": "Мини лаваш",
-    "description": "Ixcham va yengil tamaddi uchun to'yimli mini lavash",
-    "price": 25000,
-    "image": "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-non-kabob",
-    "category": "fastfood",
-    "name": "Нон кабоб",
-    "description": "Maxsus issiq non ichida qovurilgan xushbo'y go'sht bo'laklari va piyoz",
-    "price": 33000,
-    "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80",
-    "badge": "Milliy Fastfood"
-  },
-  {
-    "id": "ff-donar-bulochka",
-    "category": "fastfood",
-    "name": "Донар в булочке",
-    "description": "Yumshoq qarsildoq bulochka, lazzatli go'sht, bodring, pomidor va oq sous",
-    "price": 25000,
-    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-cheeseburger",
-    "category": "fastfood",
-    "name": "Чиз Бургер",
-    "description": "Mol go'shti kotleti, erigan chedded pishlog'i, marinadlangan bodring va sous",
-    "price": 29000,
-    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
-    "badge": "Xit"
-  },
-  {
-    "id": "ff-big-cheese",
-    "category": "fastfood",
-    "name": "Биг чиз",
-    "description": "Kattalashtirilgan ikki qavatli pishloq, katta suvli kotlet va karamellangan piyoz",
-    "price": 35000,
-    "image": "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80",
-    "badge": "Katta"
-  },
-  {
-    "id": "ff-hamburger",
-    "category": "fastfood",
-    "name": "Гамбургер",
-    "description": "Klassik briosh nonida barra aysberg, yangi pomidor va mol go'shti kotleti",
-    "price": 26000,
-    "image": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-big-burger",
-    "category": "fastfood",
-    "name": "Биг бургер",
-    "description": "Katta to'yimli burger, ikki hissa barra sabzavotlar va ko'p sous",
-    "price": 32000,
-    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-hotdog-kolbasa",
-    "category": "fastfood",
-    "name": "Хот-дог с колбасой",
-    "description": "Dudlangan xushbo'y kolbasa, yangi bodring, pomidor, ketchup va mayonez",
-    "price": 14000,
-    "image": "https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-hotdog-classic",
-    "category": "fastfood",
-    "name": "Хот-дог",
-    "description": "Klassik sosiskali hot-dog, barra ko'katlar va qarsildoq sabzavotlar",
-    "price": 12000,
-    "image": "https://images.unsplash.com/photo-1627054234553-626a45749f50?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-hotdog-royal",
-    "category": "fastfood",
-    "name": "Королевский хот-дог",
-    "description": "Ikkita yirik sosiska, erigan pishloq, bodring, pomidor va maxsus sous",
-    "price": 20000,
-    "image": "https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=600&q=80",
-    "badge": "Qirollik"
-  },
-  {
-    "id": "ff-club-sandwich",
-    "category": "fastfood",
-    "name": "Клаб сендвич",
-    "description": "Qatlamli toster nonida tovuq go'shti, tuxum, pishloq va yonida oltin rang fri",
-    "price": 32000,
-    "image": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=600&q=80",
-    "badge": "Fri bilan"
-  },
-  {
-    "id": "ff-shaurma",
-    "category": "fastfood",
-    "name": "Шаурма",
-    "description": "Maxsus shaurma nonida go'sht, yangi sabzavotlar va qizil sous",
-    "price": 30000,
-    "image": "https://images.unsplash.com/photo-1644704170910-a0cdf183649b?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-pita",
-    "category": "fastfood",
-    "name": "Пита",
-    "description": "Yupqa yumshoq pita ichida to'yimli go'sht va saralangan sabzavotlar",
-    "price": 32000,
-    "image": "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-pita-cheese",
-    "category": "fastfood",
-    "name": "Пита Чиз",
-    "description": "Erigan pishloq bilan boyitilgan nozik pita",
-    "price": 34000,
-    "image": "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-pita-extra",
-    "category": "fastfood",
-    "name": "Пита Экстра",
-    "description": "Ekstra porsiya go'sht, pishloq va mualliflik sousi",
-    "price": 36000,
-    "image": "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=600&q=80",
-    "badge": "Ekstra"
-  },
-  {
-    "id": "ff-xaggi",
-    "category": "fastfood",
-    "name": "Хаги",
-    "description": "Uzun yumshoq bagetda suvli go'sht, barra bodring, pomidor va sous",
-    "price": 32000,
-    "image": "https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "ff-zinger",
-    "category": "fastfood",
-    "name": "Зингер",
-    "description": "Qarsildoq achchiq paniradagi tovuq filesi, aysberg va sous",
-    "price": 26000,
-    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
-    "badge": "Achchiq"
-  },
-  {
-    "id": "ff-longer",
-    "category": "fastfood",
-    "name": "Лонгер",
-    "description": "Uzunchoq non, qarsildoq tovuq filesi bo'lagi va mayin sous",
-    "price": 22000,
-    "image": "https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=600&q=80"
-  },
-
-  {
-    "id": "pz-pepperoni-med",
-    "category": "pizza",
-    "name": "Пеперони (Сред.)",
-    "description": "O'rtacha o'lcham (30 sm). Sifatli achchiq pepperoni kolbasasi, motsarella va pomidor sousi",
-    "price": 70000,
-    "image": "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-pepperoni-big",
-    "category": "pizza",
-    "name": "Пеперони (Бол.)",
-    "description": "Katta o'lcham (35 sm). Ko'p miqdorda pepperoni kolbasasi va motsarella",
-    "price": 82000,
-    "image": "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=600&q=80",
-    "badge": "Xit"
-  },
-  {
-    "id": "pz-pepperoni-mega",
-    "category": "pizza",
-    "name": "Пеперони (Мега)",
-    "description": "Mega o'lcham (40 sm). Do'stlar davrasi uchun ulkan pepperoni pitsasi",
-    "price": 101000,
-    "image": "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=600&q=80",
-    "badge": "Mega"
-  },
-  {
-    "id": "pz-palermo-med",
-    "category": "pizza",
-    "name": "Палермо (Сред.)",
-    "description": "O'rtacha o'lcham (30 sm). Dudlangan kurka go'shti, zaytun, qo'ziqorin va oq sous",
-    "price": 70000,
-    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-palermo-big",
-    "category": "pizza",
-    "name": "Палермо (Бол.)",
-    "description": "Katta o'lcham (35 sm). Palermo uslubidagi xushta'm pitsa",
-    "price": 82000,
-    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-palermo-mega",
-    "category": "pizza",
-    "name": "Палермо (Мега)",
-    "description": "Mega o'lcham (40 sm). Palermo mega pitsasi",
-    "price": 101000,
-    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-margarita-med",
-    "category": "pizza",
-    "name": "Маргарита (Сред.)",
-    "description": "O'rtacha o'lcham (30 sm). Klassik italyancha rayhon, yangi pomidor va motsarella",
-    "price": 65000,
-    "image": "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-margarita-big",
-    "category": "pizza",
-    "name": "Маргарита (Бол.)",
-    "description": "Katta o'lcham (35 sm). Katta Margarita pitsasi",
-    "price": 75000,
-    "image": "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-margarita-mega",
-    "category": "pizza",
-    "name": "Маргарита (Мега)",
-    "description": "Mega o'lcham (40 sm). Mayin motsarella bilan qoplangan mega Margarita",
-    "price": 90000,
-    "image": "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-qazi-med",
-    "category": "pizza",
-    "name": "Пицца с казы (Сред.)",
-    "description": "O'rtacha (30 sm). Milliy saralangan ot go'shti qazisi, pomidor va erigan motsarella",
-    "price": 90000,
-    "image": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=600&q=80",
-    "badge": "Premium"
-  },
-  {
-    "id": "pz-qazi-big",
-    "category": "pizza",
-    "name": "Пицца с казы (Бол.)",
-    "description": "Katta (35 sm). Mo'l qazi bo'laklari bilan boyitilgan shohona pitsa",
-    "price": 105000,
-    "image": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=600&q=80",
-    "badge": "Xit"
-  },
-  {
-    "id": "pz-qazi-mega",
-    "category": "pizza",
-    "name": "Пицца с казы (Мега)",
-    "description": "Mega (40 sm). Butun oila uchun unutilmas milliy qazili pitsa",
-    "price": 120000,
-    "image": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=600&q=80",
-    "badge": "Mega"
-  },
-  {
-    "id": "pz-meat-med",
-    "category": "pizza",
-    "name": "Мясная (Сред.)",
-    "description": "O'rtacha (30 sm). Suvli mol go'shti, dudlangan tovuq, qo'ziqorin va pishloq",
-    "price": 75000,
-    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-meat-big",
-    "category": "pizza",
-    "name": "Мясная (Бол.)",
-    "description": "Katta (35 sm). Go'shtsevarlar uchun to'yimli go'shtli pitsa",
-    "price": 88000,
-    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-meat-mega",
-    "category": "pizza",
-    "name": "Мясная (Мега)",
-    "description": "Mega (40 sm). 3 xil go'sht bilan to'ldirilgan mega pitsa",
-    "price": 105000,
-    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-assorti-med",
-    "category": "pizza",
-    "name": "Ассорти (Сред.)",
-    "description": "O'rtacha (30 sm). Go'sht, qo'ziqorin, zaytun, makkajo'xori va motsarella",
-    "price": 76000,
-    "image": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-assorti-big",
-    "category": "pizza",
-    "name": "Ассорти (Бол.)",
-    "description": "Katta (35 sm). Katta Assorti pitsasi",
-    "price": 85000,
-    "image": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "pz-assorti-mega",
-    "category": "pizza",
-    "name": "Ассорти (Мега)",
-    "description": "Mega (40 sm). Hamma yoqtirgan ta'mlar uyg'unligi",
-    "price": 103000,
-    "image": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80"
-  },
-
-  {
-    "id": "hd-kotlet-cheese",
-    "category": "hotdishes",
-    "name": "Котлеты Чиз",
-    "description": "Pishloqli mol go'shti kotletlari, qarsildoq fri kartoshkasi, qizil karam salati, makkajo'xori va maxsus sous",
-    "price": 57000,
-    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
-    "badge": "Set"
-  },
-  {
-    "id": "hd-cheese-beyti",
-    "category": "hotdishes",
-    "name": "Сырный бейти",
-    "description": "Lavashga o'ralgan pishloqli lazzatli beyti kabobi, fri, sabzi salat, qizil karam salati va sous",
-    "price": 52000,
-    "image": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=600&q=80",
-    "badge": "Xit Set"
-  },
-  {
-    "id": "hd-palochka",
-    "category": "hotdishes",
-    "name": "Палочка",
-    "description": "Oltin rang qarsildoq tovuq tayoqchalari (strips), fri kartoshkasi, karam salati, makkajo'xori va sous",
-    "price": 49000,
-    "image": "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=600&q=80",
-    "badge": "Bolalar sevgan"
-  },
-  {
-    "id": "hd-doner-tarelka",
-    "category": "hotdishes",
-    "name": "Донер Тарелка",
-    "description": "Tarelkada to'yimli doner go'shti, oltin fri kartoshkasi, vitaminli salatlar va qizil sous",
-    "price": 47000,
-    "image": "https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=600&q=80",
-    "badge": "To'yimli"
-  },
-  {
-    "id": "hd-chicken-kotlet",
-    "category": "hotdishes",
-    "name": "Куриный котлет",
-    "description": "Mayin tovuq go'shti kotletlari, fri kartoshkasi, barra sabzavotlar va sous",
-    "price": 42000,
-    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "hd-meat-kotlet",
-    "category": "hotdishes",
-    "name": "Мясной котлет",
-    "description": "100% mol go'shtidan suvli kotletlar, fri, yangi sabzavotlar va pomidor sousi",
-    "price": 55000,
-    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "sh-meat-shashlik-set",
+    "id": "sh-burda",
     "category": "shashlik",
-    "name": "Мясной шашлык",
-    "description": "Cho'g'da pishirilgan haqiqiy lahm mol go'shti shashligi, fri kartoshkasi, sabzavotlar va sous",
-    "price": 55000,
-    "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80",
-    "badge": "Cho'g'da"
-  },
-
-  {
-    "id": "sl-olivye",
-    "category": "hotdishes",
-    "name": "Оливье",
-    "description": "Klassik sevimli bayramona go'shtli Olivye salati",
-    "price": 25000,
-    "image": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80"
+    "name": "Burda shashlik",
+    "description": "Saralangan mayin lahm mol go‘shti va eruvchan dumba bo‘laklari terilgan choyxona burda shashligi",
+    "price": 20000,
+    "image": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=600&q=80",
+    "badge": "Lahm Go‘sht"
   },
   {
-    "id": "sl-sezar",
-    "category": "hotdishes",
-    "name": "Цезарь",
-    "description": "Grilda pishirilgan tovuq filesi, aysberg, parmezan, sarimsoqli suxariklar va sezar sousi",
-    "price": 29000,
-    "image": "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&w=600&q=80",
-    "badge": "Xit"
-  },
-  {
-    "id": "sl-grecheskiy",
-    "category": "hotdishes",
-    "name": "Греческий",
-    "description": "Barra pomidor, bodring, bolgar qalampiri, feta pishlog'i va zaytun mevalari",
-    "price": 27000,
-    "image": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "sl-mujskoy-kapriz",
-    "category": "hotdishes",
-    "name": "Мужской каприз",
-    "description": "Mol tili/go'shti, pishloq, mayda to'g'ralgan tuxum va maxsus sous",
-    "price": 29000,
-    "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "sl-shakarob",
-    "category": "hotdishes",
-    "name": "Шакароб",
-    "description": "Yupqa tilimlangan shirin pomidor, qizil piyoz va ko'katlar",
-    "price": 12000,
-    "image": "https://images.unsplash.com/photo-1592417817098-8f3d6910985c?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    "id": "sl-svejiy",
-    "category": "hotdishes",
-    "name": "Свежий салат",
-    "description": "Yangi uzilgan bodring, barra pomidor va xushbo'y ko'katlar",
-    "price": 12000,
-    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80"
-  },
-
-  {
-    "id": "dr-limonad",
-    "category": "drinks_dessert",
-    "name": "Ibrohim Ota Fresh Limonad (1 litr)",
-    "description": "Tabiiy limon, yalpiz barglari va laym bilan tayyorlangan sovutuvchi ichimlik",
+    "id": "sh-ordak",
+    "category": "shashlik",
+    "name": "O‘rdak shashlik",
+    "description": "Choyxonamizning o‘zgacha ta’mli, xushbo‘y ziravorlar bilan marinadlangan yumshoq o‘rdak go‘shti shashligi",
     "price": 24000,
-    "image": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
-    "badge": "Sovuq"
+    "image": "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80",
+    "badge": "Maxsus Ta’m"
   },
   {
-    "id": "dr-cheesecake",
-    "category": "drinks_dessert",
-    "name": "San Sebastian Chizkeyk",
-    "description": "Ispancha uslubdagi mayin pishloqli nozik desert, issiq shokolad bilan",
-    "price": 28000,
-    "image": "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=600&q=80",
-    "badge": "Desert"
-  },
-  {
-    "id": "dr-coffee",
-    "category": "drinks_dessert",
-    "name": "Kapuchino / Latte (350 ml)",
-    "description": "100% Arabika donalaridan yangi tayyorlangan xushbo'y qahva va sut ko'pigi",
+    "id": "sh-tovuq-qanot",
+    "category": "shashlik",
+    "name": "Tovuq qanot shashlik",
+    "description": "Ko‘mir olovida qarsildoq qilib qizartirilgan, ichi shirali va xushbo‘y tovuq qanotlari",
     "price": 18000,
-    "image": "https://images.unsplash.com/photo-1572442388796-11668ba67e53?auto=format&fit=crop&w=600&q=80"
+    "image": "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=600&q=80",
+    "badge": "Qarsildoq"
+  },
+  {
+    "id": "sh-tovuq-burda",
+    "category": "shashlik",
+    "name": "Tovuq burda shashlik",
+    "description": "Yumshoq tovuq filesi bo‘laklari va maxsus sous bilan cho‘qda pishirilgan yengil shashlik",
+    "price": 17000,
+    "image": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=600&q=80",
+    "badge": "Yengil & Mayin"
+  },
+  {
+    "id": "ff-lavash-katta",
+    "category": "fastfood",
+    "name": "Katta lavash",
+    "description": "Yupqa xamirda to‘yimli mol go‘shti, pomidor, bodring, qarsildoq chips va maxsus sousli ulkan lavash",
+    "price": 34000,
+    "image": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80",
+    "badge": "Katta & To‘yimli"
+  },
+  {
+    "id": "ff-lavash-kichik",
+    "category": "fastfood",
+    "name": "Kichkina lavash",
+    "description": "Yangi mol go‘shti, sabzavotlar va choyxona sousi solingan ixcham va mazali lavash",
+    "price": 28000,
+    "image": "https://images.unsplash.com/photo-1561651823-34feb02250e4?auto=format&fit=crop&w=600&q=80",
+    "badge": "Standart"
+  },
+  {
+    "id": "ff-xotdog-sosiska",
+    "category": "fastfood",
+    "name": "Sosiskali xotdog",
+    "description": "Yumshoq bulyonli bulochka, sifatli pishirilgan sosiska, bodring, pomidor, xantal va mayonez",
+    "price": 15000,
+    "image": "https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=600&q=80",
+    "badge": "Klassik"
+  },
+  {
+    "id": "ff-xotdog-kolbasa",
+    "category": "fastfood",
+    "name": "Kolbasali xotdog",
+    "description": "Tosterda qizdirilgan non, dudlangan mazali kolbasa bo‘laklari, sabzavotlar va xushxo‘r sous",
+    "price": 18000,
+    "image": "https://images.unsplash.com/photo-1612392062631-94dd858cba88?auto=format&fit=crop&w=600&q=80",
+    "badge": "Dudlangan"
+  },
+  {
+    "id": "ff-chizburger",
+    "category": "fastfood",
+    "name": "Chizburger",
+    "description": "Yumshoq kunjutli bulochka, shirali go‘shtli kotlet, erigan Cheddar pishlog‘i, marinadlangan bodring va sous",
+    "price": 26000,
+    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
+    "badge": "Pishloqli Xit"
   },
   {
     "id": "dr-pepsi",
     "category": "drinks_dessert",
-    "name": "Pepsi / Coca-Cola (0.5 L)",
-    "description": "Muzdek gazlangan ichimlik",
+    "name": "Pepsi",
+    "description": "Muzdek tetiklashtiruvchi gazlangan klassik Pepsi ichimligi",
+    "price": 14000,
+    "image": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=600&q=80",
+    "badge": "Muzdek"
+  },
+  {
+    "id": "dr-cola",
+    "category": "drinks_dessert",
+    "name": "Coca-Cola",
+    "description": "Klassik ta’mli muzdek Coca-Cola shishada",
+    "price": 14000,
+    "image": "https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=600&q=80",
+    "badge": "Muzdek"
+  },
+  {
+    "id": "dr-garden",
+    "category": "drinks_dessert",
+    "name": "Garden sharbati",
+    "description": "Tabiiy mevalardan tayyorlangan quyuq va shirin Garden meva sharbati",
+    "price": 15000,
+    "image": "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=600&q=80",
+    "badge": "Tabiiy"
+  },
+  {
+    "id": "dr-flavis",
+    "category": "drinks_dessert",
+    "name": "Flavis sharbati",
+    "description": "Meva ta’mli, xushbo‘y va chanqoqbosti Flavis sharbati",
+    "price": 14000,
+    "image": "https://images.unsplash.com/photo-1534353473418-4cfa6c56fd38?auto=format&fit=crop&w=600&q=80",
+    "badge": "Chanqoqbosti"
+  },
+  {
+    "id": "dr-qora-choy",
+    "category": "drinks_dessert",
+    "name": "Qora choy (Choynakda)",
+    "description": "Choyxona an’anasiga xos yangi damlangan, xushbo‘y qora choy choynakda",
+    "price": 5000,
+    "image": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80",
+    "badge": "Choyxona"
+  },
+  {
+    "id": "dr-kok-choy",
+    "category": "drinks_dessert",
+    "name": "Ko‘k choy (Choynakda)",
+    "description": "Haqiqiy 95-ko‘k choy, osh va shashlikdan keyin kayfiyatni ko‘taruvchi barra choy",
+    "price": 5000,
+    "image": "https://images.unsplash.com/photo-1627435601361-ec25f5b1d0e5?auto=format&fit=crop&w=600&q=80",
+    "badge": "95-Ko‘k Choy"
+  },
+  {
+    "id": "dr-gazli-suv",
+    "category": "drinks_dessert",
+    "name": "Gazli suv",
+    "description": "Muzdek mineral gazlangan toza ichimlik suvi",
+    "price": 5000,
+    "image": "https://images.unsplash.com/photo-1559839914-17aae19cec71?auto=format&fit=crop&w=600&q=80",
+    "badge": "Muzdek"
+  },
+  {
+    "id": "sl-shakarob",
+    "category": "salads",
+    "name": "Shakarob (Achchiq-chuchuk)",
+    "description": "Yangi barra pomidor, piyoz, mayin ko‘katlar va achchiq qalampir qo‘shilgan haqiqiy oshbop shakarob",
+    "price": 10000,
+    "image": "https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=600&q=80",
+    "badge": "Oshga Xos"
+  },
+  {
+    "id": "sl-karamli",
+    "category": "salads",
+    "name": "Karamli salat",
+    "description": "Qarsildoq yangi karam, sabzi, ukrop va zaytun yog‘i bilan tayyorlangan yengil salat",
     "price": 8000,
-    "image": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+    "image": "https://images.unsplash.com/photo-1607532941433-304659e8198a?auto=format&fit=crop&w=600&q=80",
+    "badge": "Qarsildoq"
+  },
+  {
+    "id": "sl-bahor",
+    "category": "salads",
+    "name": "Bahor salat",
+    "description": "Barra rediska, yangi bodring, barra ko‘katlar va o‘simlik yog‘i qo‘shilgan vitaminli bahor salati",
+    "price": 10000,
+    "image": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+    "badge": "Vitaminli"
+  },
+  {
+    "id": "sl-qatiq",
+    "category": "salads",
+    "name": "Qatiq (Choyxona suzmasi)",
+    "description": "Yog‘li, quyuq tabiiy choyxona qatig‘i — osh va shashlik uchun ajoyib qo‘shimcha",
+    "price": 8000,
+    "image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=600&q=80",
+    "badge": "Tabiiy"
+  },
+  {
+    "id": "sl-bodring",
+    "category": "salads",
+    "name": "Bodring salat",
+    "description": "Shirin va barra yangi bodringlar, ko‘katlar va yengil tuzlangan ishtahaochar salat",
+    "price": 8000,
+    "image": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=80",
+    "badge": "Yangi Barra"
+  },
+  {
+    "id": "sl-achchiq",
+    "category": "salads",
+    "name": "Achchiq salat",
+    "description": "Achchiq qalampir, pomidor, sarimsoq va maxsus o‘tkir ziravorlar bilan tayyorlangan ishtahaochar salat",
+    "price": 9000,
+    "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+    "badge": "Achchiq 🌶️"
+  },
+  {
+    "id": "sl-non",
+    "category": "salads",
+    "name": "Issiq tandir non",
+    "description": "Tandirdan uzilgan qasqondek qizarib pishgan, kunjutli qaynoq choyxona noni",
+    "price": 4000,
+    "image": "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=600&q=80",
+    "badge": "Qaynoq Tandir"
   }
 ]

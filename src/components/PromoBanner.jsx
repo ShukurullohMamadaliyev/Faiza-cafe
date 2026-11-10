@@ -22,7 +22,7 @@ export default function PromoBanner() {
   const handleBannerClick = () => {
     telegram.triggerHaptic('medium');
 
-    // 1. Kategoriyani bannerning o'z haqiqiy toifasiga o'tkazish (masalan: 'hotdishes', 'pizza', 'fastfood')
+    // 1. Kategoriyani bannerning o'z haqiqiy toifasiga o'tkazish (masalan: 'hotdishes', 'shashlik', 'fastfood')
     const targetCat = banner.category || 'all';
     setSelectedCategory(targetCat);
 

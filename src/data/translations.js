@@ -21,7 +21,7 @@ export const translations = {
     change: "O'zgartirish",
     selectBranch: 'Filialni tanlang',
     tableNumber: 'Stol raqami',
-    searchPlaceholder: 'lavash, doner, pitsa, shashlik...',
+    searchPlaceholder: 'lavash, osh, shashlik, somsa...',
     detectGps: 'Mening joriy joylashuvimni aniqlash (GPS)',
     gpsDetecting: 'GPS orqali joylashuv aniqlanmoqda...',
     orEnterManually: "yoki qo‘lda kiriting",
@@ -32,11 +32,11 @@ export const translations = {
     // Categories
     categories: {
       all: 'Barchasi',
+      hotdishes: 'Milliy taomlar',
+      shashlik: 'Shashliklar',
       fastfood: 'Fastfud',
-      pizza: 'Pitsa',
-      hotdishes: 'Issiq Taomlar & Salatlar',
-      shashlik: 'Shashlik Setlari',
-      drinks_dessert: 'Ichimlik & Desert',
+      drinks_dessert: 'Ichimliklar',
+      salads: 'Salatlar va Non',
     },
 
     // Sections
@@ -178,7 +178,7 @@ export const translations = {
     change: 'Изменить',
     selectBranch: 'Выберите филиал',
     tableNumber: 'Номер стола',
-    searchPlaceholder: 'лаваш, донер, пицца, шашлык...',
+    searchPlaceholder: 'лаваш, плов, шашлык, самса...',
     detectGps: 'Определить текущее местоположение (GPS)',
     gpsDetecting: 'Определяется по GPS...',
     orEnterManually: 'или введите вручную',
@@ -189,11 +189,11 @@ export const translations = {
     // Categories
     categories: {
       all: 'Все',
+      hotdishes: 'Национальные блюда',
+      shashlik: 'Шашлыки',
       fastfood: 'Фастфуд',
-      pizza: 'Пицца',
-      hotdishes: 'Горячие блюда и салаты',
-      shashlik: 'Сеты шашлыка',
-      drinks_dessert: 'Напитки и десерты',
+      drinks_dessert: 'Напитки',
+      salads: 'Салаты и Хлеб',
     },
 
     // Sections
@@ -335,7 +335,7 @@ export const translations = {
     change: 'Change',
     selectBranch: 'Select Branch',
     tableNumber: 'Table Number',
-    searchPlaceholder: 'lavash, burger, pizza, shashlik...',
+    searchPlaceholder: 'lavash, burger, osh, shashlik, somsa...',
     detectGps: 'Detect Current Location (GPS)',
     gpsDetecting: 'Detecting via GPS...',
     orEnterManually: 'or enter manually',
@@ -346,11 +346,11 @@ export const translations = {
     // Categories
     categories: {
       all: 'All',
+      hotdishes: 'National Dishes',
+      shashlik: 'Shashliks',
       fastfood: 'Fast Food',
-      pizza: 'Pizza',
-      hotdishes: 'Hot Dishes & Salads',
-      shashlik: 'Shashlik Sets',
-      drinks_dessert: 'Drinks & Desserts',
+      drinks_dessert: 'Beverages',
+      salads: 'Salads & Bread',
     },
 
     // Sections

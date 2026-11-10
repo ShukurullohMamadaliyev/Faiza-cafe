@@ -22,14 +22,14 @@ import { CATEGORIES } from '../data/mockData';
 import { compressImage, formatFileSize } from '../utils/imageUtils';
 
 const PRESET_IMAGES = [
-  { label: 'Osh / Palov', url: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80' },
+  { label: 'Osh / Palov', url: 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=600&q=80' },
   { label: 'Shashlik / Kabob', url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80' },
   { label: 'Lavash / Donar', url: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80' },
   { label: 'Burger', url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Pitsa', url: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Choy / Choynak', url: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80' },
+  { label: 'Tandir Non', url: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=600&q=80' },
+  { label: 'Choy / Choynak', url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80' },
   { label: 'Somsa', url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Salat', url: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80' }
+  { label: 'Salat', url: 'https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=600&q=80' }
 ];
 
 export default function AdminPage() {
@@ -646,8 +646,8 @@ export default function AdminPage() {
                     <option value="hotdishes">🍲 Milliy taomlar</option>
                     <option value="shashlik">🥩 Shashliklar</option>
                     <option value="fastfood">🍔 Fastfud</option>
-                    <option value="pizza">🍕 Pitsa</option>
                     <option value="drinks_dessert">☕ Ichimliklar</option>
+                    <option value="salads">🥗 Salatlar va Non</option>
                   </select>
                 </div>
               </div>
@@ -871,8 +871,8 @@ export default function AdminPage() {
                     <option value="hotdishes">🍲 Milliy taomlar</option>
                     <option value="shashlik">🥩 Shashliklar</option>
                     <option value="fastfood">🍔 Fastfud</option>
-                    <option value="pizza">🍕 Pitsa</option>
                     <option value="drinks_dessert">☕ Ichimliklar</option>
+                    <option value="salads">🥗 Salatlar va Non</option>
                   </select>
                 </div>
               </div>
