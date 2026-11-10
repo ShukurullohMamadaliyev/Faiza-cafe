@@ -115,9 +115,12 @@ export default async function handler(req, res) {
 
       // Telegram Document sifatida yuklash (Bulutli zaxira)
       let fileId = null;
+      let uploadData = null;
       try {
         const jsonString = JSON.stringify(products, null, 2);
-        const blob = new Blob([jsonString], { type: 'application/json' });
+        const blob = typeof File !== 'undefined'
+          ? new File([jsonString], 'menu_db.json', { type: 'application/json' })
+          : new Blob([jsonString], { type: 'application/json' });
         const formData = new FormData();
         formData.append('chat_id', groupId);
         formData.append('caption', '#IBROHIM_OTA_MENU_DB#\nBulutli menyu bazasi yangilandi');
@@ -127,7 +130,7 @@ export default async function handler(req, res) {
           method: 'POST',
           body: formData
         });
-        const uploadData = await uploadRes.json();
+        uploadData = await uploadRes.json();
 
         if (uploadData.ok && uploadData.result?.document?.file_id) {
           fileId = uploadData.result.document.file_id;
@@ -139,6 +142,7 @@ export default async function handler(req, res) {
         }
       } catch (uploadErr) {
         console.warn('Telegram cloud document upload warning:', uploadErr.message);
+        uploadData = { error: uploadErr.message };
       }
 
       // Agar guruhga izoh yuborish kerak bo'lsa
@@ -154,7 +158,8 @@ export default async function handler(req, res) {
         ok: true,
         message: 'Menyu muvaffaqiyatli bulutga saqlandi',
         count: products.length,
-        fileId: fileId || undefined
+        fileId: fileId || undefined,
+        uploadDebug: uploadData || null
       });
     } catch (err) {
       console.error('Menu save error:', err);
