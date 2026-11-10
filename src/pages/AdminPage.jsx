@@ -7,19 +7,19 @@ import {
   Search,
   Check,
   X,
-  ChefHat,
-  Bike,
-  CheckCircle2,
   RotateCcw,
   LogOut,
   Lock,
-  Tag,
-  DollarSign,
   UtensilsCrossed,
+  Upload,
+  Camera,
+  Sparkles,
+  Loader2,
   Image as ImageIcon
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CATEGORIES } from '../data/mockData';
+import { compressImage, formatFileSize } from '../utils/imageUtils';
 
 const PRESET_IMAGES = [
   { label: 'Osh / Palov', url: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80' },
@@ -35,17 +35,18 @@ const PRESET_IMAGES = [
 export default function AdminPage() {
   const {
     orders,
-    updateOrderStatus,
     productList,
     addProduct,
     updateProduct,
     deleteProduct,
     toggleProductStock,
     resetMenuToDefault,
+    isAdmin,
     isAdminAuth,
     loginAdmin,
     logoutAdmin,
     setActiveTab,
+    showToast,
     telegram
   } = useApp();
 
@@ -57,6 +58,11 @@ export default function AdminPage() {
   // Modal holatlari
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+
+  // Siqish holatlari (Loading & Info)
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [addCompressInfo, setAddCompressInfo] = useState(null);
+  const [editCompressInfo, setEditCompressInfo] = useState(null);
 
   // Tezkor narx o'zgartirish uchun (inline edit)
   const [inlinePriceEditId, setInlinePriceEditId] = useState(null);
@@ -71,6 +77,29 @@ export default function AdminPage() {
     image: PRESET_IMAGES[0].url,
     badge: 'Yangi'
   });
+
+  // Agar umuman ruxsatsiz foydalanuvchi bo'lsa (faqat botga start bosgan berilgan Telegram ID'lar kirishi mumkin)
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#150305] text-amber-100 flex flex-col items-center justify-center p-6 text-center select-none space-y-4">
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 flex items-center justify-center shadow-lg">
+          <Lock size={32} />
+        </div>
+        <h2 className="font-serif font-black text-lg text-amber-300">
+          Kirish taqiqlangan! 🚫
+        </h2>
+        <p className="text-xs text-stone-400 max-w-xs">
+          Ushbu boshqaruv paneli faqat Ibrohim Ota Choyxonasi maʼmuriyatiga ruxsat berilgan.
+        </p>
+        <button
+          onClick={() => setActiveTab('home')}
+          className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-black text-xs rounded-xl shadow-lg active:scale-95 transition"
+        >
+          ← Bosh sahifaga qaytish
+        </button>
+      </div>
+    );
+  }
 
   // Agar admin avtorizatsiyadan o'tmagan bo'lsa, PIN-kod ekrani
   if (!isAdminAuth) {
@@ -127,6 +156,42 @@ export default function AdminPage() {
     );
   }
 
+  // Galereyadan rasm tanlash va sifatini yo'qotmasdan siqish
+  const handleImageFileSelect = async (e, isEditing = false) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsCompressing(true);
+      telegram.triggerHaptic('light');
+
+      // 800x800px o'lchamda, 0.85 yuqori sifatda siqish
+      const res = await compressImage(file, 800, 800, 0.85);
+
+      const origText = formatFileSize(res.originalSize);
+      const compText = formatFileSize(res.compressedSize);
+      const infoText = `${origText} ➡️ ${compText} (Sifatli siqildi)`;
+
+      if (isEditing) {
+        setEditingProduct((prev) => ({ ...prev, image: res.dataUrl }));
+        setEditCompressInfo(infoText);
+      } else {
+        setFormData((prev) => ({ ...prev, image: res.dataUrl }));
+        setAddCompressInfo(infoText);
+      }
+
+      telegram.triggerHaptic('success');
+      showToast(`Rasm muvaffaqiyatli siqildi: ${origText} dan ${compText} ga! ✨`);
+    } catch (err) {
+      console.warn('Rasm siqish xatosi:', err);
+      telegram.triggerHaptic('warning');
+      showToast(err.message || 'Rasmni yuklashda xatolik');
+    } finally {
+      setIsCompressing(false);
+      e.target.value = '';
+    }
+  };
+
   // Filtrlangan menyu
   const filteredMenu = productList.filter((p) => {
     const matchesSearch = p.name.toLowerCase().includes(menuSearch.toLowerCase());
@@ -134,7 +199,6 @@ export default function AdminPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const totalRevenue = orders.reduce((acc, o) => acc + (o.total || 0), 0);
   const newOrdersCount = orders.filter((o) => o.status === 'new').length;
 
   const handleOpenAddModal = () => {
@@ -146,6 +210,7 @@ export default function AdminPage() {
       image: PRESET_IMAGES[0].url,
       badge: 'Yangi'
     });
+    setAddCompressInfo(null);
     setIsAddModalOpen(true);
   };
 
@@ -285,7 +350,7 @@ export default function AdminPage() {
 
               <button
                 onClick={() => {
-                  if (window.confirm("Menyuni asl standart holatiga qaytarishni xohlaysizmi?")) {
+                  if (window.confirm('Menyuni asl standart holatiga qaytarishni xohlaysizmi?')) {
                     resetMenuToDefault();
                   }
                 }}
@@ -337,9 +402,7 @@ export default function AdminPage() {
                   <div
                     key={product.id}
                     className={`bg-[#28080b]/90 border rounded-2xl p-3 space-y-2.5 shadow-md transition ${
-                      product.isOutOfStock
-                        ? 'border-red-500/30 opacity-75'
-                        : 'border-amber-500/20'
+                      product.isOutOfStock ? 'border-red-500/30 opacity-75' : 'border-amber-500/20'
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -406,7 +469,7 @@ export default function AdminPage() {
                               className="text-[10px] text-stone-400 hover:text-amber-300 underline flex items-center gap-0.5"
                             >
                               <Edit2 size={10} />
-                              <span>Narxni o'zgartirish</span>
+                              <span>Narxni o‘zgartirish</span>
                             </button>
                           </div>
                         )}
@@ -424,13 +487,18 @@ export default function AdminPage() {
                             : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25'
                         }`}
                       >
-                        <span className={`w-1.5 h-1.5 rounded-full ${product.isOutOfStock ? 'bg-red-400' : 'bg-emerald-400'}`}></span>
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${product.isOutOfStock ? 'bg-red-400' : 'bg-emerald-400'}`}
+                        ></span>
                         <span>{product.isOutOfStock ? 'Tugagan (Stop-list)' : 'Sotuvda mavjud'}</span>
                       </button>
 
                       <div className="flex items-center gap-1.5">
                         <button
-                          onClick={() => setEditingProduct(product)}
+                          onClick={() => {
+                            setEditingProduct(product);
+                            setEditCompressInfo(null);
+                          }}
                           className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 text-stone-300 border border-white/10 rounded-xl text-[11px] font-bold flex items-center gap-1"
                         >
                           <Edit2 size={11} />
@@ -488,16 +556,16 @@ export default function AdminPage() {
                       {order.customer?.name} • {order.customer?.phone}
                     </div>
                     {order.customer?.address && (
-                      <div className="text-[11px] text-stone-400">
-                        📍 {order.customer.address}
-                      </div>
+                      <div className="text-[11px] text-stone-400">📍 {order.customer.address}</div>
                     )}
                   </div>
 
                   <div className="space-y-1 text-xs">
                     {(order.items || []).map((it, idx) => (
                       <div key={idx} className="flex justify-between text-stone-300">
-                        <span>{it.quantity}x {it.name}</span>
+                        <span>
+                          {it.quantity}x {it.name}
+                        </span>
                         <span className="font-bold text-amber-300">
                           {(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m
                         </span>
@@ -523,7 +591,7 @@ export default function AdminPage() {
       {/* MODAL 1: YANGI TAOM QO'SHISH */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#24070a] border border-amber-500/30 text-white w-full max-w-md rounded-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#24070a] border border-amber-500/30 text-white w-full max-w-md rounded-3xl p-5 space-y-4 max-h-[92vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <h3 className="font-serif font-black text-base text-amber-300">
                 ➕ Yangi taom qo‘shish
@@ -536,7 +604,7 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveNewProduct} className="space-y-3">
+            <form onSubmit={handleSaveNewProduct} className="space-y-3.5">
               <div>
                 <label className="text-xs font-semibold text-stone-300 block mb-1">
                   Taom nomi *
@@ -597,40 +665,109 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-semibold text-stone-300 block mb-1">
-                  Tayyor rasmlardan tanlang:
+              {/* Rasm qo'shish qismi: Galereyadan yuklash + Smart siqish */}
+              <div className="space-y-2 pt-1">
+                <label className="text-xs font-semibold text-stone-300 flex items-center justify-between">
+                  <span>Taom rasmi *</span>
+                  {isCompressing && (
+                    <span className="text-[10px] text-amber-400 flex items-center gap-1 animate-pulse">
+                      <Loader2 size={11} className="animate-spin" />
+                      <span>Sifatli siqilmoqda...</span>
+                    </span>
+                  )}
                 </label>
-                <div className="grid grid-cols-4 gap-1.5 pb-2">
-                  {PRESET_IMAGES.map((img, i) => (
-                    <button
-                      type="button"
-                      key={i}
-                      onClick={() => setFormData({ ...formData, image: img.url })}
-                      className={`relative rounded-xl overflow-hidden border-2 aspect-square transition ${
-                        formData.image === img.url
-                          ? 'border-amber-400 ring-2 ring-amber-400/50 scale-95'
-                          : 'border-transparent opacity-60 hover:opacity-100'
-                      }`}
-                    >
-                      <img src={img.url} alt={img.label} className="w-full h-full object-cover" />
-                      <span className="absolute bottom-0 inset-x-0 bg-black/70 text-[8px] text-center truncate px-0.5">
-                        {img.label}
-                      </span>
-                    </button>
-                  ))}
-                </div>
 
-                <label className="text-[11px] text-stone-400 block mb-1">
-                  Yoki rasm havolasi (URL):
+                {/* Tanlangan rasm ko'rinishi */}
+                {formData.image ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 bg-[#150305] aspect-video flex items-center justify-center shadow-inner">
+                    <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end justify-between p-2.5">
+                      {addCompressInfo ? (
+                        <span className="text-[10px] font-bold bg-amber-500 text-stone-950 px-2 py-0.5 rounded-md shadow-md flex items-center gap-1">
+                          <Sparkles size={11} />
+                          <span>{addCompressInfo}</span>
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-stone-300 bg-black/60 px-2 py-0.5 rounded-md">
+                          Tanlangan rasm
+                        </span>
+                      )}
+
+                      <label className="cursor-pointer text-xs font-bold bg-stone-900/90 hover:bg-stone-900 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-xl shadow-md flex items-center gap-1.5 active:scale-95 transition">
+                        <Camera size={13} />
+                        <span>Boshqa rasm</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageFileSelect(e, false)}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="cursor-pointer flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 border-dashed border-amber-500/30 hover:border-amber-400 bg-[#150305]/60 hover:bg-[#150305] transition active:scale-98">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                      <Upload size={22} />
+                    </div>
+                    <div className="text-center">
+                      <span className="text-xs font-bold text-amber-300 block">
+                        📷 Telefon galereyasidan rasm tanlang
+                      </span>
+                      <span className="text-[10px] text-stone-400 block mt-0.5">
+                        Avtomatik ravishda sifatini yo'qotmasdan siqiladi
+                      </span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageFileSelect(e, false)}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+
+                {/* Yoki Galereyadan yangi rasm tanlash tugmasi */}
+                <label className="w-full py-2.5 px-3 bg-[#150305] hover:bg-[#1c0507] border border-amber-500/30 rounded-xl text-xs font-bold text-amber-300 flex items-center justify-center gap-2 cursor-pointer transition active:scale-98 shadow-sm">
+                  <Camera size={15} />
+                  <span>Galereyadan yangi rasm yuklash</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageFileSelect(e, false)}
+                    className="hidden"
+                  />
                 </label>
-                <input
-                  type="url"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3 py-1.5 bg-[#150305] border border-amber-500/20 rounded-xl text-xs text-stone-100 focus:outline-none focus:border-amber-400"
-                />
+
+                {/* Tayyor shablon rasmlari */}
+                <div className="pt-1">
+                  <span className="text-[11px] text-stone-400 block mb-1">
+                    Yoki tayyor rasmlardan birini tanlang:
+                  </span>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {PRESET_IMAGES.map((img, i) => (
+                      <button
+                        type="button"
+                        key={i}
+                        onClick={() => {
+                          setFormData({ ...formData, image: img.url });
+                          setAddCompressInfo(null);
+                        }}
+                        className={`relative rounded-xl overflow-hidden border-2 aspect-square transition ${
+                          formData.image === img.url
+                            ? 'border-amber-400 ring-2 ring-amber-400/50 scale-95'
+                            : 'border-transparent opacity-60 hover:opacity-100'
+                        }`}
+                      >
+                        <img src={img.url} alt={img.label} className="w-full h-full object-cover" />
+                        <span className="absolute bottom-0 inset-x-0 bg-black/75 text-[8px] text-center truncate px-0.5 font-semibold">
+                          {img.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -658,7 +795,8 @@ export default function AdminPage() {
               <div className="pt-2 flex gap-2">
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-black text-xs rounded-xl shadow-lg active:scale-95 transition"
+                  disabled={isCompressing}
+                  className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-black text-xs rounded-xl shadow-lg active:scale-95 transition disabled:opacity-50"
                 >
                   Menyuga saqlash
                 </button>
@@ -678,7 +816,7 @@ export default function AdminPage() {
       {/* MODAL 2: TAOM VA NARXNI TAHRIRLASH */}
       {editingProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-[#24070a] border border-amber-500/30 text-white w-full max-w-md rounded-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#24070a] border border-amber-500/30 text-white w-full max-w-md rounded-3xl p-5 space-y-4 max-h-[92vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <h3 className="font-serif font-black text-base text-amber-300">
                 ✏️ Taomni tahrirlash
@@ -691,7 +829,7 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveEditProduct} className="space-y-3">
+            <form onSubmit={handleSaveEditProduct} className="space-y-3.5">
               <div>
                 <label className="text-xs font-semibold text-stone-300 block mb-1">
                   Taom nomi *
@@ -725,7 +863,9 @@ export default function AdminPage() {
                   </label>
                   <select
                     value={editingProduct.category}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, category: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-[#150305] border border-amber-500/20 rounded-xl text-xs text-stone-100 focus:outline-none focus:border-amber-400"
                   >
                     <option value="hotdishes">🍲 Milliy taomlar</option>
@@ -744,27 +884,72 @@ export default function AdminPage() {
                 <input
                   type="text"
                   value={editingProduct.description || ''}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })}
+                  onChange={(e) =>
+                    setEditingProduct({ ...editingProduct, description: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-[#150305] border border-amber-500/20 rounded-xl text-xs text-stone-100 focus:outline-none focus:border-amber-400"
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-semibold text-stone-300 block mb-1">
-                  Rasm havolasi (URL)
+              {/* Rasm tahrirlash: Galereyadan yuklash */}
+              <div className="space-y-2 pt-1">
+                <label className="text-xs font-semibold text-stone-300 flex items-center justify-between">
+                  <span>Taom rasmi</span>
+                  {isCompressing && (
+                    <span className="text-[10px] text-amber-400 flex items-center gap-1 animate-pulse">
+                      <Loader2 size={11} className="animate-spin" />
+                      <span>Sifatli siqilmoqda...</span>
+                    </span>
+                  )}
                 </label>
-                <input
-                  type="url"
-                  value={editingProduct.image || ''}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, image: e.target.value })}
-                  className="w-full px-3 py-1.5 bg-[#150305] border border-amber-500/20 rounded-xl text-xs text-stone-100 focus:outline-none focus:border-amber-400"
-                />
+
+                {editingProduct.image && (
+                  <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 bg-[#150305] aspect-video flex items-center justify-center">
+                    <img
+                      src={editingProduct.image}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end justify-between p-2.5">
+                      {editCompressInfo && (
+                        <span className="text-[10px] font-bold bg-amber-500 text-stone-950 px-2 py-0.5 rounded-md shadow-md flex items-center gap-1">
+                          <Sparkles size={11} />
+                          <span>{editCompressInfo}</span>
+                        </span>
+                      )}
+
+                      <label className="cursor-pointer ml-auto text-xs font-bold bg-stone-900/90 hover:bg-stone-900 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-xl shadow-md flex items-center gap-1.5 active:scale-95 transition">
+                        <Camera size={13} />
+                        <span>Galereyadan almashtirish</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageFileSelect(e, true)}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                <label className="w-full py-2.5 px-3 bg-[#150305] hover:bg-[#1c0507] border border-amber-500/30 rounded-xl text-xs font-bold text-amber-300 flex items-center justify-center gap-2 cursor-pointer transition active:scale-98 shadow-sm">
+                  <Camera size={15} />
+                  <span>Galereyadan yangi rasm yuklash</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageFileSelect(e, true)}
+                    className="hidden"
+                  />
+                </label>
               </div>
 
               <div className="pt-2 flex gap-2">
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-black text-xs rounded-xl shadow-lg active:scale-95 transition"
+                  disabled={isCompressing}
+                  className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-black text-xs rounded-xl shadow-lg active:scale-95 transition disabled:opacity-50"
                 >
                   O‘zgarishlarni saqlash
                 </button>

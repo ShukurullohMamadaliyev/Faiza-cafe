@@ -5,6 +5,8 @@ import { useTelegram } from '../hooks/useTelegram';
 import { getCurrentCoordinates, reverseGeocode } from '../utils/geoUtils';
 import confetti from 'canvas-confetti';
 
+export const ADMIN_IDS = ['8340079081', '7048168954'];
+
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
@@ -166,19 +168,40 @@ export function AppProvider({ children }) {
     return PRODUCTS;
   });
 
+  // Admin tekshiruvi: faqat ruxsat etilgan Telegram ID'lar va maxfiy havola
+  const isAdmin = useMemo(() => {
+    const currentUserId = String(telegram.user?.id || '');
+    if (currentUserId && ADMIN_IDS.includes(currentUserId)) {
+      return true;
+    }
+    if (typeof window !== 'undefined') {
+      const adminParam = new URLSearchParams(window.location.search).get('admin');
+      if (adminParam && ADMIN_IDS.includes(adminParam)) {
+        return true;
+      }
+    }
+    return false;
+  }, [telegram.user?.id]);
+
   // Admin autentifikatsiyasi
   const [isAdminAuth, setIsAdminAuth] = useState(() => {
     if (typeof window !== 'undefined') {
       const param = new URLSearchParams(window.location.search).get('admin');
-      if (param === '8340079081' || param === '7777') return true;
-      if (localStorage.getItem('ibrohim_is_admin') === 'true') return true;
+      if (param && ADMIN_IDS.includes(param)) return true;
+      if (localStorage.getItem('ibrohim_is_admin') === 'true' && ADMIN_IDS.includes(String(telegram.user?.id || ''))) {
+        return true;
+      }
     }
-    return telegram.user?.id == 8340079081;
+    return ADMIN_IDS.includes(String(telegram.user?.id || ''));
   });
 
   const loginAdmin = (pin) => {
+    if (!isAdmin) {
+      showToast("Sizda admin ruxsati mavjud emas! 🚫");
+      return false;
+    }
     const cleanPin = (pin || '').trim();
-    if (cleanPin === '7777' || cleanPin === '1234' || cleanPin === '8340079081') {
+    if (cleanPin === '7777' || cleanPin === '1234' || ADMIN_IDS.includes(cleanPin)) {
       setIsAdminAuth(true);
       if (typeof window !== 'undefined') {
         localStorage.setItem('ibrohim_is_admin', 'true');
@@ -330,6 +353,23 @@ export function AppProvider({ children }) {
         })
         .catch(() => {});
     }
+
+    // Bulutli menyu bazasini serverdan (/api/menu) yuklash - har bir mijoz uchun eng yangi menyu
+    fetch('/api/menu')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && Array.isArray(data.products) && data.products.length > 0) {
+          setProductList(data.products);
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem('ibrohim_ota_menu_custom', JSON.stringify(data.products));
+            } catch (e) {}
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('Bulutli menyuni yuklashda xatolik:', err);
+      });
 
     if (!savedAddress) {
       // Birinchi marta kirganda 500ms kutib avtomatik GPS ruxsatini so'raymiz
@@ -787,6 +827,8 @@ export function AppProvider({ children }) {
         deleteProduct,
         toggleProductStock,
         resetMenuToDefault,
+        isAdmin,
+        ADMIN_IDS,
         isAdminAuth,
         loginAdmin,
         logoutAdmin,

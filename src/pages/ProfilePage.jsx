@@ -32,7 +32,8 @@ export default function ProfilePage() {
     isDetectingLocation,
     orders,
     showToast,
-    setActiveTab
+    setActiveTab,
+    isAdmin
   } = useApp();
 
   const [isEditingName, setIsEditingName] = useState(false);
@@ -97,10 +98,6 @@ export default function ProfilePage() {
     telegram.triggerHaptic('medium');
     await detectAndSetLocation(false);
   };
-
-  const isAdmin =
-    telegram.user?.id == 8340079081 ||
-    (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('admin') === '8340079081');
 
   return (
     <div className="pb-32 px-4 pt-4 space-y-4 min-h-screen">
@@ -442,17 +439,19 @@ export default function ProfilePage() {
         </a>
       </div>
 
-      {/* Admin Panel tugmasi (Boshqaruv, taomlar va narxlar) */}
-      <button
-        onClick={() => {
-          telegram.triggerHaptic('medium');
-          setActiveTab('admin');
-        }}
-        className="w-full py-3.5 bg-gradient-to-r from-[#28080b] to-[#1c0507] hover:from-[#350a0f] hover:to-[#24070a] border border-amber-500/30 text-amber-300 font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-98 transition"
-      >
-        <ShieldAlert size={16} className="text-amber-400" />
-        <span>👑 Admin Panel (Taomlar va Narxlar)</span>
-      </button>
+      {/* Admin Panel tugmasi - faqat tasdiqlangan Adminlar uchun ko'rinadi */}
+      {isAdmin && (
+        <button
+          onClick={() => {
+            telegram.triggerHaptic('medium');
+            setActiveTab('admin');
+          }}
+          className="w-full py-3.5 bg-gradient-to-r from-[#28080b] to-[#1c0507] hover:from-[#350a0f] hover:to-[#24070a] border border-amber-500/30 text-amber-300 font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-98 transition"
+        >
+          <ShieldAlert size={16} className="text-amber-400" />
+          <span>👑 Admin Panel (Taomlar va Narxlar)</span>
+        </button>
+      )}
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { SEED_USERS } from './usersDb.js';
 const token = process.env.BOT_TOKEN || '9229821218:AAGEk0sZA4W27UIw5Sbh4E2bADK6IpQZ6G8';
 const myBotId = token ? Number(token.split(':')[0]) : null;
 const webAppUrl = process.env.WEBAPP_URL || 'https://ibrohimota-choyxonasi.vercel.app';
-const ADMIN_IDS = (process.env.ADMIN_IDS || '8340079081').split(',').map((id) => id.trim()).filter(Boolean);
+const ADMIN_IDS = (process.env.ADMIN_IDS || '8340079081,7048168954').split(',').map((id) => id.trim()).filter(Boolean);
 const API_BASE = `https://api.telegram.org/bot${token}`;
 
 function getOrderGroupId() {
@@ -91,6 +91,11 @@ function getMainKeyboard(userId) {
     }
   }
 
+  // Faqat ruxsat etilgan adminlar (8340079081 va b.) uchun admin parametri
+  if (ADMIN_IDS.includes(String(userId))) {
+    queryParts.push(`admin=${encodeURIComponent(userId)}`);
+  }
+
   if (queryParts.length > 0) {
     const sep = appUrl.includes('?') ? '&' : '?';
     appUrl = `${appUrl}${sep}${queryParts.join('&')}`;
@@ -123,9 +128,22 @@ function getMainKeyboard(userId) {
 function getInlineActionKeyboard(userId = 0) {
   const user = getUser(userId);
   let appUrl = webAppUrl;
+  const queryParts = [];
+
   if (user && user.phone) {
+    queryParts.push(`phone=${encodeURIComponent(user.phone)}`);
+    if (user.name) {
+      queryParts.push(`name=${encodeURIComponent(user.name)}`);
+    }
+  }
+
+  if (ADMIN_IDS.includes(String(userId))) {
+    queryParts.push(`admin=${encodeURIComponent(userId)}`);
+  }
+
+  if (queryParts.length > 0) {
     const sep = appUrl.includes('?') ? '&' : '?';
-    appUrl = `${appUrl}${sep}phone=${encodeURIComponent(user.phone)}&name=${encodeURIComponent(user.name || '')}`;
+    appUrl = `${appUrl}${sep}${queryParts.join('&')}`;
   }
 
   return {

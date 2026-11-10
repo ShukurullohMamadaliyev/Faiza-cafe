@@ -14,7 +14,7 @@ import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 
 export default function App() {
-  const { activeTab, toastMessage, cart } = useApp();
+  const { activeTab, toastMessage, cart, isAdmin } = useApp();
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -28,7 +28,7 @@ export default function App() {
       case 'profile':
         return <ProfilePage />;
       case 'admin':
-        return <AdminPage />;
+        return isAdmin ? <AdminPage /> : <HomePage />;
       default:
         return <HomePage />;
     }
