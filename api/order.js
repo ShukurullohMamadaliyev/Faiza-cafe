@@ -21,7 +21,6 @@ export default async function handler(req, res) {
   }
 
   const token = process.env.BOT_TOKEN || '9229821218:AAGEk0sZA4W27UIw5Sbh4E2bADK6IpQZ6G8';
-  const adminIdsStr = process.env.ADMIN_IDS || '8340079081';
   let orderGroupId = process.env.ORDER_GROUP_ID || '-5370487830';
 
   try {
@@ -36,28 +35,8 @@ export default async function handler(req, res) {
     }
   } catch (e) {}
 
-  // /tmp dagi eng so'nggi biriktirilgan guruhni ham tekshiramiz
-  try {
-    const fs = await import('fs');
-    if (fs.existsSync('/tmp/current_group.json')) {
-      const liveCfg = JSON.parse(fs.readFileSync('/tmp/current_group.json', 'utf-8'));
-      if (liveCfg?.groupId) orderGroupId = liveCfg.groupId;
-    }
-  } catch (e) {}
-
-  const recipients = [];
-  if (orderGroupId && String(orderGroupId) !== '-1003577268173') {
-    recipients.push(String(orderGroupId));
-  }
-
-  // Adminlar ro'yxatini ham qo'shamiz
-  adminIdsStr
-    .split(',')
-    .map((id) => id.trim())
-    .filter(Boolean)
-    .forEach((id) => {
-      if (!recipients.includes(id)) recipients.push(id);
-    });
+  // Buyurtmalar FAQAT guruhning o'ziga yuboriladi
+  const recipients = [String(orderGroupId)];
 
   try {
     const order = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
@@ -66,20 +45,18 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Order data required' });
     }
 
+    const cleanId = String(order.id).replace(/^FC-/, '');
+
+    // Taomlar ro‘yxati (qisqa va lo‘nda, × va = belgisi bilan)
     const itemsText = (order.items || [])
       .map(
         (it) =>
-          `• *${it.quantity}x ${it.name}* — ${(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m`
+          `• ${it.name} × ${it.quantity} = ${(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m`
       )
       .join('\n');
 
     const customerInfo = order.customer || {};
     const tgUser = order.telegramUser || {};
-    const userTag = tgUser.username
-      ? `@${tgUser.username}`
-      : tgUser.id
-      ? `ID: ${tgUser.id}`
-      : 'Web-mijoz';
     const custChatId = tgUser.id || 0;
 
     const coords = order.coords || customerInfo.coords;
@@ -87,41 +64,45 @@ export default async function handler(req, res) {
     const lon = coords?.lon || coords?.longitude;
     const hasCoords = Boolean(lat && lon);
 
-    let addressInfo =
-      order.orderType === 'delivery'
-        ? `🚗 *Yetkazib berish:* ${customerInfo.address || 'Rishton'}`
-        : order.orderType === 'takeaway'
-        ? `🛍 *Olib ketish:* ${customerInfo.branch || 'Ibrohim Ota Choyxonasi'}`
-        : `🍽 *Kafeda:* ${customerInfo.table || '1'}-stol`;
-
-    if (order.orderType === 'delivery' && hasCoords) {
-      addressInfo += `\n📍 *GPS koordinatalar:* \`${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}\`\n🗺 *Navigatsiya:* [Google Maps orqali ochish](https://maps.google.com/?q=${lat},${lon})`;
+    let headerType = '🚴 *Yetkazib berish*';
+    if (order.orderType === 'takeaway') {
+      headerType = '🛍 *OLIB KETISH*';
+    } else if (order.orderType === 'dineIn') {
+      headerType = `🍽 *STOLDA (#${customerInfo.table || '1'}-stol)*`;
     }
 
-    const phoneLine = customerInfo.secondaryPhone
-      ? `📞 *Telefon:* \`${customerInfo.phone || 'Nomaʼlum'}\`\n📱 *Qo‘shimcha tel:* \`${customerInfo.secondaryPhone}\``
-      : `📞 *Telefon:* \`${customerInfo.phone || 'Nomaʼlum'}\``;
+    const lines = [
+      `🧾 *Buyurtma #${cleanId}*`,
+      headerType,
+      '',
+      itemsText || '• Taomlar ko‘rsatilmadi',
+      '',
+      `💰 *Jami:* *${(order.total || 0).toLocaleString('uz-UZ')} so‘m* · 💵 ${order.paymentMethod || 'Naqd'}`,
+      `👤 ${customerInfo.name || 'Mijoz'}`,
+      `📞 ${customerInfo.phone || 'Nomaʼlum'}`
+    ];
 
-    const messageText = `🔔 *YANGI BUYURTMA! #${order.id}*
-━━━━━━━━━━━━━━━━━━━━
-👤 *Mijoz:* ${customerInfo.name || 'Mijoz'} (${userTag})
-${phoneLine}
-${addressInfo}
-💬 *Izoh:* ${customerInfo.note ? `_${customerInfo.note}_` : 'Mavjud emas'}
+    if (customerInfo.secondaryPhone) {
+      lines.push(`📱 ${customerInfo.secondaryPhone}`);
+    }
 
-📋 *Taomlar ro‘yxati:*
-${itemsText || '• Taomlar ko‘rsatilmadi'}
+    // Yetkazib berish bo'lsa manzilni qo'shamiz (Olib ketishda lokatsiya shart emas)
+    if (order.orderType === 'delivery') {
+      if (customerInfo.address) {
+        lines.push(`📍 ${customerInfo.address}`);
+      }
+    }
 
-💰 *Jami to‘lov:* *${(order.total || 0).toLocaleString('uz-UZ')} so‘m*
-💳 *To‘lov turi:* ${order.paymentMethod || 'Naqd pul'}
-🕒 *Vaqt:* ${order.date || new Date().toLocaleString()}
-━━━━━━━━━━━━━━━━━━━━
-📌 *Holati:* 🟡 *Yangi (Kutilmoqda)*`;
+    if (customerInfo.note) {
+      lines.push(`💬 *Izoh:* _${customerInfo.note}_`);
+    }
+
+    const messageText = lines.join('\n');
 
     // Admin boshqaruv tugmalari (Inline Buttons)
     const inline_keyboard = [];
 
-    // Agar aniq lokatsiya bo'lsa xaritada ochish tugmasini yuqoriga qo'shamiz
+    // Faqat yetkazib berish va koordinata bo'lgandagina Google Maps tugmasi
     if (order.orderType === 'delivery' && hasCoords) {
       inline_keyboard.push([
         { text: '🗺 Xaritada ochish (Navigatsiya)', url: `https://maps.google.com/?q=${lat},${lon}` }
@@ -130,24 +111,19 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
 
     inline_keyboard.push(
       [
-        { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${order.id}:${custChatId}` },
-        { text: '🍳 Tayyorlanmoqda', callback_data: `st:cook:${order.id}:${custChatId}` }
+        { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${cleanId}:${custChatId}` },
+        { text: '🍳 Oshxonada', callback_data: `st:cook:${cleanId}:${custChatId}` }
       ],
       [
-        { text: '🛵 Yetkazilmoqda', callback_data: `st:delv:${order.id}:${custChatId}` },
-        { text: '✅ Yetkazildi', callback_data: `st:comp:${order.id}:${custChatId}` }
+        { text: '🛵 Yetkazilmoqda', callback_data: `st:delv:${cleanId}:${custChatId}` },
+        { text: '✅ Yetkazildi', callback_data: `st:comp:${cleanId}:${custChatId}` }
       ],
       [
-        { text: '❌ Bekor qilish', callback_data: `st:canc:${order.id}:${custChatId}` }
+        { text: '❌ Bekor qilish', callback_data: `st:canc:${cleanId}:${custChatId}` }
       ]
     );
 
-    // Agar buyurtma beruvchi Telegram foydalanuvchisi bo'lsa, xabardor qilamiz
-    if (custChatId && custChatId > 0 && !recipients.includes(String(custChatId))) {
-      recipients.push(String(custChatId));
-    }
-
-    // Guruh va adminga buyurtma bildirishnomasini yuborish
+    // Buyurtma bildirishnomasini FAQAT guruhga yuborish
     const sendPromises = recipients.map((targetId) =>
       fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: 'POST',
@@ -163,7 +139,7 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
 
     const results = await Promise.all(sendPromises);
 
-    // Agar yetkazib berish va GPS mavjud bo'lsa, Telegram orqali xaritadagi lokatsiya pinini jo'natamiz
+    // Agar yetkazib berish va GPS mavjud bo'lsa, xaritadagi lokatsiya pinini jo'natamiz (Olib ketishda shart emas)
     if (order.orderType === 'delivery' && hasCoords) {
       for (const targetId of recipients) {
         try {
@@ -184,7 +160,7 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
 
     return res.status(200).json({
       success: true,
-      orderId: order.id,
+      orderId: cleanId,
       adminNotified: results.map((r) => ({ ok: r.ok, message_id: r.result?.message_id }))
     });
   } catch (error) {

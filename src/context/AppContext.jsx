@@ -453,7 +453,23 @@ export function AppProvider({ children }) {
 
   const submitOrder = (customerDetails) => {
     telegram.triggerHaptic('success');
-    const newOrderId = `FC-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    let nextNum = 1;
+    try {
+      const storedCount = localStorage.getItem('ibrohim_ota_order_seq');
+      if (storedCount) {
+        nextNum = parseInt(storedCount, 10) + 1;
+      } else if (orders && orders.length > 0) {
+        nextNum = orders.length + 1;
+      }
+    } catch (e) {
+      nextNum = (orders && orders.length > 0) ? orders.length + 1 : 1;
+    }
+    try {
+      localStorage.setItem('ibrohim_ota_order_seq', String(nextNum));
+    } catch (e) {}
+
+    const newOrderId = String(nextNum);
     const now = new Date();
     const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 

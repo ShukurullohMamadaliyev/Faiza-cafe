@@ -145,20 +145,16 @@ function getInlineActionKeyboard(userId = 0) {
 
 // Guruhga yangi buyurtmani yuborish
 async function sendOrderToGroup(order, custChatId = 0) {
+  const cleanId = String(order.id || '1').replace(/^FC-/, '');
   const itemsText = (order.items || [])
     .map(
       (it) =>
-        `• *${it.quantity}x ${it.name}* — ${(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m`
+        `• ${it.name} × ${it.quantity} = ${(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m`
     )
     .join('\n');
 
   const customerInfo = order.customer || {};
   const tgUser = order.telegramUser || {};
-  const userTag = tgUser.username
-    ? `@${tgUser.username}`
-    : tgUser.id
-    ? `ID: ${tgUser.id}`
-    : 'Web';
   const validCustChatId = custChatId || tgUser.id || 0;
 
   const coords = order.coords || customerInfo.coords;
@@ -166,36 +162,40 @@ async function sendOrderToGroup(order, custChatId = 0) {
   const lon = coords?.lon || coords?.longitude;
   const hasCoords = Boolean(lat && lon);
 
-  let addressInfo =
-    order.orderType === 'delivery'
-      ? `🚗 *Yetkazib berish:* ${customerInfo.address || 'Rishton'}`
-      : order.orderType === 'takeaway'
-      ? `🛍 *Olib ketish:* ${customerInfo.branch || 'Ibrohim Ota Choyxonasi Rishton'}`
-      : `🍽 *Kafeda:* ${customerInfo.table || '1'}-stol`;
-
-  if (order.orderType === 'delivery' && hasCoords) {
-    addressInfo += `\n📍 *GPS koordinatalar:* \`${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}\`\n🗺 *Navigatsiya:* [Google Maps orqali ochish](https://maps.google.com/?q=${lat},${lon})`;
+  let headerType = '🚴 *Yetkazib berish*';
+  if (order.orderType === 'takeaway') {
+    headerType = '🛍 *OLIB KETISH*';
+  } else if (order.orderType === 'dineIn') {
+    headerType = `🍽 *STOLDA (#${customerInfo.table || '1'}-stol)*`;
   }
 
-  const phoneLine = customerInfo.secondaryPhone
-    ? `📞 *Telefon:* \`${customerInfo.phone || 'Nomaʼlum'}\`\n📱 *Qo‘shimcha tel:* \`${customerInfo.secondaryPhone}\``
-    : `📞 *Telefon:* \`${customerInfo.phone || 'Nomaʼlum'}\``;
+  const lines = [
+    `🧾 *Buyurtma #${cleanId}*`,
+    headerType,
+    '',
+    itemsText || '• Taomlar ko‘rsatilmadi',
+    '',
+    `💰 *Jami:* *${(order.total || 0).toLocaleString('uz-UZ')} so‘m* · 💵 ${order.paymentMethod || 'Naqd'}`,
+    `👤 ${customerInfo.name || 'Mijoz'}`,
+    `📞 ${customerInfo.phone || 'Nomaʼlum'}`
+  ];
 
-  const messageText = `🔔 *YANGI BUYURTMA! #${order.id}*
-━━━━━━━━━━━━━━━━━━━━
-👤 *Mijoz:* ${customerInfo.name || 'Mijoz'} (${userTag})
-${phoneLine}
-${addressInfo}
-💬 *Izoh:* ${customerInfo.note ? `_${customerInfo.note}_` : 'Mavjud emas'}
+  if (customerInfo.secondaryPhone) {
+    lines.push(`📱 ${customerInfo.secondaryPhone}`);
+  }
 
-📋 *Taomlar ro‘yxati:*
-${itemsText || '• Taomlar ko‘rsatilmadi'}
+  // Faqat yetkazib berishda manzil ko'rsatiladi
+  if (order.orderType === 'delivery') {
+    if (customerInfo.address) {
+      lines.push(`📍 ${customerInfo.address}`);
+    }
+  }
 
-💰 *Jami to‘lov:* *${(order.total || 0).toLocaleString('uz-UZ')} so‘m*
-💳 *To‘lov turi:* ${order.paymentMethod || 'Naqd pul'}
-🕒 *Vaqt:* ${order.date || new Date().toLocaleString()}
-━━━━━━━━━━━━━━━━━━━━
-📌 *Holati:* 🟡 *Yangi (Kutilmoqda)*`;
+  if (customerInfo.note) {
+    lines.push(`💬 *Izoh:* _${customerInfo.note}_`);
+  }
+
+  const messageText = lines.join('\n');
 
   const inline_keyboard = [];
   if (order.orderType === 'delivery' && hasCoords) {
@@ -206,15 +206,15 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
 
   inline_keyboard.push(
     [
-      { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${order.id}:${validCustChatId}` },
-      { text: '🍳 Oshxonada', callback_data: `st:cook:${order.id}:${validCustChatId}` }
+      { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${cleanId}:${validCustChatId}` },
+      { text: '🍳 Oshxonada', callback_data: `st:cook:${cleanId}:${validCustChatId}` }
     ],
     [
-      { text: '🛵 Yetkazilmoqda', callback_data: `st:delv:${order.id}:${validCustChatId}` },
-      { text: '✅ Yetkazildi', callback_data: `st:comp:${order.id}:${validCustChatId}` }
+      { text: '🛵 Yetkazilmoqda', callback_data: `st:delv:${cleanId}:${validCustChatId}` },
+      { text: '✅ Yetkazildi', callback_data: `st:comp:${cleanId}:${validCustChatId}` }
     ],
     [
-      { text: '❌ Bekor qilish', callback_data: `st:canc:${order.id}:${validCustChatId}` }
+      { text: '❌ Bekor qilish', callback_data: `st:canc:${cleanId}:${validCustChatId}` }
     ]
   );
 
@@ -231,6 +231,7 @@ ${itemsText || '• Taomlar ko‘rsatilmadi'}
     reply_markup: { inline_keyboard }
   });
 
+  // Olib ketishda lokatsiya shart emas, faqat yetkazib berishda yuboriladi
   if (order.orderType === 'delivery' && hasCoords) {
     try {
       await tg('sendLocation', {
