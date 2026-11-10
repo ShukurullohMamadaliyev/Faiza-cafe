@@ -27,7 +27,7 @@ export default function CheckoutModal() {
   } = useApp();
 
   const [name, setName] = useState(userName || telegram.user?.first_name || 'Mijoz');
-  const [phone, setPhone] = useState(userPhone || '+998 90 377 30 00');
+  const [phone, setPhone] = useState(userPhone || '');
   const [address, setAddress] = useState(deliveryAddress);
   const [table, setTable] = useState(tableNumber);
   const [note, setNote] = useState('');

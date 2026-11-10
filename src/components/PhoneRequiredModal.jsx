@@ -13,6 +13,7 @@ export default function PhoneRequiredModal() {
     userPhone &&
     userPhone !== '+998 90 377 30 00' &&
     userPhone !== '+998903773000' &&
+    userPhone !== '+998 20 000 01 49' &&
     userPhone.length >= 9
   );
 

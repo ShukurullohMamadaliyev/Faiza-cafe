@@ -56,7 +56,7 @@ export default function Header({ showSearch = true }) {
             <div className="flex items-center gap-1.5 text-[11px] text-gray-500 mt-1 font-medium">
               <span className="flex items-center gap-1 text-red-700 font-semibold">
                 <Clock size={11} className="text-red-600" />
-                08:00 – 03:00
+                08:00 – 23:00
               </span>
               <span>•</span>
               <span className="text-gray-400">{t.halal || 'Halol'}</span>

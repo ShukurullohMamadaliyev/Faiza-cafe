@@ -5,7 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import { SEED_USERS } from './usersDb.js';
 
-const token = process.env.BOT_TOKEN || '9141727536:AAGkeeNUQGbsD3WBtMciA17UxhBkFhPLWx0';
+const token = process.env.BOT_TOKEN;
+const myBotId = token ? Number(token.split(':')[0]) : null;
 const webAppUrl = process.env.WEBAPP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://faiza-cafe.vercel.app');
 const ADMIN_IDS = (process.env.ADMIN_IDS || '8340079081').split(',').map((id) => id.trim()).filter(Boolean);
 const ORDER_GROUP_ID = process.env.ORDER_GROUP_ID || '-1003577268173';
@@ -222,7 +223,7 @@ async function handleMessage(msg) {
     const isAuthorizedGroup = String(chatId) === String(ORDER_GROUP_ID);
 
     if (msg.new_chat_members) {
-      const botAdded = msg.new_chat_members.some((m) => m.is_bot && (m.id === 9141727536 || m.username === 'ibrohim_ota_bot'));
+      const botAdded = msg.new_chat_members.some((m) => m.is_bot && (m.id === myBotId || m.is_bot));
       if (botAdded) {
         if (isOwner || isAuthorizedGroup) {
           await tg('sendMessage', {

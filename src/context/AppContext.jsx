@@ -455,7 +455,7 @@ export function AppProvider({ children }) {
       },
       customer: {
         name: customerDetails.name || userName || telegram.user?.first_name || 'Mijoz',
-        phone: customerDetails.phone || userPhone || '+998 90 377 30 00',
+        phone: customerDetails.phone || userPhone || '',
         address: orderType === 'delivery' ? customerDetails.address || deliveryAddress : undefined,
         coords: validCoords,
         mapsUrl,

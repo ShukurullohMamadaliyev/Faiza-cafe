@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const token = process.env.BOT_TOKEN || '9141727536:AAGkeeNUQGbsD3WBtMciA17UxhBkFhPLWx0';
+  const token = process.env.BOT_TOKEN;
   const adminIdsStr = process.env.ADMIN_IDS || '8340079081';
   let orderGroupId = process.env.ORDER_GROUP_ID || '-1003577268173';
 

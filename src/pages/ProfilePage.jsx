@@ -13,6 +13,7 @@ import {
   Sparkles,
   PhoneCall,
   Phone,
+  Clock,
   X
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -115,7 +116,7 @@ export default function ProfilePage() {
               )}
               <span className="text-xs text-red-800 font-bold block mt-1 bg-red-50 px-2.5 py-0.5 rounded-lg border border-red-200/60 inline-flex items-center gap-1">
                 <span>📱</span>
-                <span>{userPhone || '+998 90 377 30 00'}</span>
+                <span>{userPhone || '+998 20 000 01 49'}</span>
               </span>
             </div>
           </div>
@@ -215,6 +216,59 @@ export default function ProfilePage() {
           </button>
         </div>
 
+        {/* Aloqa va Choyxona Ma'lumotlari Bo'limi */}
+        <div className="bg-gradient-to-br from-red-50 via-white to-amber-50/40 rounded-3xl p-4.5 border border-red-200/80 shadow-card space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-[#991b1b] text-white flex items-center justify-center shadow-md">
+                <PhoneCall size={20} className="text-amber-300" />
+              </div>
+              <div>
+                <h4 className="text-sm font-black text-[#991b1b] tracking-tight">
+                  IBROHIM OTA CHOYXONASI
+                </h4>
+                <p className="text-[11px] text-amber-900/80 font-bold">
+                  Milliy taomlar, tandir kabob & fayzli choyxona
+                </p>
+              </div>
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-wider bg-red-100 text-red-800 px-2 py-0.5 rounded-full border border-red-200">
+              Aloqa
+            </span>
+          </div>
+
+          <p className="text-xs text-gray-600 leading-relaxed italic bg-white/80 p-3 rounded-2xl border border-red-100">
+            «Qadrdon mehmonga eshigimiz hamisha ochiq! Mazali milliy taomlar, sarxil shashliklar va xushbo‘y damlama choylar bilan dasturxoningiz to‘kin bo‘lsin.»
+          </p>
+
+          <div className="space-y-2 pt-1 text-xs">
+            <div className="flex items-center gap-2.5 text-gray-700 bg-white/90 p-2.5 rounded-xl border border-red-100/70">
+              <Clock size={16} className="text-red-700 shrink-0" />
+              <div>
+                <span className="text-[11px] text-gray-400 block font-medium">Ish vaqti:</span>
+                <span className="font-extrabold text-gray-800">Har kuni 08:00 dan 23:00 gacha</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 text-gray-700 bg-white/90 p-2.5 rounded-xl border border-red-100/70">
+              <MapPin size={16} className="text-red-700 shrink-0" />
+              <div>
+                <span className="text-[11px] text-gray-400 block font-medium">Manzil:</span>
+                <span className="font-bold text-gray-800">Rishton tumani, Milliy bank ro‘parasi</span>
+              </div>
+            </div>
+          </div>
+
+          <a
+            href="tel:+998200000149"
+            onClick={() => telegram.triggerHaptic('medium')}
+            className="w-full py-3 bg-[#991b1b] hover:bg-red-800 active:scale-98 text-white font-black text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2"
+          >
+            <Phone size={16} className="text-amber-300" />
+            <span>Qo‘ng‘iroq qilish: +998 20 000 01 49</span>
+          </a>
+        </div>
+
         {/* Language Switcher */}
         <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-card space-y-2.5">
           <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider">
@@ -262,7 +316,7 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Support & Version with 2-number selector */}
+        {/* Support & Version */}
         <div className="text-center pt-2 space-y-2">
           <p className="text-[11px] text-gray-400 font-medium">
             Ibrohim Ota Choyxonasi Telegram Mini App v1.0.0
@@ -280,18 +334,18 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* 2 ta Raqamli Qo'llab-quvvatlash Modali (Support Modal) */}
+      {/* Qo'llab-quvvatlash Modali (Support Modal) */}
       {showSupportModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 select-none animate-fade-in">
           <div className="bg-white w-full max-w-sm rounded-t-[32px] sm:rounded-3xl p-5 space-y-4 shadow-2xl animate-slide-up border border-red-100">
             <div className="flex items-center justify-between pb-2 border-b border-gray-100">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-red-100 text-red-700 flex items-center justify-center">
-                  <PhoneCall size={16} />
+                <div className="w-9 h-9 rounded-full bg-red-100 text-red-700 flex items-center justify-center">
+                  <PhoneCall size={18} />
                 </div>
                 <div>
-                  <h3 className="font-black text-sm text-[#991b1b]">{t.callSupport}</h3>
-                  <p className="text-[11px] text-gray-400">{t.callPrompt}</p>
+                  <h3 className="font-black text-sm text-[#991b1b]">Ibrohim Ota Aloqa Markazi</h3>
+                  <p className="text-[11px] text-gray-400">Har kuni 08:00 – 23:00 xizmatingizdamiz</p>
                 </div>
               </div>
               <button
@@ -302,47 +356,28 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            <div className="space-y-2.5">
-              {/* 1-Raqam: +998 90 377 30 00 */}
-              <a
-                href="tel:+998903773000"
-                onClick={() => telegram.triggerHaptic('medium')}
-                className="p-3.5 bg-red-50/80 hover:bg-red-100 border border-red-200 rounded-2xl flex items-center justify-between transition group active:scale-98"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-xs">
-                    <Phone size={18} />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-gray-500">{t.callLine1}</div>
-                    <div className="text-sm font-black text-[#991b1b] tracking-wide">+998 90 377 30 00</div>
-                  </div>
-                </div>
-                <span className="text-xs font-bold text-red-700 bg-white px-2.5 py-1 rounded-xl shadow-xs border border-red-100">
-                  {t.call}
-                </span>
-              </a>
+            <p className="text-xs text-gray-600 bg-red-50/50 p-3 rounded-xl border border-red-100">
+              Savol, taklif yoki buyurtmalar bo‘yicha to‘g‘ridan-to‘g‘ri ma‘muriyatga qo‘ng‘iroq qilishingiz mumkin.
+            </p>
 
-              {/* 2-Raqam: +998 98 571 00 67 */}
-              <a
-                href="tel:+998985710067"
-                onClick={() => telegram.triggerHaptic('medium')}
-                className="p-3.5 bg-red-50/80 hover:bg-red-100 border border-red-200 rounded-2xl flex items-center justify-between transition group active:scale-98"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-xs">
-                    <Phone size={18} />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-gray-500">{t.callLine2}</div>
-                    <div className="text-sm font-black text-[#991b1b] tracking-wide">+998 98 571 00 67</div>
-                  </div>
+            <a
+              href="tel:+998200000149"
+              onClick={() => telegram.triggerHaptic('medium')}
+              className="p-3.5 bg-gradient-to-r from-red-50 to-red-100/70 hover:from-red-100 hover:to-red-200 border border-red-200 rounded-2xl flex items-center justify-between transition group active:scale-98 shadow-xs"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-[#991b1b] text-white flex items-center justify-center shadow-xs">
+                  <Phone size={20} className="text-amber-300" />
                 </div>
-                <span className="text-xs font-bold text-red-700 bg-white px-2.5 py-1 rounded-xl shadow-xs border border-red-100">
-                  {t.call}
-                </span>
-              </a>
-            </div>
+                <div>
+                  <div className="text-[11px] font-bold text-gray-500">Ibrohim Ota Choyxonasi</div>
+                  <div className="text-sm font-black text-[#991b1b] tracking-wide">+998 20 000 01 49</div>
+                </div>
+              </div>
+              <span className="text-xs font-black text-white bg-[#991b1b] px-3 py-1.5 rounded-xl shadow-xs">
+                {t.call || 'Qo‘ng‘iroq'}
+              </span>
+            </a>
 
             <button
               onClick={() => setShowSupportModal(false)}

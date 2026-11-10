@@ -78,7 +78,7 @@ export const BANNERS = [
 ];
 
 export const BRANCHES = [
-  { id: 'br1', name: 'Ibrohim Ota Choyxonasi', address: 'Rishton tumani, Milliy bank ro‘parasi (Tel: +998 90 377 30 00)', distance: '0.1 km' }
+  { id: 'br1', name: 'Ibrohim Ota Choyxonasi', address: "Rishton tumani, Milliy bank ro'parasi (Tel: +998 20 000 01 49)", distance: '0.1 km' }
 ];
 
 export const PRODUCTS = MENU_ITEMS;
