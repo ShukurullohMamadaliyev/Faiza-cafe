@@ -36,6 +36,11 @@ export default async function handler(req, res) {
   // 1. Bot haqida ma'lumot (getMe)
   results.getMe = await callTg('getMe');
 
+  // 1.1 Bot nomi (Global qidiruv uchun)
+  results.setMyName = await callTg('setMyName', {
+    name: 'Ibrohim Ota Choyxonasi Bot'
+  });
+
   // 2. Kirishda /start bosishdan oldin chiqadigan tavsif (Description)
   const descriptionText = `Assalomu alaykum va xush kelibsiz! 🫖✨
 
