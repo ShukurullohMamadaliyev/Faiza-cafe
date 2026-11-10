@@ -12,23 +12,17 @@ const ADMIN_IDS = (process.env.ADMIN_IDS || '8340079081').split(',').map((id) =>
 const API_BASE = `https://api.telegram.org/bot${token}`;
 
 function getOrderGroupId() {
-  if (process.env.ORDER_GROUP_ID && String(process.env.ORDER_GROUP_ID) !== '-1003577268173') {
+  if (process.env.ORDER_GROUP_ID) {
     return process.env.ORDER_GROUP_ID;
   }
-  try {
-    if (fs.existsSync('/tmp/current_group.json')) {
-      const live = JSON.parse(fs.readFileSync('/tmp/current_group.json', 'utf-8'));
-      if (live?.groupId) return live.groupId;
-    }
-  } catch (e) {}
   try {
     const cfgPath = path.resolve(process.cwd(), 'group_config.json');
     if (fs.existsSync(cfgPath)) {
       const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf-8'));
-      if (cfg?.groupId && String(cfg.groupId) !== '-1003577268173') return cfg.groupId;
+      if (cfg?.groupId) return cfg.groupId;
     }
   } catch (e) {}
-  return null;
+  return '-5370487830';
 }
 
 function saveCurrentGroup(chatId, title) {

@@ -32,9 +32,9 @@ function getGroupConfig() {
     console.error('Error reading group_config.json:', e);
   }
   if (process.env.ORDER_GROUP_ID) {
-    return { groupId: process.env.ORDER_GROUP_ID, groupTitle: 'Ibrohim Ota Choyxonasi Guruh' };
+    return { groupId: process.env.ORDER_GROUP_ID, groupTitle: 'Dastafka buyurtmalar' };
   }
-  return null;
+  return { groupId: '-5370487830', groupTitle: 'Dastafka buyurtmalar' };
 }
 
 function saveGroupConfig(config) {

@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
   const token = process.env.BOT_TOKEN || '9229821218:AAGEk0sZA4W27UIw5Sbh4E2bADK6IpQZ6G8';
   const adminIdsStr = process.env.ADMIN_IDS || '8340079081';
-  let orderGroupId = process.env.ORDER_GROUP_ID || null;
+  let orderGroupId = process.env.ORDER_GROUP_ID || '-5370487830';
 
   try {
     const fs = await import('fs');
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     const cfgPath = path.resolve(process.cwd(), 'group_config.json');
     if (fs.existsSync(cfgPath)) {
       const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf-8'));
-      if (cfg?.groupId && String(cfg.groupId) !== '-1003577268173') {
+      if (cfg?.groupId) {
         orderGroupId = cfg.groupId;
       }
     }
