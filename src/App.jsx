@@ -42,7 +42,7 @@ export default function App() {
   const shouldShowBottomNav = activeTab !== 'admin' && !(activeTab === 'cart' && cart.length > 0);
 
   return (
-    <div className="min-h-screen bg-[#F8FAF9] text-gray-900 flex justify-center selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#F8FAF9] text-gray-900 flex justify-center selection:bg-red-600 selection:text-white">
       {/* Mobile container constraint for preview on wide desktop screens */}
       <div className="w-full max-w-md bg-white min-h-screen shadow-2xl relative flex flex-col">
         {/* Telegram Top Bar (Faqat tashqi brauzerda chiqadi, mobil Telegram ichida ortiqcha dublikat bo'lmasligi uchun yashiriladi) */}
@@ -51,8 +51,8 @@ export default function App() {
         {/* Global Toast Notification */}
         {toastMessage && (
           <div className="fixed top-14 inset-x-0 z-50 flex justify-center px-4 pointer-events-none animate-slide-up">
-            <div className="bg-[#0d3b2e] text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg border border-emerald-400/40 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <div className="bg-[#991b1b] text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg border border-red-400/40 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-400 animate-ping"></span>
               <span>{toastMessage}</span>
             </div>
           </div>

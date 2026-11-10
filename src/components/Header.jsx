@@ -39,23 +39,23 @@ export default function Header({ showSearch = true }) {
       {/* Brand Hero Bar: Logo + Brand + Branch / Mode */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="h-10 w-10 rounded-xl overflow-hidden bg-[#0d3b2e] p-1 flex items-center justify-center shadow-sm border border-emerald-900/10">
+          <div className="h-11 w-11 rounded-2xl overflow-hidden bg-gradient-to-br from-red-600 to-red-950 p-1 flex items-center justify-center shadow-md border border-red-900/30">
             <img
-              src="/logo.png"
-              alt="Faiza Cafe Logo"
+              src="/logo.svg"
+              alt="Ibrohim Ota Choyxonasi Logo"
               className="h-full w-full object-contain"
             />
           </div>
           <div>
-            <h1 className="text-[16px] font-black tracking-tight text-[#0d3b2e] leading-none flex items-center gap-1.5">
-              FAIZA CAFE
-              <span className="text-[9px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                ESTD 2024
+            <h1 className="text-[17px] font-black tracking-tight text-[#991b1b] leading-none flex items-center gap-1.5">
+              IBROHIM OTA
+              <span className="text-[9px] font-extrabold text-red-700 bg-red-100/90 px-1.5 py-0.5 rounded border border-red-200">
+                CHOYXONA
               </span>
             </h1>
             <div className="flex items-center gap-1.5 text-[11px] text-gray-500 mt-1 font-medium">
-              <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                <Clock size={11} className="text-emerald-600" />
+              <span className="flex items-center gap-1 text-red-700 font-semibold">
+                <Clock size={11} className="text-red-600" />
                 08:00 – 03:00
               </span>
               <span>•</span>
@@ -65,14 +65,14 @@ export default function Header({ showSearch = true }) {
         </div>
 
         {/* Cafe Status Badge */}
-        <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-200/60 shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <div className="flex items-center gap-1.5 bg-red-50 text-red-800 px-2.5 py-1 rounded-full text-[11px] font-bold border border-red-200/80 shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
           {t.open || 'Ochiq'}
         </div>
       </div>
 
       {/* Mode Location Selector Pill (Clickable) */}
-      <div className="w-full flex items-center justify-between bg-emerald-50/60 hover:bg-emerald-50 border border-emerald-200/70 rounded-2xl px-3 py-2 text-left transition group">
+      <div className="w-full flex items-center justify-between bg-red-50/60 hover:bg-red-50 border border-red-200/70 rounded-2xl px-3 py-2 text-left transition group">
         <button
           onClick={() => {
             telegram.triggerHaptic('selection');
@@ -108,12 +108,12 @@ export default function Header({ showSearch = true }) {
             onClick={handleGpsClick}
             disabled={isDetectingLocation}
             title={t.detectGps}
-            className="flex items-center gap-1 bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-bold px-2.5 py-1.5 rounded-xl shadow-xs shrink-0 active:scale-95 transition"
+            className="flex items-center gap-1 bg-white hover:bg-red-100 text-red-800 border border-red-200 text-[11px] font-bold px-2.5 py-1.5 rounded-xl shadow-xs shrink-0 active:scale-95 transition"
           >
             {isDetectingLocation ? (
-              <Loader2 size={13} className="animate-spin text-emerald-600" />
+              <Loader2 size={13} className="animate-spin text-red-600" />
             ) : (
-              <Navigation size={12} className="text-emerald-700" />
+              <Navigation size={12} className="text-red-700" />
             )}
             <span>GPS</span>
           </button>
@@ -138,11 +138,11 @@ export default function Header({ showSearch = true }) {
           onClick={() => handleOrderTypeChange('delivery')}
           className={`flex items-center justify-center gap-1.5 py-2 px-1 rounded-xl text-xs font-bold transition-all duration-200 ${
             orderType === 'delivery'
-              ? 'bg-[#0d3b2e] text-white shadow-sm'
+              ? 'bg-[#991b1b] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          <Bike size={15} className={orderType === 'delivery' ? 'text-emerald-300' : 'text-gray-400'} />
+          <Bike size={15} className={orderType === 'delivery' ? 'text-amber-300' : 'text-gray-400'} />
           <span className="truncate">{t.delivery}</span>
         </button>
 
@@ -150,11 +150,11 @@ export default function Header({ showSearch = true }) {
           onClick={() => handleOrderTypeChange('takeaway')}
           className={`flex items-center justify-center gap-1.5 py-2 px-1 rounded-xl text-xs font-bold transition-all duration-200 ${
             orderType === 'takeaway'
-              ? 'bg-[#0d3b2e] text-white shadow-sm'
+              ? 'bg-[#991b1b] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          <ShoppingBag size={15} className={orderType === 'takeaway' ? 'text-emerald-300' : 'text-gray-400'} />
+          <ShoppingBag size={15} className={orderType === 'takeaway' ? 'text-amber-300' : 'text-gray-400'} />
           <span className="truncate">{t.takeaway}</span>
         </button>
 
@@ -162,11 +162,11 @@ export default function Header({ showSearch = true }) {
           onClick={() => handleOrderTypeChange('dineIn')}
           className={`flex items-center justify-center gap-1.5 py-2 px-1 rounded-xl text-xs font-bold transition-all duration-200 ${
             orderType === 'dineIn'
-              ? 'bg-[#0d3b2e] text-white shadow-sm'
+              ? 'bg-[#991b1b] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          <UtensilsCrossed size={14} className={orderType === 'dineIn' ? 'text-emerald-300' : 'text-gray-400'} />
+          <UtensilsCrossed size={14} className={orderType === 'dineIn' ? 'text-amber-300' : 'text-gray-400'} />
           <span className="truncate">{t.dineIn}</span>
         </button>
       </div>
@@ -182,7 +182,7 @@ export default function Header({ showSearch = true }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t.searchPlaceholder}
-            className="w-full pl-9 pr-9 py-2.5 bg-gray-50 border border-gray-200/80 text-sm font-medium text-gray-800 placeholder-gray-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 transition"
+            className="w-full pl-9 pr-9 py-2.5 bg-gray-50 border border-gray-200/80 text-sm font-medium text-gray-800 placeholder-gray-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-600 transition"
           />
           {searchQuery && (
             <button
@@ -203,7 +203,7 @@ export default function Header({ showSearch = true }) {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4">
           <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[85vh] overflow-y-auto animate-slide-up shadow-2xl">
             <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-              <h3 className="font-bold text-base text-[#0d3b2e]">
+              <h3 className="font-bold text-base text-[#991b1b]">
                 {orderType === 'delivery'
                   ? (t.deliveryAddressLabel || 'Yetkazib berish manzili')
                   : orderType === 'takeaway'
@@ -231,16 +231,16 @@ export default function Header({ showSearch = true }) {
                     }
                   }}
                   disabled={isDetectingLocation}
-                  className="w-full py-3 bg-emerald-50 hover:bg-emerald-100 active:scale-98 border border-emerald-300 text-emerald-900 font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 transition"
+                  className="w-full py-3 bg-red-50 hover:bg-red-100 active:scale-98 border border-red-300 text-red-900 font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 transition"
                 >
                   {isDetectingLocation ? (
                     <>
-                      <Loader2 size={16} className="animate-spin text-emerald-700" />
+                      <Loader2 size={16} className="animate-spin text-red-700" />
                       <span>{t.gpsDetecting || 'GPS orqali joylashuv aniqlanmoqda...'}</span>
                     </>
                   ) : (
                     <>
-                      <Navigation size={15} className="text-emerald-700" />
+                      <Navigation size={15} className="text-red-700" />
                       <span>📍 {t.detectGps || 'Mening joriy joylashuvimni aniqlash (GPS)'}</span>
                     </>
                   )}
@@ -263,7 +263,7 @@ export default function Header({ showSearch = true }) {
                     value={tempAddress}
                     onChange={(e) => setTempAddress(e.target.value)}
                     placeholder={t.addressInputPlaceholder || "Masalan: Rishton, Mustaqillik ko‘chasi, 15-uy..."}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 font-medium"
                   />
                 </div>
 
@@ -283,7 +283,7 @@ export default function Header({ showSearch = true }) {
                         key={loc}
                         type="button"
                         onClick={() => setTempAddress(loc)}
-                        className="text-[11px] font-semibold bg-gray-100 hover:bg-emerald-50 hover:text-emerald-800 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-200 transition"
+                        className="text-[11px] font-semibold bg-gray-100 hover:bg-red-50 hover:text-red-800 text-gray-700 px-2.5 py-1 rounded-lg border border-gray-200 transition"
                       >
                         {loc}
                       </button>
@@ -296,12 +296,12 @@ export default function Header({ showSearch = true }) {
                   onClick={() => {
                     setDeliveryAddress(tempAddress);
                     if (typeof window !== 'undefined') {
-                      localStorage.setItem('faiza_cafe_address', tempAddress);
+                      localStorage.setItem('ibrohim_ota_address', tempAddress);
                     }
                     setIsBranchModalOpen(false);
                     telegram.triggerHaptic('medium');
                   }}
-                  className="w-full py-3 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-bold rounded-xl text-sm transition shadow-md"
+                  className="w-full py-3 bg-[#991b1b] hover:bg-red-900 active:scale-98 text-white font-bold rounded-xl text-sm transition shadow-md"
                 >
                   {t.saveAddress || 'Manzilni saqlash'}
                 </button>
@@ -321,15 +321,15 @@ export default function Header({ showSearch = true }) {
                     }}
                     className={`p-3.5 rounded-2xl border cursor-pointer transition flex items-center justify-between ${
                       selectedBranch.id === branch.id
-                        ? 'border-emerald-600 bg-emerald-50/70'
+                        ? 'border-red-600 bg-red-50/70'
                         : 'border-gray-100 hover:border-gray-200 bg-white'
                     }`}
                   >
                     <div>
-                      <div className="font-bold text-sm text-[#0d3b2e]">{branch.name}</div>
+                      <div className="font-bold text-sm text-[#991b1b]">{branch.name}</div>
                       <div className="text-xs text-gray-500">{branch.address}</div>
                     </div>
-                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-semibold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
                       {branch.distance}
                     </span>
                   </div>
@@ -351,7 +351,7 @@ export default function Header({ showSearch = true }) {
                       }}
                       className={`py-2.5 rounded-xl font-bold text-sm border transition ${
                         tableNumber === tbl
-                          ? 'border-emerald-600 bg-[#0d3b2e] text-white shadow-xs'
+                          ? 'border-red-600 bg-[#991b1b] text-white shadow-xs'
                           : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
                       }`}
                     >

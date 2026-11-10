@@ -1,4 +1,4 @@
-// Faiza Cafe - Multi-language Translations (O'zbekcha, Русский, English)
+// Ibrohim Ota Choyxonasi - Multi-language Translations (O'zbekcha, Русский, English)
 
 export const translations = {
   uz: {
@@ -101,7 +101,7 @@ export const translations = {
     cashOnlyNotice: 'Ushbu to‘lov usuli tez kunda ishga tushadi! Hozircha faqat naqd pul orqali to‘lov mavjud.',
     confirmOrder: 'Buyurtmani yuborish',
     phoneRequiredTitle: 'Telefon raqam tasdiqlanmagan',
-    phoneRequiredDesc: 'Faiza Cafe\'dan buyurtma berish va yetkazib berish xizmatidan foydalanish uchun, iltimos, avval Telegram botimizda telefon raqamingizni tasdiqlang!',
+    phoneRequiredDesc: 'Ibrohim Ota Choyxonasi\'dan buyurtma berish va yetkazib berish xizmatidan foydalanish uchun, iltimos, avval Telegram botimizda telefon raqamingizni tasdiqlang!',
     phoneRequiredBtn: 'Botga qaytib raqamni yuborish',
     phoneRequiredSub: 'Bu sizning buyurtmangizni tez va aniq yetkazib berish uchun kerak 🚖',
 
@@ -145,7 +145,7 @@ export const translations = {
     call: 'Qo‘ng‘iroq qilish',
     cancel: 'Bekor qilish',
     addressesSaved: 'Manzillar saqlandi',
-    promosAvailable: 'Mavjud promokodlar: FAYZ10, FAYZ20K',
+    promosAvailable: 'Mavjud promokodlar: IBROHIM10, IBROHIM20K',
     notificationsEnabled: 'Bildirishnomalar yoqilgan',
     nameUpdated: 'Ism yangilandi',
     locationPromptTitle: 'Yetkazib berish manzilini aniqlash 📍',
@@ -258,7 +258,7 @@ export const translations = {
     cashOnlyNotice: 'Этот способ оплаты скоро станет доступен! Пока оплата только наличными.',
     confirmOrder: 'Подтвердить заказ',
     phoneRequiredTitle: 'Номер телефона не подтвержден',
-    phoneRequiredDesc: 'Для оформления заказов и доставки в Faiza Cafe, пожалуйста, сначала подтвердите номер телефона в нашем Telegram-боте!',
+    phoneRequiredDesc: 'Для оформления заказов и доставки в Ibrohim Ota Choyxonasi, пожалуйста, сначала подтвердите номер телефона в нашем Telegram-боте!',
     phoneRequiredBtn: 'Вернуться в бот и отправить номер',
     phoneRequiredSub: 'Это необходимо для быстрой и точной доставки вашего заказа 🚖',
 
@@ -302,7 +302,7 @@ export const translations = {
     call: 'Позвонить',
     cancel: 'Отмена',
     addressesSaved: 'Адреса сохранены',
-    promosAvailable: 'Доступные промокоды: FAYZ10, FAYZ20K',
+    promosAvailable: 'Доступные промокоды: IBROHIM10, IBROHIM20K',
     notificationsEnabled: 'Уведомления включены',
     nameUpdated: 'Имя обновлено',
     locationPromptTitle: 'Определение адреса доставки 📍',
@@ -415,7 +415,7 @@ export const translations = {
     cashOnlyNotice: 'This payment method is coming soon! Only cash payment is available for now.',
     confirmOrder: 'Place Order',
     phoneRequiredTitle: 'Phone number not verified',
-    phoneRequiredDesc: 'To place orders and use delivery services at Faiza Cafe, please verify your phone number in our Telegram bot first!',
+    phoneRequiredDesc: 'To place orders and use delivery services at Ibrohim Ota Choyxonasi, please verify your phone number in our Telegram bot first!',
     phoneRequiredBtn: 'Return to bot and send phone',
     phoneRequiredSub: 'This is required for fast and accurate order delivery 🚖',
 
@@ -459,7 +459,7 @@ export const translations = {
     call: 'Call',
     cancel: 'Cancel',
     addressesSaved: 'Addresses saved',
-    promosAvailable: 'Available promo codes: FAYZ10, FAYZ20K',
+    promosAvailable: 'Available promo codes: IBROHIM10, IBROHIM20K',
     notificationsEnabled: 'Notifications enabled',
     nameUpdated: 'Name updated',
     locationPromptTitle: 'Delivery Address Detection 📍',

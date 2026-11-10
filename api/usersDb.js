@@ -1,4 +1,4 @@
-// Faiza Cafe - Seed Users Database for Vercel Serverless
+// Ibrohim Ota Choyxonasi - Seed Users Database for Vercel Serverless
 export const SEED_USERS = {
   "8475595353": {
     "phone": "+998200072172",

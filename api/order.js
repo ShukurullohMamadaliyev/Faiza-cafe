@@ -1,5 +1,5 @@
 // Vercel Serverless Function: /api/order
-// Faiza Cafe - Telegram Admin Alert (8340079081)
+// Ibrohim Ota Choyxonasi - Telegram Admin Alert
 
 export default async function handler(req, res) {
   // CORS sozlamalari
@@ -81,7 +81,7 @@ export default async function handler(req, res) {
       order.orderType === 'delivery'
         ? `🚗 *Yetkazib berish:* ${customerInfo.address || 'Rishton'}`
         : order.orderType === 'takeaway'
-        ? `🛍 *Olib ketish:* ${customerInfo.branch || 'Faiza Cafe (Markaz)'}`
+        ? `🛍 *Olib ketish:* ${customerInfo.branch || 'Ibrohim Ota Choyxonasi'}`
         : `🍽 *Kafeda:* ${customerInfo.table || '1'}-stol`;
 
     if (order.orderType === 'delivery' && hasCoords) {

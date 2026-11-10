@@ -1,4 +1,4 @@
-// Fayz Cafe - Mock Data & Categories
+// Ibrohim Ota Choyxonasi - Mock Data & Categories
 import { MENU_ITEMS } from './menuData';
 
 export const CATEGORIES = [
@@ -22,10 +22,10 @@ export const BANNERS = [
     category: 'hotdishes',
     productId: 'hd-kotlet-cheese',
     image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=700&q=80',
-    bgGradient: 'linear-gradient(135deg, #073527 0%, #0d4e3a 50%, #042218 100%)',
-    badgeColor: 'bg-emerald-400/25 text-emerald-200 border-emerald-400/40',
-    glowColor: 'rgba(16, 185, 129, 0.45)',
-    btnColor: 'bg-emerald-500 hover:bg-emerald-400 text-white'
+    bgGradient: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #450a0a 100%)',
+    badgeColor: 'bg-red-400/25 text-red-100 border-red-400/40',
+    glowColor: 'rgba(239, 68, 68, 0.45)',
+    btnColor: 'bg-red-600 hover:bg-red-500 text-white'
   },
   {
     id: 'b2',
@@ -78,7 +78,7 @@ export const BANNERS = [
 ];
 
 export const BRANCHES = [
-  { id: 'br1', name: 'Faiza Cafe Rishton', address: 'Rishton tumani, Milliy bank ro‘parasi (Tel: +998 90 377 30 00)', distance: '0.1 km' }
+  { id: 'br1', name: 'Ibrohim Ota Choyxonasi', address: 'Rishton tumani, Milliy bank ro‘parasi (Tel: +998 90 377 30 00)', distance: '0.1 km' }
 ];
 
 export const PRODUCTS = MENU_ITEMS;

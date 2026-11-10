@@ -137,11 +137,11 @@ export default function CheckoutModal() {
         {/* Header */}
         <div className="p-4 px-5 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
           <div>
-            <h3 className="font-black text-lg text-[#0d3b2e]">
+            <h3 className="font-black text-lg text-[#991b1b]">
               {t.checkoutTitle}
             </h3>
             <p className="text-xs text-gray-500 font-medium">
-              Faiza Cafe • {orderType === 'delivery' ? t.delivery : orderType === 'takeaway' ? t.takeaway : t.dineIn}
+              Ibrohim Ota Choyxonasi • {orderType === 'delivery' ? t.delivery : orderType === 'takeaway' ? t.takeaway : t.dineIn}
             </p>
           </div>
           <button
@@ -375,7 +375,7 @@ export default function CheckoutModal() {
             )}
             <div className="pt-2 border-t border-gray-200 flex justify-between text-sm font-black text-gray-900">
               <span>{t.totalPay}</span>
-              <span className="text-[#0d3b2e]">
+              <span className="text-[#991b1b]">
                 {cartTotal.toLocaleString('uz-UZ')} {t.currency}
               </span>
             </div>
@@ -384,7 +384,7 @@ export default function CheckoutModal() {
           {/* Submit CTA */}
           <button
             type="submit"
-            className="w-full py-3.5 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-extrabold text-sm rounded-2xl shadow-float transition"
+            className="w-full py-3.5 bg-[#991b1b] hover:bg-red-900 active:scale-98 text-white font-extrabold text-sm rounded-2xl shadow-float transition"
           >
             {t.confirmOrder} • {cartTotal.toLocaleString('uz-UZ')} {t.currency}
           </button>

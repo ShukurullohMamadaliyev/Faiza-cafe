@@ -33,7 +33,7 @@ export default function PhoneRequiredModal() {
 
     telegram.triggerHaptic('success');
     if (typeof window !== 'undefined') {
-      localStorage.setItem('faiza_cafe_user_phone', formatted);
+      localStorage.setItem('ibrohim_ota_user_phone', formatted);
     }
     if (setUserPhone) {
       setUserPhone(formatted);
@@ -46,13 +46,13 @@ export default function PhoneRequiredModal() {
     if (telegram?.tg?.close) {
       telegram.tg.close();
     } else {
-      window.location.href = 'https://t.me/faizacafe_rishton_bot?start=auth';
+      window.location.href = 'https://t.me/ibrohim_ota_bot?start=auth';
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 select-none animate-fade-in">
-      <div className="bg-white rounded-3xl p-6 text-center max-w-sm w-full shadow-2xl space-y-4 border border-emerald-100 relative">
+      <div className="bg-white rounded-3xl p-6 text-center max-w-sm w-full shadow-2xl space-y-4 border border-red-100 relative">
         {/* Yopish tugmasi (Mijoz menyuni ko'ra olishi uchun) */}
         <button
           onClick={() => {
@@ -65,16 +65,16 @@ export default function PhoneRequiredModal() {
           <X size={16} />
         </button>
 
-        <div className="w-14 h-14 mx-auto bg-emerald-50 text-[#0d3b2e] rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-emerald-200">
+        <div className="w-14 h-14 mx-auto bg-red-50 text-[#991b1b] rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-red-200">
           📱
         </div>
 
         <div className="space-y-1">
-          <h3 className="font-black text-lg text-[#0d3b2e]">
+          <h3 className="font-black text-lg text-[#991b1b]">
             Xush kelibsiz! 👋
           </h3>
           <p className="text-xs text-gray-500 font-medium leading-relaxed">
-            Buyurtma berish va yetkazib berish holatini kuzatish uchun telefon raqamingizni kiriting:
+            Ibrohim Ota Choyxonasidan buyurtma berish va yetkazib berish holatini kuzatish uchun telefon raqamingizni kiriting:
           </p>
         </div>
 
@@ -89,7 +89,7 @@ export default function PhoneRequiredModal() {
                 setPhoneNumber(e.target.value);
               }}
               placeholder="+998 90 123 45 67"
-              className="w-full px-4 py-3 text-center text-sm font-bold tracking-wider text-gray-800 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-emerald-600 focus:bg-white transition"
+              className="w-full px-4 py-3 text-center text-sm font-bold tracking-wider text-gray-800 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-red-600 focus:bg-white transition"
               autoFocus
             />
           </div>
@@ -100,7 +100,7 @@ export default function PhoneRequiredModal() {
 
           <button
             type="submit"
-            className="w-full py-3 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#991b1b] hover:bg-red-900 active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2"
           >
             <Check size={16} />
             <span>Tasdiqlash va Davom etish</span>
@@ -122,7 +122,7 @@ export default function PhoneRequiredModal() {
           <button
             type="button"
             onClick={handleReturnToBot}
-            className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1"
+            className="text-red-700 hover:text-red-800 font-bold flex items-center gap-1"
           >
             <span>Bot orqali ochish</span>
             <ArrowRight size={12} />

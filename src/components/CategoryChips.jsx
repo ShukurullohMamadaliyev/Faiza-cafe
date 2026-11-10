@@ -23,7 +23,7 @@ export default function CategoryChips() {
               onClick={() => handleSelect(cat.id)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl whitespace-nowrap text-xs font-bold transition-all duration-200 shrink-0 ${
                 isSelected
-                  ? 'bg-[#0d3b2e] text-white shadow-sm ring-2 ring-emerald-600/30'
+                  ? 'bg-[#991b1b] text-white shadow-sm ring-2 ring-red-600/30'
                   : 'bg-gray-100/90 text-gray-700 hover:bg-gray-200/80 active:scale-95'
               }`}
             >

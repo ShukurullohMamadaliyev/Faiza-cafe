@@ -8,18 +8,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Faiza Cafe official branding: Forest Emerald & Elegant Warm Gold
+        // Ibrohim Ota Choyxonasi official branding: Royal Crimson Red & Warm Amber Gold
         brand: {
-          50: '#f0fdf5',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#10b981', // fresh emerald
-          600: '#059669', // rich emerald
-          700: '#047857',
-          800: '#0d3b2e', // Logo deep forest green
-          900: '#09271e', // Darkest forest
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444', // vibrant red
+          600: '#dc2626', // rich crimson
+          700: '#b91c1c', // deep red
+          800: '#991b1b', // Choyxona deep ruby red
+          900: '#7f1d1d', // Darkest burgundy
+          950: '#450a0a',
         },
         gold: {
           300: '#fef08a',

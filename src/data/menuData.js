@@ -1,4 +1,4 @@
-// Fayz Cafe - Rasmiy Instagram Menyusidan to'liq o'qib olingan taomlar bazasi
+// Ibrohim Ota Choyxonasi - Rasmiy Instagram Menyusidan to'liq o'qib olingan taomlar bazasi
 import menuItemsJson from './menu.json';
 
 // Modifikatorlar shablonlari
@@ -6,7 +6,7 @@ const FASTFOOD_MODIFIERS = [
   { id: 'm-cheese', name: 'Qo‘shimcha Pishloq', price: 4000 },
   { id: 'm-meat', name: 'Qo‘shimcha go‘sht (50g)', price: 10000 },
   { id: 'm-jalapeno', name: 'Jalapeno achchiq qalampiri', price: 3000 },
-  { id: 'm-sauce', name: 'Fayz maxsus sousi', price: 3000 }
+  { id: 'm-sauce', name: 'Choyxona maxsus sousi', price: 3000 }
 ];
 
 const PIZZA_MODIFIERS = [

@@ -1,4 +1,4 @@
-// Faiza Cafe - Seed Users Database
+// Ibrohim Ota Choyxonasi - Seed Users Database
 export const SEED_USERS = {
   "8475595353": {
     "phone": "+998200072172",

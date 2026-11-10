@@ -51,7 +51,7 @@ export default function CartPage() {
             telegram.triggerHaptic('light');
             setActiveTab('home');
           }}
-          className="flex items-center gap-2 font-black text-base text-[#0d3b2e] hover:opacity-80 active:scale-95 transition"
+          className="flex items-center gap-2 font-black text-base text-[#991b1b] hover:opacity-80 active:scale-95 transition"
         >
           <ArrowLeft size={20} />
           <span>{t.yourCart}</span>
@@ -72,12 +72,12 @@ export default function CartPage() {
       {cart.length === 0 ? (
         <div className="px-4 py-12 flex flex-col items-center justify-center text-center">
           <div className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-soft border border-gray-100 flex flex-col items-center space-y-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-100 to-amber-100 flex items-center justify-center text-3xl shadow-inner">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-red-100 to-amber-100 flex items-center justify-center text-3xl shadow-inner">
               🥗
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-xl font-black text-[#0d3b2e]">
+              <h3 className="text-xl font-black text-[#991b1b]">
                 {t.cartEmpty}
               </h3>
               <p className="text-xs text-gray-500 leading-relaxed">
@@ -90,7 +90,7 @@ export default function CartPage() {
                 telegram.triggerHaptic('medium');
                 setActiveTab('menu');
               }}
-              className="w-full py-3 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-float transition"
+              className="w-full py-3 bg-[#991b1b] hover:bg-red-900 active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-float transition"
             >
               {t.goToMenu}
             </button>
@@ -102,7 +102,7 @@ export default function CartPage() {
           {/* Order Mode Summary Banner */}
           <div className="bg-white rounded-2xl p-3 border border-gray-100 shadow-card flex items-center justify-between text-xs">
             <div className="flex items-center gap-2 min-w-0 pr-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 animate-pulse"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 animate-pulse"></span>
               <span className="font-bold text-gray-800 truncate">
                 {orderType === 'delivery'
                   ? `${t.delivery}: ${deliveryAddress}`
@@ -116,7 +116,7 @@ export default function CartPage() {
                 telegram.triggerHaptic('light');
                 setActiveTab('home');
               }}
-              className="text-emerald-700 font-bold hover:underline shrink-0"
+              className="text-red-700 font-bold hover:underline shrink-0"
             >
               {t.change}
             </button>
@@ -153,7 +153,7 @@ export default function CartPage() {
                       </div>
                     )}
 
-                    <div className="text-xs font-black text-emerald-800 mt-1.5">
+                    <div className="text-xs font-black text-red-800 mt-1.5">
                       {item.totalPrice.toLocaleString('uz-UZ')} {t.currency}
                     </div>
                   </div>
@@ -192,7 +192,7 @@ export default function CartPage() {
               type="checkbox"
               checked={includeCutlery}
               onChange={(e) => setIncludeCutlery(e.target.checked)}
-              className="w-5 h-5 rounded-md text-emerald-600 focus:ring-emerald-500 accent-emerald-600 cursor-pointer"
+              className="w-5 h-5 rounded-md text-red-600 focus:ring-red-500 accent-red-600 cursor-pointer"
             />
           </div>
 
@@ -206,25 +206,25 @@ export default function CartPage() {
                   value={promoInput}
                   onChange={(e) => setPromoInput(e.target.value)}
                   placeholder={appliedPromo ? `Faol: ${appliedPromo.code}` : t.promoCodePlaceholder}
-                  className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-emerald-600 uppercase"
+                  className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-red-600 uppercase"
                 />
               </div>
               <button
                 type="submit"
-                className="px-4 py-2 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-95 text-white text-xs font-bold rounded-xl transition"
+                className="px-4 py-2 bg-[#991b1b] hover:bg-red-900 active:scale-95 text-white text-xs font-bold rounded-xl transition"
               >
                 {t.apply}
               </button>
             </form>
 
             {appliedPromo && (
-              <div className="mt-2 text-xs font-bold text-emerald-700 flex items-center gap-1">
+              <div className="mt-2 text-xs font-bold text-red-700 flex items-center gap-1">
                 <Check size={14} />
                 <span>{appliedPromo.label} faollashtirildi!</span>
               </div>
             )}
             <div className="mt-1.5 text-[10px] text-gray-400">
-              Sinab ko'ring: <span className="font-mono text-emerald-700 font-bold">FAYZ10</span> (10% chegirma) yoki <span className="font-mono text-emerald-700 font-bold">FAYZ20K</span>
+              Sinab ko'ring: <span className="font-mono text-red-700 font-bold">IBROHIM10</span> (10% chegirma) yoki <span className="font-mono text-red-700 font-bold">IBROHIM20K</span>
             </div>
           </div>
 
@@ -238,14 +238,14 @@ export default function CartPage() {
             {orderType === 'delivery' && (
               <div className="flex justify-between text-gray-600 font-medium">
                 <span>{t.deliveryFee}</span>
-                <span className="text-emerald-700 font-bold">
+                <span className="text-red-700 font-bold">
                   {t.freeDelivery}
                 </span>
               </div>
             )}
 
             {discountAmount > 0 && (
-              <div className="flex justify-between text-emerald-600 font-bold">
+              <div className="flex justify-between text-red-600 font-bold">
                 <span>{t.discount}</span>
                 <span>-{discountAmount.toLocaleString('uz-UZ')} {t.currency}</span>
               </div>
@@ -253,7 +253,7 @@ export default function CartPage() {
 
             <div className="pt-2 border-t border-gray-100 flex justify-between text-base font-black text-gray-900">
               <span>{t.totalPay}</span>
-              <span className="text-[#0d3b2e]">
+              <span className="text-[#991b1b]">
                 {cartTotal.toLocaleString('uz-UZ')} {t.currency}
               </span>
             </div>
@@ -270,13 +270,13 @@ export default function CartPage() {
                 telegram.triggerHaptic('medium');
                 setIsCheckoutOpen(true);
               }}
-              className="w-full py-3.5 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-black text-sm rounded-2xl shadow-float transition flex items-center justify-between px-5"
+              className="w-full py-3.5 bg-[#991b1b] hover:bg-red-900 active:scale-98 text-white font-black text-sm rounded-2xl shadow-float transition flex items-center justify-between px-5"
             >
               <div className="flex items-center gap-2">
-                <ShoppingBag size={18} className="text-emerald-300" />
+                <ShoppingBag size={18} className="text-amber-300" />
                 <span>{t.checkoutBtn}</span>
               </div>
-              <span className="bg-emerald-800/90 text-gold-300 px-3 py-1 rounded-xl text-xs font-black shadow-xs">
+              <span className="bg-red-950/80 text-amber-300 px-3 py-1 rounded-xl text-xs font-black shadow-xs">
                 {cartTotal.toLocaleString('uz-UZ')} {t.currency}
               </span>
             </button>

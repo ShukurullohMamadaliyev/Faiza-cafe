@@ -38,9 +38,9 @@ export default function OrdersPage() {
       case 'preparing':
         return { label: t.statusPreparing || 'Oshxonada tayyorlanmoqda', bg: 'bg-amber-50 text-amber-700 border-amber-200' };
       case 'delivering':
-        return { label: t.statusDelivering || 'Yetkazilmoqda (Kuryerda)', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+        return { label: t.statusDelivering || 'Yetkazilmoqda (Kuryerda)', bg: 'bg-red-50 text-red-700 border-red-200' };
       case 'completed':
-        return { label: `${t.statusCompleted || 'Yetkazildi'} ✅`, bg: 'bg-emerald-50 text-emerald-800 border-emerald-300' };
+        return { label: `${t.statusCompleted || 'Yetkazildi'} ✅`, bg: 'bg-red-50 text-red-800 border-red-300' };
       default:
         return { label: status, bg: 'bg-gray-100 text-gray-700 border-gray-200' };
     }
@@ -55,7 +55,7 @@ export default function OrdersPage() {
             telegram.triggerHaptic('light');
             setActiveTab('home');
           }}
-          className="flex items-center gap-2 font-black text-base text-[#0d3b2e]"
+          className="flex items-center gap-2 font-black text-base text-[#991b1b]"
         >
           <ArrowLeft size={20} />
           <span>{t.orderHistory}</span>
@@ -98,7 +98,7 @@ export default function OrdersPage() {
       <div className="px-4 space-y-3">
         {currentList.length === 0 ? (
           <div className="bg-white rounded-3xl p-8 shadow-card border border-gray-100 text-center flex flex-col items-center space-y-3 mt-4">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl shadow-inner">
+            <div className="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl shadow-inner">
               🪙
             </div>
             <h4 className="font-black text-base text-gray-900">
@@ -119,7 +119,7 @@ export default function OrdersPage() {
                 {/* Header of order */}
                 <div className="flex items-center justify-between pb-2 border-b border-gray-100">
                   <div>
-                    <span className="text-xs font-black text-[#0d3b2e]">
+                    <span className="text-xs font-black text-[#991b1b]">
                       #{order.id}
                     </span>
                     <span className="text-[11px] text-gray-400 block">
@@ -136,10 +136,10 @@ export default function OrdersPage() {
                 {orderTab === 'active' && (
                   <div className="py-1">
                     <div className="grid grid-cols-4 gap-1 mb-2">
-                      <div className="h-1.5 rounded-full bg-emerald-500"></div>
-                      <div className={`h-1.5 rounded-full ${order.status === 'preparing' || order.status === 'delivering' || order.status === 'completed' ? 'bg-emerald-500' : 'bg-gray-200'}`}></div>
-                      <div className={`h-1.5 rounded-full ${order.status === 'delivering' || order.status === 'completed' ? 'bg-emerald-500' : 'bg-gray-200'}`}></div>
-                      <div className={`h-1.5 rounded-full ${order.status === 'completed' ? 'bg-emerald-500' : 'bg-gray-200'}`}></div>
+                      <div className="h-1.5 rounded-full bg-red-500"></div>
+                      <div className={`h-1.5 rounded-full ${order.status === 'preparing' || order.status === 'delivering' || order.status === 'completed' ? 'bg-red-500' : 'bg-gray-200'}`}></div>
+                      <div className={`h-1.5 rounded-full ${order.status === 'delivering' || order.status === 'completed' ? 'bg-red-500' : 'bg-gray-200'}`}></div>
+                      <div className={`h-1.5 rounded-full ${order.status === 'completed' ? 'bg-red-500' : 'bg-gray-200'}`}></div>
                     </div>
                     <div className="flex justify-between text-[10px] text-gray-400 font-semibold px-0.5">
                       <span>{t.statusSteps?.received || 'Qabul'}</span>
@@ -166,14 +166,14 @@ export default function OrdersPage() {
                 <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
                   <div>
                     <span className="text-[11px] text-gray-400 block font-medium">{t.orderTotalLabel || "Jami to'lov:"}</span>
-                    <span className="text-sm font-black text-[#0d3b2e]">
+                    <span className="text-sm font-black text-[#991b1b]">
                       {order.total.toLocaleString('uz-UZ')} {t.currency}
                     </span>
                   </div>
 
                   <button
                     onClick={() => handleReorder(order)}
-                    className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-[#0d3b2e] rounded-xl text-xs font-bold transition border border-emerald-200"
+                    className="flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 active:scale-95 text-[#991b1b] rounded-xl text-xs font-bold transition border border-red-200"
                   >
                     <RotateCcw size={13} />
                     <span>{t.reorder}</span>

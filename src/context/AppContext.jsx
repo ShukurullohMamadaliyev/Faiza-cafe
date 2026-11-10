@@ -11,7 +11,7 @@ export function AppProvider({ children }) {
   const telegram = useTelegram();
   const [lang, setLangState] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('faiza_cafe_lang') || 'uz';
+      return localStorage.getItem('ibrohim_ota_lang') || 'uz';
     }
     return 'uz';
   });
@@ -19,7 +19,7 @@ export function AppProvider({ children }) {
   const setLang = (newLang) => {
     setLangState(newLang);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('faiza_cafe_lang', newLang);
+      localStorage.setItem('ibrohim_ota_lang', newLang);
     }
   };
 
@@ -30,12 +30,12 @@ export function AppProvider({ children }) {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search).get('phone');
       if (p && p !== '+998 90 377 30 00' && p !== '+998903773000') {
-        localStorage.setItem('faiza_cafe_user_phone', p);
+        localStorage.setItem('ibrohim_ota_user_phone', p);
         return p;
       }
-      const stored = localStorage.getItem('faiza_cafe_user_phone');
+      const stored = localStorage.getItem('ibrohim_ota_user_phone');
       if (stored === '+998 90 377 30 00' || stored === '+998903773000') {
-        localStorage.removeItem('faiza_cafe_user_phone');
+        localStorage.removeItem('ibrohim_ota_user_phone');
         return '';
       }
       return stored || '';
@@ -47,10 +47,10 @@ export function AppProvider({ children }) {
     if (typeof window !== 'undefined') {
       const n = new URLSearchParams(window.location.search).get('name');
       if (n) {
-        localStorage.setItem('faiza_cafe_user_name', n);
+        localStorage.setItem('ibrohim_ota_user_name', n);
         return n;
       }
-      const stored = localStorage.getItem('faiza_cafe_user_name');
+      const stored = localStorage.getItem('ibrohim_ota_user_name');
       if (stored) return stored;
     }
     return telegram.user?.first_name || 'Mijoz';
@@ -65,9 +65,9 @@ export function AppProvider({ children }) {
   const [tableNumber, setTableNumber] = useState('5');
 
   // Geolocation & Delivery Address
-  const savedAddress = typeof window !== 'undefined' ? localStorage.getItem('faiza_cafe_address') : null;
-  const savedCoords = typeof window !== 'undefined' && localStorage.getItem('faiza_cafe_coords')
-    ? JSON.parse(localStorage.getItem('faiza_cafe_coords'))
+  const savedAddress = typeof window !== 'undefined' ? localStorage.getItem('ibrohim_ota_address') : null;
+  const savedCoords = typeof window !== 'undefined' && localStorage.getItem('ibrohim_ota_coords')
+    ? JSON.parse(localStorage.getItem('ibrohim_ota_coords'))
     : null;
 
   const [deliveryAddress, setDeliveryAddress] = useState(savedAddress || "Rishton tumani (Joriy joylashuv)");
@@ -95,7 +95,7 @@ export function AppProvider({ children }) {
   const [orders, setOrders] = useState(() => {
     if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem('faiza_cafe_orders');
+        const stored = localStorage.getItem('ibrohim_ota_orders');
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
@@ -116,7 +116,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        localStorage.setItem('faiza_cafe_orders', JSON.stringify(orders));
+        localStorage.setItem('ibrohim_ota_orders', JSON.stringify(orders));
       } catch (e) {
         console.warn('Failed to save orders:', e);
       }
@@ -155,8 +155,8 @@ export function AppProvider({ children }) {
       setUserCoords(normalizedCoords);
 
       if (typeof window !== 'undefined') {
-        localStorage.setItem('faiza_cafe_address', detectedAddr);
-        localStorage.setItem('faiza_cafe_coords', JSON.stringify(normalizedCoords));
+        localStorage.setItem('ibrohim_ota_address', detectedAddr);
+        localStorage.setItem('ibrohim_ota_coords', JSON.stringify(normalizedCoords));
       }
 
       setShowLocationPrompt(false);
@@ -188,11 +188,11 @@ export function AppProvider({ children }) {
 
       if (phoneParam) {
         setUserPhone(phoneParam);
-        localStorage.setItem('faiza_cafe_user_phone', phoneParam);
+        localStorage.setItem('ibrohim_ota_user_phone', phoneParam);
       }
       if (nameParam) {
         setUserName(nameParam);
-        localStorage.setItem('faiza_cafe_user_name', nameParam);
+        localStorage.setItem('ibrohim_ota_user_name', nameParam);
       }
 
       // Admin tekshiruvi (8340079081)
@@ -246,11 +246,11 @@ export function AppProvider({ children }) {
         .then((data) => {
           if (data?.user?.phone) {
             setUserPhone(data.user.phone);
-            localStorage.setItem('faiza_cafe_user_phone', data.user.phone);
+            localStorage.setItem('ibrohim_ota_user_phone', data.user.phone);
           }
           if (data?.user?.name) {
             setUserName(data.user.name);
-            localStorage.setItem('faiza_cafe_user_name', data.user.name);
+            localStorage.setItem('ibrohim_ota_user_name', data.user.name);
           }
         })
         .catch(() => {});
@@ -274,7 +274,7 @@ export function AppProvider({ children }) {
     return cart.reduce((acc, item) => acc + item.quantity, 0);
   }, [cart]);
 
-  // Faiza Cafe'da Rishton bo'ylab yetkazib berish BEPUL!
+  // Ibrohim Ota Choyxonasi'da Rishton bo'ylab yetkazib berish BEPUL!
   const deliveryFee = 0;
 
   const discountAmount = useMemo(() => {
@@ -408,11 +408,11 @@ export function AppProvider({ children }) {
 
   const applyPromoCode = (code) => {
     const cleanCode = code.trim().toUpperCase();
-    if (cleanCode === 'FAYZ10' || cleanCode === 'XUSH_KELIBSIZ') {
+    if (cleanCode === 'IBROHIM10' || cleanCode === 'XUSH_KELIBSIZ') {
       setAppliedPromo({ code: cleanCode, type: 'percent', value: 10, label: '10% chegirma' });
       showToast('10% lik maxsus chegirma qo‘llanildi! 🎉');
       return { success: true, message: '10% chegirma qo‘llandi!' };
-    } else if (cleanCode === 'FAYZ20K') {
+    } else if (cleanCode === 'IBROHIM20K') {
       setAppliedPromo({ code: cleanCode, type: 'fixed', value: 20000, label: '20 000 so‘m' });
       showToast('20 000 so‘m chegirma qo‘llanildi! 🎉');
       return { success: true, message: '20 000 so‘m chegirma!' };

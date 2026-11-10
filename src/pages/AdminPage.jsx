@@ -44,8 +44,8 @@ export default function AdminPage() {
           </button>
           <div>
             <h2 className="font-black text-sm text-white flex items-center gap-1.5">
-              <span>Fayz Cafe Admin</span>
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30">
+              <span>Ibrohim Ota Choyxonasi Admin</span>
+              <span className="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30">
                 v1.0
               </span>
             </h2>
@@ -55,7 +55,7 @@ export default function AdminPage() {
 
         <button
           onClick={() => setActiveTab('home')}
-          className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl transition shadow-xs"
+          className="text-xs bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-1.5 rounded-xl transition shadow-xs"
         >
           Mijoz ko'rinishi
         </button>
@@ -76,7 +76,7 @@ export default function AdminPage() {
 
           <div className="bg-slate-800/80 border border-slate-700/60 p-3 rounded-2xl">
             <span className="text-[10px] text-slate-400 font-semibold block">Tushum</span>
-            <span className="text-xs font-black text-emerald-400 truncate block mt-1">
+            <span className="text-xs font-black text-red-400 truncate block mt-1">
               {(totalRevenue / 1000).toFixed(0)}k so'm
             </span>
           </div>
@@ -88,7 +88,7 @@ export default function AdminPage() {
             onClick={() => setActiveAdminTab('orders')}
             className={`flex-1 py-2 text-xs font-bold rounded-xl transition ${
               activeAdminTab === 'orders'
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-red-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -98,7 +98,7 @@ export default function AdminPage() {
             onClick={() => setActiveAdminTab('menu')}
             className={`flex-1 py-2 text-xs font-bold rounded-xl transition ${
               activeAdminTab === 'menu'
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-red-600 text-white shadow-sm'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -162,7 +162,7 @@ export default function AdminPage() {
                             : order.status === 'preparing'
                             ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                             : order.status === 'delivering'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                            ? 'bg-red-500/20 text-red-300 border border-red-500/40'
                             : 'bg-slate-700 text-slate-300'
                         }`}
                       >
@@ -196,7 +196,7 @@ export default function AdminPage() {
                             }
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold transition"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-600/30 hover:bg-red-600/50 text-red-300 border border-red-500/40 text-[11px] font-bold transition"
                           >
                             <span>🗺️ Xaritada ko‘rish (GPS Navigatsiya)</span>
                           </a>
@@ -218,7 +218,7 @@ export default function AdminPage() {
 
                     {/* Action buttons to advance status */}
                     <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between gap-2">
-                      <span className="text-xs font-black text-emerald-400">
+                      <span className="text-xs font-black text-red-400">
                         Jami: {order.total.toLocaleString('uz-UZ')} so'm
                       </span>
 
@@ -246,7 +246,7 @@ export default function AdminPage() {
                         {order.status === 'delivering' && (
                           <button
                             onClick={() => updateOrderStatus(order.id, 'completed')}
-                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1"
+                            className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1"
                           >
                             <CheckCircle2 size={13} />
                             <span>Yakunlash</span>
@@ -277,7 +277,7 @@ export default function AdminPage() {
                 value={menuSearch}
                 onChange={(e) => setMenuSearch(e.target.value)}
                 placeholder="Taom nomini qidiring..."
-                className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-red-500"
               />
             </div>
 
@@ -297,7 +297,7 @@ export default function AdminPage() {
                     <h5 className="text-xs font-bold text-white truncate">
                       {product.name}
                     </h5>
-                    <span className="text-xs font-semibold text-emerald-400">
+                    <span className="text-xs font-semibold text-red-400">
                       {product.price.toLocaleString('uz-UZ')} so'm
                     </span>
                   </div>
@@ -308,7 +308,7 @@ export default function AdminPage() {
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
                       product.isOutOfStock
                         ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-red-500/20 text-red-400 border border-red-500/30'
                     }`}
                   >
                     <span>{product.isOutOfStock ? 'Tugagan' : 'Mavjud'}</span>

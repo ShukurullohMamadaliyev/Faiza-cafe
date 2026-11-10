@@ -39,7 +39,7 @@ export default function MenuPage() {
         <div className="flex items-center justify-between pb-1">
           <div className="flex items-center gap-2">
             <span className="text-xl">{currentCategory.icon}</span>
-            <h2 className="text-lg font-black text-[#0d3b2e]">
+            <h2 className="text-lg font-black text-[#991b1b]">
               {searchQuery ? `"${searchQuery}"` : translatedCatName}
             </h2>
           </div>

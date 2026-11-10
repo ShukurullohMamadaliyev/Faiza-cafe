@@ -17,17 +17,17 @@ export default function LocationPromptModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 select-none animate-fade-in">
-      <div className="bg-white w-full max-w-sm rounded-t-[32px] sm:rounded-3xl p-6 text-center space-y-4 shadow-2xl animate-slide-up border border-emerald-100">
+      <div className="bg-white w-full max-w-sm rounded-t-[32px] sm:rounded-3xl p-6 text-center space-y-4 shadow-2xl animate-slide-up border border-red-100">
         {/* Header icon */}
         <div className="relative w-16 h-16 mx-auto">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shadow-inner">
-            <Navigation size={30} className={isDetectingLocation ? 'animate-spin text-emerald-600' : 'text-emerald-700'} />
+          <div className="w-16 h-16 rounded-full bg-red-100 text-red-700 flex items-center justify-center shadow-inner">
+            <Navigation size={30} className={isDetectingLocation ? 'animate-spin text-red-600' : 'text-red-700'} />
           </div>
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full animate-ping"></span>
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping"></span>
         </div>
 
         <div className="space-y-1.5">
-          <h3 className="text-lg font-black text-[#0d3b2e] tracking-tight">
+          <h3 className="text-lg font-black text-[#991b1b] tracking-tight">
             {t.locationPromptTitle || 'Yetkazib berish manzilini aniqlash 📍'}
           </h3>
           <p className="text-xs text-gray-500 leading-relaxed font-medium">
@@ -37,12 +37,12 @@ export default function LocationPromptModal() {
 
         {/* Current address preview if already detected */}
         {deliveryAddress && deliveryAddress !== 'Rishton tumani (Joriy joylashuv)' && (
-          <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200/80 text-left text-xs space-y-1">
-            <span className="text-[10px] text-emerald-800 font-extrabold uppercase tracking-wider block">
+          <div className="p-3 bg-red-50 rounded-2xl border border-red-200/80 text-left text-xs space-y-1">
+            <span className="text-[10px] text-red-800 font-extrabold uppercase tracking-wider block">
               {t.detectedAddressLabel || 'Aniqlangan manzil:'}
             </span>
             <div className="font-bold text-gray-900 flex items-center gap-1.5">
-              <Check size={14} className="text-emerald-600 shrink-0" />
+              <Check size={14} className="text-red-600 shrink-0" />
               <span className="truncate">{deliveryAddress}</span>
             </div>
           </div>
@@ -53,11 +53,11 @@ export default function LocationPromptModal() {
           <button
             onClick={() => detectAndSetLocation()}
             disabled={isDetectingLocation}
-            className="w-full py-3.5 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-float transition flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-[#991b1b] hover:bg-red-900 active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-float transition flex items-center justify-center gap-2"
           >
             {isDetectingLocation ? (
               <>
-                <Loader2 size={16} className="animate-spin text-emerald-300" />
+                <Loader2 size={16} className="animate-spin text-red-300" />
                 <span>{t.gpsDetecting || 'GPS orqali aniqlanmoqda...'}</span>
               </>
             ) : (

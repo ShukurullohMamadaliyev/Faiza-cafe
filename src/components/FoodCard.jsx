@@ -116,7 +116,7 @@ export default function FoodCard({ product }) {
         {cartCount > 0 ? (
           <div
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-2 bg-[#0d3b2e] text-white px-2.5 py-1.5 rounded-full shadow-xs text-xs font-bold"
+            className="flex items-center gap-2 bg-[#991b1b] text-white px-2.5 py-1.5 rounded-full shadow-xs text-xs font-bold"
           >
             <button
               onClick={handleMinus}
@@ -136,7 +136,7 @@ export default function FoodCard({ product }) {
           <button
             onClick={handlePlus}
             disabled={product.isOutOfStock}
-            className="w-8 h-8 rounded-full bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-800 border border-emerald-200/60 flex items-center justify-center active:scale-90 transition-all shadow-xs"
+            className="w-8 h-8 rounded-full bg-red-50 hover:bg-red-600 hover:text-white text-red-800 border border-red-200/60 flex items-center justify-center active:scale-90 transition-all shadow-xs"
             aria-label={t.addToCart}
           >
             <Plus size={16} strokeWidth={2.5} />

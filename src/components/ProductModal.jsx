@@ -206,7 +206,7 @@ export default function ProductModal() {
             {/* Qo'shish Button */}
             <button
               onClick={handleAdd}
-              className="py-3 px-6 bg-[#0d3b2e] hover:bg-emerald-900 active:scale-95 text-white font-extrabold text-sm rounded-2xl shadow-float transition flex items-center gap-2"
+              className="py-3 px-6 bg-[#991b1b] hover:bg-red-900 active:scale-95 text-white font-extrabold text-sm rounded-2xl shadow-float transition flex items-center gap-2"
             >
               <span>{t.add || "Qo'shish"}</span>
             </button>

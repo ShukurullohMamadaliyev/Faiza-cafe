@@ -1,0 +1,186 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#dc2626"/>
+      <stop offset="45%" stop-color="#991b1b"/>
+      <stop offset="85%" stop-color="#7f1d1d"/>
+      <stop offset="100%" stop-color="#450a0a"/>
+    </radialGradient>
+
+    <!-- Gold Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="30%" stop-color="#f59e0b"/>
+      <stop offset="70%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="50%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+
+    <!-- Glow & Shadow Filters -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="innerGlow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowDiff"/>
+      <feFlood flood-color="#fef08a" flood-opacity="0.4"/>
+      <feComposite in2="shadowDiff" operator="in"/>
+      <feComposite in2="SourceGraphic" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Circular Base -->
+  <circle cx="256" cy="256" r="248" fill="url(#bgGrad)"/>
+  
+  <!-- Outer Gold Rim -->
+  <circle cx="256" cy="256" r="242" fill="none" stroke="url(#goldGrad)" stroke-width="6"/>
+  <circle cx="256" cy="256" r="232" fill="none" stroke="url(#goldGrad)" stroke-width="2" stroke-dasharray="6,4" opacity="0.8"/>
+  <circle cx="256" cy="256" r="222" fill="none" stroke="url(#goldGrad)" stroke-width="3"/>
+
+  <!-- Decorative Corner / Circumference Dots -->
+  <g fill="url(#goldGrad)">
+    <circle cx="256" cy="18" r="5"/>
+    <circle cx="256" cy="494" r="5"/>
+    <circle cx="18" cy="256" r="5"/>
+    <circle cx="494" cy="256" r="5"/>
+    <circle cx="88" cy="88" r="4"/>
+    <circle cx="424" cy="88" r="4"/>
+    <circle cx="88" cy="424" r="4"/>
+    <circle cx="424" cy="424" r="4"/>
+  </g>
+
+  <!-- Crossed Shashlik Skewers (Behind Teapot) -->
+  <g filter="url(#shadow)">
+    <!-- Skewer 1 (Left-top to Right-bottom) -->
+    <line x1="100" y1="120" x2="412" y2="390" stroke="#e2e8f0" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="94" cy="115" r="9" fill="url(#goldGrad)"/>
+    <!-- Meat chunks on Skewer 1 -->
+    <rect x="140" y="145" width="30" height="22" rx="6" fill="#78350f" stroke="#451a03" stroke-width="2" transform="rotate(40 155 156)"/>
+    <rect x="185" y="185" width="32" height="22" rx="6" fill="#92400e" stroke="#451a03" stroke-width="2" transform="rotate(40 201 196)"/>
+    <rect x="310" y="295" width="32" height="22" rx="6" fill="#92400e" stroke="#451a03" stroke-width="2" transform="rotate(40 326 306)"/>
+    <rect x="355" y="335" width="30" height="22" rx="6" fill="#78350f" stroke="#451a03" stroke-width="2" transform="rotate(40 370 346)"/>
+
+    <!-- Skewer 2 (Right-top to Left-bottom) -->
+    <line x1="412" y1="120" x2="100" y2="390" stroke="#e2e8f0" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="418" cy="115" r="9" fill="url(#goldGrad)"/>
+    <!-- Meat chunks on Skewer 2 -->
+    <rect x="342" y="145" width="30" height="22" rx="6" fill="#78350f" stroke="#451a03" stroke-width="2" transform="rotate(-40 357 156)"/>
+    <rect x="295" y="185" width="32" height="22" rx="6" fill="#92400e" stroke="#451a03" stroke-width="2" transform="rotate(-40 311 196)"/>
+    <rect x="170" y="295" width="32" height="22" rx="6" fill="#92400e" stroke="#451a03" stroke-width="2" transform="rotate(-40 186 306)"/>
+    <rect x="125" y="335" width="30" height="22" rx="6" fill="#78350f" stroke="#451a03" stroke-width="2" transform="rotate(-40 140 346)"/>
+  </g>
+
+  <!-- Central Emblem: Authentic Uzbek Teapot (Choynak) -->
+  <g filter="url(#shadow)">
+    <!-- Steam rising -->
+    <path d="M236,120 Q240,105 235,95 Q230,85 236,75" fill="none" stroke="url(#goldLight)" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+    <path d="M256,115 Q262,98 256,88 Q250,78 258,65" fill="none" stroke="url(#goldLight)" stroke-width="3.5" stroke-linecap="round" opacity="0.9"/>
+    <path d="M276,120 Q272,105 277,95 Q282,85 276,75" fill="none" stroke="url(#goldLight)" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+
+    <!-- Teapot Handle (Left) -->
+    <path d="M185,190 C140,195 135,265 180,285 C185,286 187,276 182,273 C150,258 152,210 185,203 Z" fill="url(#goldGrad)"/>
+
+    <!-- Teapot Spout (Right) -->
+    <path d="M315,200 C345,195 375,170 385,150 C388,146 381,142 376,146 C362,162 338,185 315,192 Z" fill="url(#goldGrad)"/>
+
+    <!-- Teapot Body (Round belly) -->
+    <ellipse cx="256" cy="245" rx="72" ry="62" fill="#fff" stroke="url(#goldGrad)" stroke-width="6"/>
+    <!-- Teapot Ornamental Patterns (Paxta / National motif) -->
+    <ellipse cx="256" cy="245" rx="58" ry="48" fill="#7f1d1d"/>
+    <path d="M256,208 C242,228 242,262 256,282 C270,262 270,228 256,208 Z" fill="url(#goldGrad)"/>
+    <path d="M220,245 C236,233 266,233 282,245 C266,257 236,257 220,245 Z" fill="url(#goldGrad)" opacity="0.9"/>
+    <circle cx="256" cy="245" r="9" fill="#fff" stroke="url(#goldGrad)" stroke-width="2"/>
+
+    <!-- Teapot Neck & Base -->
+    <path d="M218,186 L294,186 L286,200 L226,200 Z" fill="url(#goldGrad)"/>
+    <ellipse cx="256" cy="298" rx="42" ry="7" fill="url(#goldGrad)"/>
+
+    <!-- Teapot Lid & Golden Finial -->
+    <ellipse cx="256" cy="184" rx="38" ry="10" fill="#fff" stroke="url(#goldGrad)" stroke-width="3"/>
+    <path d="M232,182 C236,166 276,166 280,182 Z" fill="url(#goldGrad)"/>
+    <circle cx="256" cy="160" r="8" fill="url(#goldLight)" stroke="url(#goldGrad)" stroke-width="2"/>
+  </g>
+
+  <!-- Ribbon Banner for Main Title -->
+  <g filter="url(#shadow)">
+    <!-- Ribbon Ends -->
+    <path d="M45,385 L95,355 L95,415 L45,435 L65,405 Z" fill="#7f1d1d" stroke="url(#goldGrad)" stroke-width="2"/>
+    <path d="M467,385 L417,355 L417,415 L467,435 L447,405 Z" fill="#7f1d1d" stroke="url(#goldGrad)" stroke-width="2"/>
+
+    <!-- Ribbon Main Body -->
+    <path d="M80,360 L432,360 Q440,360 440,368 L430,412 Q430,420 422,420 L90,420 Q82,420 82,412 L72,368 Q72,360 80,360 Z"
+          fill="url(#goldGrad)" stroke="#fff" stroke-width="2"/>
+    
+    <!-- Ribbon Inner Border Line -->
+    <path d="M88,366 L424,366 L416,414 L80,414 Z" fill="none" stroke="#78350f" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- Typography: IBROHIM OTA -->
+  <!-- Main Name inside Banner -->
+  <text x="256" y="402"
+        font-family="'Georgia', 'Times New Roman', 'Plus Jakarta Sans', serif"
+        font-size="34"
+        font-weight="900"
+        letter-spacing="3"
+        text-anchor="middle"
+        fill="#450a0a"
+        stroke="#450a0a"
+        stroke-width="0.5">
+    IBROHIM OTA
+  </text>
+
+  <!-- Secondary Badge / Subtitle: CHOYXONASI -->
+  <g filter="url(#shadow)">
+    <rect x="140" y="432" width="232" height="28" rx="14" fill="#450a0a" stroke="url(#goldGrad)" stroke-width="2"/>
+    <text x="256" y="451"
+          font-family="'Plus Jakarta Sans', 'Inter', sans-serif"
+          font-size="14"
+          font-weight="800"
+          letter-spacing="4"
+          text-anchor="middle"
+          fill="url(#goldLight)">
+      CHOYXONASI
+    </text>
+  </g>
+
+  <!-- Traditional Quality Stars & Slogan at Top -->
+  <g fill="url(#goldLight)" filter="url(#shadow)">
+    <!-- 5 Stars -->
+    <path d="M256,42 L259,51 L268,51 L261,56 L263,65 L256,60 L249,65 L251,56 L244,51 L253,51 Z" transform="scale(1.2) translate(-42 -7)"/>
+    <path d="M228,48 L230,55 L237,55 L232,59 L234,66 L228,62 L222,66 L224,59 L219,55 L226,55 Z"/>
+    <path d="M284,48 L286,55 L293,55 L288,59 L290,66 L284,62 L278,66 L280,59 L275,55 L282,55 Z"/>
+  </g>
+
+  <!-- Curved Slogan Above -->
+  <text x="256" y="80"
+        font-family="'Plus Jakarta Sans', sans-serif"
+        font-size="12"
+        font-weight="800"
+        letter-spacing="4"
+        text-anchor="middle"
+        fill="#fef08a"
+        opacity="0.95">
+    MILLIY TAOMLAR &amp; KABOB
+  </text>
+
+  <!-- Laurel / Wheat branches at the sides -->
+  <g fill="url(#goldGrad)" opacity="0.85">
+    <!-- Left Branch -->
+    <ellipse cx="108" cy="230" rx="8" ry="4" transform="rotate(-30 108 230)"/>
+    <ellipse cx="104" cy="255" rx="8" ry="4" transform="rotate(-15 104 255)"/>
+    <ellipse cx="106" cy="280" rx="8" ry="4" transform="rotate(5 106 280)"/>
+    <ellipse cx="114" cy="305" rx="8" ry="4" transform="rotate(25 114 305)"/>
+
+    <!-- Right Branch -->
+    <ellipse cx="404" cy="230" rx="8" ry="4" transform="rotate(30 404 230)"/>
+    <ellipse cx="408" cy="255" rx="8" ry="4" transform="rotate(15 408 255)"/>
+    <ellipse cx="406" cy="280" rx="8" ry="4" transform="rotate(-5 406 280)"/>
+    <ellipse cx="398" cy="305" rx="8" ry="4" transform="rotate(-25 398 305)"/>
+  </g>
+</svg>

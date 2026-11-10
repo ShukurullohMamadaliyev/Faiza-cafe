@@ -84,19 +84,19 @@ export default function PromoBanner() {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         style={{
-          background: banner.bgGradient || 'linear-gradient(135deg, #073527 0%, #0d4e3a 50%, #042218 100%)',
-          boxShadow: `0 12px 30px -8px ${banner.glowColor || 'rgba(13, 59, 46, 0.45)'}`
+          background: banner.bgGradient || 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #450a0a 100%)',
+          boxShadow: `0 12px 30px -8px ${banner.glowColor || 'rgba(153, 27, 27, 0.45)'}`
         }}
         className="relative overflow-hidden rounded-[26px] text-white cursor-pointer transition-all duration-500 active:scale-98 group border border-white/15"
       >
         {/* Dekorativ orqa fon yoritgichlari (Glow effect) */}
         <div
           className="absolute -right-10 -top-10 w-44 h-44 rounded-full filter blur-3xl opacity-40 pointer-events-none transition-colors duration-700"
-          style={{ background: banner.glowColor || 'rgba(16, 185, 129, 0.6)' }}
+          style={{ background: banner.glowColor || 'rgba(239, 68, 68, 0.6)' }}
         />
         <div
           className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full filter blur-3xl opacity-25 pointer-events-none transition-colors duration-700"
-          style={{ background: banner.glowColor || 'rgba(16, 185, 129, 0.4)' }}
+          style={{ background: banner.glowColor || 'rgba(239, 68, 68, 0.4)' }}
         />
 
         {/* Asosiy Banner Konteyniri */}

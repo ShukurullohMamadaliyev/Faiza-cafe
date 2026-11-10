@@ -1,11 +1,11 @@
 // Vercel Serverless Function: /api/user
-// Faiza Cafe - User Phone & Profile Storage
+// Ibrohim Ota Choyxonasi - User Phone & Profile Storage
 
 import fs from 'fs';
 import path from 'path';
 import { SEED_USERS } from './usersDb.js';
 
-const TMP_FILE = '/tmp/faiza_users.json';
+const TMP_FILE = '/tmp/ibrohim_users.json';
 
 // In-memory cache across warm lambdas
 let memoryUsers = { ...SEED_USERS };

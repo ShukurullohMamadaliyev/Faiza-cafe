@@ -46,7 +46,7 @@ export default function HomePage() {
         {!isDefaultView ? (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-black text-base text-[#0d3b2e]">
+              <h3 className="font-black text-base text-[#991b1b]">
                 {searchQuery ? `"${searchQuery}"` : (t.categories?.[activeCategory] || t.allDishes)}
               </h3>
               <span className="text-xs text-gray-500 font-semibold">
@@ -77,7 +77,7 @@ export default function HomePage() {
                   <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shadow-xs">
                     <Flame size={16} className="text-amber-600 fill-amber-500" />
                   </div>
-                  <h3 className="font-black text-base text-[#0d3b2e] tracking-tight">
+                  <h3 className="font-black text-base text-[#991b1b] tracking-tight">
                     {t.hitSales}
                   </h3>
                 </div>
@@ -88,7 +88,7 @@ export default function HomePage() {
                     setSelectedCategory('all');
                     setActiveTab('menu');
                   }}
-                  className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+                  className="text-xs font-bold text-red-700 hover:text-red-800 flex items-center gap-1"
                 >
                   <span>{t.seeAll}</span>
                   <ArrowRight size={13} />
@@ -106,10 +106,10 @@ export default function HomePage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shadow-xs">
-                    <Sparkles size={16} className="text-emerald-600" />
+                  <div className="w-7 h-7 rounded-full bg-red-100 text-red-700 flex items-center justify-center shadow-xs">
+                    <Sparkles size={16} className="text-red-600" />
                   </div>
-                  <h3 className="font-black text-base text-[#0d3b2e] tracking-tight">
+                  <h3 className="font-black text-base text-[#991b1b] tracking-tight">
                     {t.newItems}
                   </h3>
                 </div>
@@ -129,7 +129,7 @@ export default function HomePage() {
                   <div className="w-7 h-7 rounded-full bg-red-100 text-red-600 flex items-center justify-center shadow-xs">
                     <Tag size={15} className="text-red-600" />
                   </div>
-                  <h3 className="font-black text-base text-[#0d3b2e] tracking-tight">
+                  <h3 className="font-black text-base text-[#991b1b] tracking-tight">
                     {t.promoDiscounts}
                   </h3>
                 </div>

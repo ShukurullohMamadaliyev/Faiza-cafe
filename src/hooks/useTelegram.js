@@ -70,9 +70,9 @@ export function useTelegram() {
   return {
     tg,
     user: user || {
-      first_name: 'Fayz',
+      first_name: 'Ibrohim Ota',
       last_name: 'Mehmoni',
-      username: 'fayz_mehmon',
+      username: 'ibrohim_ota_mehmon',
       id: 998901234
     },
     colorScheme,

@@ -5,7 +5,7 @@ import path from 'path';
 dotenv.config();
 
 const token = process.env.BOT_TOKEN || '9141727536:AAGkeeNUQGbsD3WBtMciA17UxhBkFhPLWx0';
-const webAppUrl = process.env.WEBAPP_URL || 'https://faiza-cafe.vercel.app';
+const webAppUrl = process.env.WEBAPP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://faiza-cafe.vercel.app');
 const ADMIN_IDS = (process.env.ADMIN_IDS || '8340079081').split(',').map((id) => id.trim()).filter(Boolean);
 
 if (!token) {
@@ -33,7 +33,7 @@ function getGroupConfig() {
     console.error('Error reading group_config.json:', e);
   }
   if (process.env.ORDER_GROUP_ID) {
-    return { groupId: process.env.ORDER_GROUP_ID, groupTitle: 'Faiza Cafe Guruh' };
+    return { groupId: process.env.ORDER_GROUP_ID, groupTitle: 'Ibrohim Ota Choyxonasi Guruh' };
   }
   return null;
 }
@@ -164,17 +164,17 @@ function getMainKeyboard(userId) {
   const keyboard = [
     [
       {
-        text: '🍽 Menyu va Buyurtma berish',
+        text: 'рџЌЅ Menyu va Buyurtma berish',
         web_app: { url: appUrl }
       }
     ],
     [
-      { text: '📍 Manzilimiz va Mo‘ljal' },
-      { text: '📞 Aloqa / Telefon' }
+      { text: 'рџ“Ќ Manzilimiz va MoвЂljal' },
+      { text: 'рџ“ћ Aloqa / Telefon' }
     ],
     [
-      { text: 'ℹ️ Biz haqimizda' },
-      { text: '⏰ Ish vaqti' }
+      { text: 'в„№пёЏ Biz haqimizda' },
+      { text: 'вЏ° Ish vaqti' }
     ]
   ];
 
@@ -198,13 +198,13 @@ function getInlineActionKeyboard(userId = 0) {
     inline_keyboard: [
       [
         {
-          text: '🍕 Menyuni ochish (Mini App)',
+          text: 'рџЌ• Menyuni ochish (Mini App)',
           web_app: { url: appUrl }
         }
       ],
       [
-        { text: '📞 +998 90 377 30 00', url: 'tel:+998903773000' },
-        { text: '📞 +998 98 571 00 67', url: 'tel:+998985710067' }
+        { text: 'рџ“ћ +998 90 377 30 00', url: 'tel:+998903773000' },
+        { text: 'рџ“ћ +998 98 571 00 67', url: 'tel:+998985710067' }
       ]
     ]
   };
@@ -217,7 +217,7 @@ async function notifyAdminsAboutOrder(order, custChatId = 0) {
   const itemsText = (order.items || [])
     .map(
       (it) =>
-        `• *${it.quantity}x ${it.name}* — ${(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m`
+        `вЂў *${it.quantity}x ${it.name}* вЂ” ${(it.price * it.quantity).toLocaleString('uz-UZ')} soвЂm`
     )
     .join('\n');
 
@@ -237,49 +237,49 @@ async function notifyAdminsAboutOrder(order, custChatId = 0) {
 
   let addressInfo =
     order.orderType === 'delivery'
-      ? `🚗 *Yetkazib berish:* ${customerInfo.address || 'Rishton'}`
+      ? `рџљ— *Yetkazib berish:* ${customerInfo.address || 'Rishton'}`
       : order.orderType === 'takeaway'
-      ? `🛍 *Olib ketish:* ${customerInfo.branch || 'Faiza Cafe (Markaz)'}`
-      : `🍽 *Kafeda:* ${customerInfo.table || '1'}-stol`;
+      ? `рџ›Ќ *Olib ketish:* ${customerInfo.branch || 'Ibrohim Ota Choyxonasi (Markaz)'}`
+      : `рџЌЅ *Kafeda:* ${customerInfo.table || '1'}-stol`;
 
   if (order.orderType === 'delivery' && hasCoords) {
-    addressInfo += `\n📍 *GPS koordinatalar:* \`${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}\`\n🗺 *Navigatsiya:* [Google Maps orqali ochish](https://maps.google.com/?q=${lat},${lon})`;
+    addressInfo += `\nрџ“Ќ *GPS koordinatalar:* \`${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}\`\nрџ—є *Navigatsiya:* [Google Maps orqali ochish](https://maps.google.com/?q=${lat},${lon})`;
   }
 
-  const messageText = `🔔 *YANGI BUYURTMA! #${order.id}*
-━━━━━━━━━━━━━━━━━━━━
-👤 *Mijoz:* ${customerInfo.name || 'Mijoz'} (${userTag})
-📞 *Telefon:* \`${customerInfo.phone || 'Nomaʼlum'}\`
+  const messageText = `рџ”” *YANGI BUYURTMA! #${order.id}*
+в”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓ
+рџ‘¤ *Mijoz:* ${customerInfo.name || 'Mijoz'} (${userTag})
+рџ“ћ *Telefon:* \`${customerInfo.phone || 'NomaКјlum'}\`
 ${addressInfo}
-💬 *Izoh:* ${customerInfo.note ? `_${customerInfo.note}_` : 'Mavjud emas'}
+рџ’¬ *Izoh:* ${customerInfo.note ? `_${customerInfo.note}_` : 'Mavjud emas'}
 
-📋 *Taomlar ro‘yxati:*
-${itemsText || '• Taomlar ko‘rsatilmadi'}
+рџ“‹ *Taomlar roвЂyxati:*
+${itemsText || 'вЂў Taomlar koвЂrsatilmadi'}
 
-💰 *Jami to‘lov:* *${(order.total || 0).toLocaleString('uz-UZ')} so‘m*
-💳 *To‘lov turi:* ${order.paymentMethod || 'Naqd pul'}
-🕒 *Vaqt:* ${order.date || new Date().toLocaleString()}
-━━━━━━━━━━━━━━━━━━━━
-📌 *Holati:* 🟡 *Yangi (Kutilmoqda)*`;
+рџ’° *Jami toвЂlov:* *${(order.total || 0).toLocaleString('uz-UZ')} soвЂm*
+рџ’і *ToвЂlov turi:* ${order.paymentMethod || 'Naqd pul'}
+рџ•’ *Vaqt:* ${order.date || new Date().toLocaleString()}
+в”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓ
+рџ“Њ *Holati:* рџџЎ *Yangi (Kutilmoqda)*`;
 
   const inline_keyboard = [];
   if (order.orderType === 'delivery' && hasCoords) {
     inline_keyboard.push([
-      { text: '🗺 Xaritada ochish (Navigatsiya)', url: `https://maps.google.com/?q=${lat},${lon}` }
+      { text: 'рџ—є Xaritada ochish (Navigatsiya)', url: `https://maps.google.com/?q=${lat},${lon}` }
     ]);
   }
 
   inline_keyboard.push(
     [
-      { text: '👨‍🍳 Qabul qilish', callback_data: `st:prep:${order.id}:${validCustChatId}` },
-      { text: '🍳 Tayyorlanmoqda', callback_data: `st:cook:${order.id}:${validCustChatId}` }
+      { text: 'рџ‘ЁвЂЌрџЌі Qabul qilish', callback_data: `st:prep:${order.id}:${validCustChatId}` },
+      { text: 'рџЌі Tayyorlanmoqda', callback_data: `st:cook:${order.id}:${validCustChatId}` }
     ],
     [
-      { text: '🛵 Yetkazilmoqda', callback_data: `st:delv:${order.id}:${validCustChatId}` },
-      { text: '✅ Yetkazildi', callback_data: `st:comp:${order.id}:${validCustChatId}` }
+      { text: 'рџ›µ Yetkazilmoqda', callback_data: `st:delv:${order.id}:${validCustChatId}` },
+      { text: 'вњ… Yetkazildi', callback_data: `st:comp:${order.id}:${validCustChatId}` }
     ],
     [
-      { text: '❌ Bekor qilish', callback_data: `st:canc:${order.id}:${validCustChatId}` }
+      { text: 'вќЊ Bekor qilish', callback_data: `st:canc:${order.id}:${validCustChatId}` }
     ]
   );
 
@@ -334,32 +334,32 @@ async function handleMessage(msg) {
 
     // 0.1 Yangi a'zolar qo'shilganda (bot guruhga qo'shilganda)
     if (msg.new_chat_members) {
-      const botAdded = msg.new_chat_members.some((m) => m.is_bot && (m.id === 9141727536 || m.username === 'faizacafe_rishton_bot'));
+      const botAdded = msg.new_chat_members.some((m) => m.is_bot && (m.id === 9141727536 || m.username === 'ibrohim_ota_bot'));
       if (botAdded) {
         if (isOwner) {
           saveGroupConfig({
             groupId: chatId,
-            groupTitle: msg.chat.title || 'Faiza Cafe Guruh',
+            groupTitle: msg.chat.title || 'Ibrohim Ota Choyxonasi Guruh',
             connectedBy: msg.from.id,
             connectedAt: new Date().toISOString()
           });
           await tg('sendMessage', {
             chat_id: chatId,
-            text: `🎉 *FAIZA CAFE — BUYURTMALAR GURUHI BIRIKTIRILDI!*
-━━━━━━━━━━━━━━━━━━━━
+            text: `рџЋ‰ *Ibrohim Ota Choyxonasi вЂ” BUYURTMALAR GURUHI BIRIKTIRILDI!*
+в”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓ
 Assalomu alaykum! Ushbu guruh muvaffaqiyatli buyurtmalar qabul qilish guruhi sifatida ulandi!
 
-📌 *Guruh nomi:* ${msg.chat.title}
-🆔 *Guruh ID:* \`${chatId}\`
+рџ“Њ *Guruh nomi:* ${msg.chat.title}
+рџ†” *Guruh ID:* \`${chatId}\`
 
-✅ *Endi mijozlar bergan barcha yangi buyurtmalar to‘g‘ridan-to‘g‘ri shu guruhga yuboriladi!*
-👥 Guruhdagi barcha xodimlar buyurtmalarni ko‘rib, tugmalar orqali holatini (Oshxona, Yetkazish, Yakun) boshqarishlari mumkin.`
+вњ… *Endi mijozlar bergan barcha yangi buyurtmalar toвЂgвЂridan-toвЂgвЂri shu guruhga yuboriladi!*
+рџ‘Ґ Guruhdagi barcha xodimlar buyurtmalarni koвЂrib, tugmalar orqali holatini (Oshxona, Yetkazish, Yakun) boshqarishlari mumkin.`
           });
         } else {
           // Begona odam o'z guruhiga qo'shgan bo'lsa - chiqib ketish (Anti-leak security)
           await tg('sendMessage', {
             chat_id: chatId,
-            text: '⛔ *Xavfsizlik tizimi:* Ushbu bot faqat "Faiza Cafe" rasmiy xodimlari uchun mo‘ljallangan. Ruxsatsiz guruhdan avtomatik chiqilmoqda...'
+            text: 'в›” *Xavfsizlik tizimi:* Ushbu bot faqat "Ibrohim Ota Choyxonasi" rasmiy xodimlari uchun moвЂljallangan. Ruxsatsiz guruhdan avtomatik chiqilmoqda...'
           });
           await tg('leaveChat', { chat_id: chatId });
         }
@@ -372,23 +372,23 @@ Assalomu alaykum! Ushbu guruh muvaffaqiyatli buyurtmalar qabul qilish guruhi sif
       if (isOwner) {
         saveGroupConfig({
           groupId: chatId,
-          groupTitle: msg.chat.title || 'Faiza Cafe Guruh',
+          groupTitle: msg.chat.title || 'Ibrohim Ota Choyxonasi Guruh',
           connectedBy: msg.from.id,
           connectedAt: new Date().toISOString()
         });
         await tg('sendMessage', {
           chat_id: chatId,
-          text: `✅ *Ushbu guruh buyurtmalar guruhi sifatida saqlandi!*
-━━━━━━━━━━━━━━━━━━━━
-📌 *Guruh:* ${msg.chat.title}
-🆔 *Guruh ID:* \`${chatId}\`
+          text: `вњ… *Ushbu guruh buyurtmalar guruhi sifatida saqlandi!*
+в”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓ
+рџ“Њ *Guruh:* ${msg.chat.title}
+рџ†” *Guruh ID:* \`${chatId}\`
 
 Barcha yangi buyurtmalar, GPS lokatsiyalar va boshqaruv tugmalari shu guruhga yuboriladi.`
         });
       } else {
         await tg('sendMessage', {
           chat_id: chatId,
-          text: `ℹ️ Ushbu guruh ID raqami: \`${chatId}\`\n(Faqat bot egasi buyurtmalar guruhini biriktirishi mumkin)`
+          text: `в„№пёЏ Ushbu guruh ID raqami: \`${chatId}\`\n(Faqat bot egasi buyurtmalar guruhini biriktirishi mumkin)`
         });
       }
       return;
@@ -434,17 +434,17 @@ Barcha yangi buyurtmalar, GPS lokatsiyalar va boshqaruv tugmalari shu guruhga yu
       chat_id: chatId,
       menu_button: {
         type: 'web_app',
-        text: '🍽 Menyu',
+        text: 'рџЌЅ Menyu',
         web_app: { url: userAppUrl }
       }
     }).catch(() => {});
 
-    const successRegText = `✅ *Raqamingiz muvaffaqiyatli saqlandi!*
+    const successRegText = `вњ… *Raqamingiz muvaffaqiyatli saqlandi!*
 
-👤 *Mijoz:* ${name}
-📱 *Telefon:* \`${phone}\`
+рџ‘¤ *Mijoz:* ${name}
+рџ“± *Telefon:* \`${phone}\`
 
-Endi siz uchun barcha imkoniyatlar ochildi! Pastdagi **"🍽 Menyu va Buyurtma berish"** tugmasini bosing va o‘zingiz yoqtirgan lazzatli taomlarga buyurtma bering! 👇`;
+Endi siz uchun barcha imkoniyatlar ochildi! Pastdagi **"рџЌЅ Menyu va Buyurtma berish"** tugmasini bosing va oвЂzingiz yoqtirgan lazzatli taomlarga buyurtma bering! рџ‘‡`;
 
     await tg('sendMessage', {
       chat_id: chatId,
@@ -459,14 +459,14 @@ Endi siz uchun barcha imkoniyatlar ochildi! Pastdagi **"🍽 Menyu va Buyurtma b
   if (msg.web_app_data) {
     try {
       const order = JSON.parse(msg.web_app_data.data);
-      const confirmText = `✅ **Buyurtmangiz muvaffaqiyatli qabul qilindi!** 🎉
+      const confirmText = `вњ… **Buyurtmangiz muvaffaqiyatli qabul qilindi!** рџЋ‰
 
-🔢 **Buyurtma kodi:** #${order.id || 'FC-NEW'}
-💰 **Jami to‘lov:** ${(order.total || 0).toLocaleString('uz-UZ')} so‘m
-🛵 **Yetkazib berish:** ${order.orderType === 'delivery' ? 'Manzilingizga bepul yetkaziladi' : 'Olib ketish'}
-⏳ **Kutilayotgan vaqt:** 25-35 daqiqa ichida
+рџ”ў **Buyurtma kodi:** #${order.id || 'FC-NEW'}
+рџ’° **Jami toвЂlov:** ${(order.total || 0).toLocaleString('uz-UZ')} soвЂm
+рџ›µ **Yetkazib berish:** ${order.orderType === 'delivery' ? 'Manzilingizga bepul yetkaziladi' : 'Olib ketish'}
+вЏі **Kutilayotgan vaqt:** 25-35 daqiqa ichida
 
-Oshpazlarimiz taomni tayyorlashni boshlashdi. Rahmat! 🍔✨`;
+Oshpazlarimiz taomni tayyorlashni boshlashdi. Rahmat! рџЌ”вњЁ`;
 
       await tg('sendMessage', {
         chat_id: chatId,
@@ -499,11 +499,11 @@ Oshpazlarimiz taomni tayyorlashni boshlashdi. Rahmat! 🍔✨`;
       menu_button: { type: 'default' }
     }).catch(() => {});
 
-    const askPhoneText = `Assalomu alaykum, *${firstName}*! 👋
+    const askPhoneText = `Assalomu alaykum, *${firstName}*! рџ‘‹
 
-Xush kelibsiz **"FAIZA CAFE"**ning rasmiy buyurtma botiga! ✨🍽️
+Xush kelibsiz **"Ibrohim Ota Choyxonasi"**ning rasmiy buyurtma botiga! вњЁрџЌЅпёЏ
 
-Buyurtma berish, menyuni ko‘rish va bepul yetkazib berish xizmatidan foydalanish uchun, iltimos, pastdagi **"📱 Telefon raqamimni yuborish"** tugmasini bosing:`;
+Buyurtma berish, menyuni koвЂrish va bepul yetkazib berish xizmatidan foydalanish uchun, iltimos, pastdagi **"рџ“± Telefon raqamimni yuborish"** tugmasini bosing:`;
 
     await tg('sendMessage', {
       chat_id: chatId,
@@ -513,7 +513,7 @@ Buyurtma berish, menyuni ko‘rish va bepul yetkazib berish xizmatidan foydalani
         keyboard: [
           [
             {
-              text: '📱 Telefon raqamimni yuborish',
+              text: 'рџ“± Telefon raqamimni yuborish',
               request_contact: true
             }
           ]
@@ -527,24 +527,24 @@ Buyurtma berish, menyuni ko‘rish va bepul yetkazib berish xizmatidan foydalani
 
   // 3. /start (Faqat raqami saqlangan mijozlar uchun)
   if (text.startsWith('/start')) {
-    const phoneInfo = `\n📱 *Sizning raqamingiz:* \`${user.phone}\``;
+    const phoneInfo = `\nрџ“± *Sizning raqamingiz:* \`${user.phone}\``;
 
-    const welcomeText = `Assalomu alaykum, *${user.name || firstName}*! 👋
+    const welcomeText = `Assalomu alaykum, *${user.name || firstName}*! рџ‘‹
 
-Xush kelibsiz **"FAIZA CAFE"**ning rasmiy buyurtma botiga! ✨🍽️${phoneInfo}
+Xush kelibsiz **"Ibrohim Ota Choyxonasi"**ning rasmiy buyurtma botiga! вњЁрџЌЅпёЏ${phoneInfo}
 
 Rishton tumanidagi eng mazali va sifatli taomlar maskani:
-🍔 **Fastfud:** 20 dan ortiq lavash, tandir lavash, burger, shaurma va xot-doglar
-🍕 **Pitsa:** 6 xil o‘zgacha pitsa (Pepperoni, Qazili, Palermo, Assorti...)
-🥩 **Issiq taomlar & Shashlik:** Kotletlar Chiz, Syrniy Beyti, Doner tarelka
-🥗 **Salatlar:** Sezar, Mujskoy kapriz, Olivye, Grecheskiy
-☕ **Ichimliklar:** Fresh limonad, San-Sebastian chizkeyk va qahvalar
+рџЌ” **Fastfud:** 20 dan ortiq lavash, tandir lavash, burger, shaurma va xot-doglar
+рџЌ• **Pitsa:** 6 xil oвЂzgacha pitsa (Pepperoni, Qazili, Palermo, Assorti...)
+рџҐ© **Issiq taomlar & Shashlik:** Kotletlar Chiz, Syrniy Beyti, Doner tarelka
+рџҐ— **Salatlar:** Sezar, Mujskoy kapriz, Olivye, Grecheskiy
+в• **Ichimliklar:** Fresh limonad, San-Sebastian chizkeyk va qahvalar
 
-━━━━━━━━━━━━━━━━━━━━
-⏰ **Ish vaqti:** 08:00 – 03:00 (tungi 3 gacha)
-🚖 **Yetkazib berish:** BUTUNLAY BEPUL!
-📍 **Manzil:** Rishton tumani, Milliy bank ro‘parasi
-📞 **Aloqa:** +998 90 377 30 00 | +998 98 571 00 67`;
+в”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓ
+вЏ° **Ish vaqti:** 08:00 вЂ“ 03:00 (tungi 3 gacha)
+рџљ– **Yetkazib berish:** BUTUNLAY BEPUL!
+рџ“Ќ **Manzil:** Rishton tumani, Milliy bank roвЂparasi
+рџ“ћ **Aloqa:** +998 90 377 30 00 | +998 98 571 00 67`;
 
     await tg('sendMessage', {
       chat_id: chatId,
@@ -556,11 +556,11 @@ Rishton tumanidagi eng mazali va sifatli taomlar maskani:
   }
 
   // 4. Admin Panel (Faqat 8340079081 uchun)
-  if (text === '🛠 Admin Panel' || text.startsWith('/admin')) {
+  if (text === 'рџ›  Admin Panel' || text.startsWith('/admin')) {
     if (!isAdmin(chatId)) {
       await tg('sendMessage', {
         chat_id: chatId,
-        text: '⛔ *Kechirasiz, sizda Admin paneliga kirish huquqi mavjud emas.*',
+        text: 'в›” *Kechirasiz, sizda Admin paneliga kirish huquqi mavjud emas.*',
         parse_mode: 'Markdown',
         reply_markup: getMainKeyboard(chatId)
       });
@@ -571,17 +571,17 @@ Rishton tumanidagi eng mazali va sifatli taomlar maskani:
     const activeCount = orders.filter((o) => o.status !== 'completed' && o.status !== 'cancelled').length;
     const completedCount = orders.filter((o) => o.status === 'completed').length;
 
-    const adminDashboardText = `🔐 *FAIZA CAFE — BOSHQARUV PANELI*
-━━━━━━━━━━━━━━━━━━━━
-Assalomu alaykum, *Bosh Administrator*! 👋
-🆔 *Sizning ID:* \`${chatId}\`
+    const adminDashboardText = `рџ”ђ *Ibrohim Ota Choyxonasi вЂ” BOSHQARUV PANELI*
+в”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓ
+Assalomu alaykum, *Bosh Administrator*! рџ‘‹
+рџ†” *Sizning ID:* \`${chatId}\`
 
-📊 *Buyurtmalar statistikasi:*
-• 📥 Jami buyurtmalar: *${orders.length} ta*
-• ⏳ Faol / Kutilmoqda: *${activeCount} ta*
-• ✅ Yetkazilgan: *${completedCount} ta*
+рџ“Љ *Buyurtmalar statistikasi:*
+вЂў рџ“Ґ Jami buyurtmalar: *${orders.length} ta*
+вЂў вЏі Faol / Kutilmoqda: *${activeCount} ta*
+вЂў вњ… Yetkazilgan: *${completedCount} ta*
 
-Kerakli bo‘limni tanlang:`;
+Kerakli boвЂlimni tanlang:`;
 
     await tg('sendMessage', {
       chat_id: chatId,
@@ -591,13 +591,13 @@ Kerakli bo‘limni tanlang:`;
         inline_keyboard: [
           [
             {
-              text: '🌐 Web Admin Panelni ochish',
+              text: 'рџЊђ Web Admin Panelni ochish',
               web_app: { url: `${webAppUrl}?admin=8340079081` }
             }
           ],
           [
-            { text: '📋 Barcha buyurtmalar', callback_data: 'adm_orders' },
-            { text: '🟡 Faol buyurtmalar', callback_data: 'adm_active' }
+            { text: 'рџ“‹ Barcha buyurtmalar', callback_data: 'adm_orders' },
+            { text: 'рџџЎ Faol buyurtmalar', callback_data: 'adm_active' }
           ]
         ]
       }
@@ -606,22 +606,22 @@ Kerakli bo‘limni tanlang:`;
   }
 
   // 5. Buyurtmalar ro'yxati (Faqat admin uchun)
-  if (text === '📊 Buyurtmalar' || text === '📊 Buyurtmalar ro‘yxati' || text.startsWith('/orders')) {
+  if (text === 'рџ“Љ Buyurtmalar' || text === 'рџ“Љ Buyurtmalar roвЂyxati' || text.startsWith('/orders')) {
     if (isAdmin(chatId)) {
       const orders = getOrdersDb();
       if (orders.length === 0) {
         await tg('sendMessage', {
           chat_id: chatId,
-          text: '📋 Hozircha yangi buyurtmalar kelib tushmagan.',
+          text: 'рџ“‹ Hozircha yangi buyurtmalar kelib tushmagan.',
           reply_markup: getMainKeyboard(chatId)
         });
         return;
       }
 
-      let listText = `📋 *So‘nggi 10 ta buyurtma ro‘yxati:*\n━━━━━━━━━━━━━━━━━━━━\n`;
+      let listText = `рџ“‹ *SoвЂnggi 10 ta buyurtma roвЂyxati:*\nв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓ\n`;
       orders.slice(0, 10).forEach((o, idx) => {
-        const statusEmoji = o.status === 'completed' ? '✅' : o.status === 'delivering' ? '🛵' : '⏳';
-        listText += `${idx + 1}. *#${o.id}* — ${statusEmoji} ${o.status || 'Yangi'}\n👤 Mijoz: ${o.customer?.name || 'Mijoz'} | 📞 ${o.customer?.phone || '-'}\n💰 Jami: ${(o.total || 0).toLocaleString('uz-UZ')} so‘m\n\n`;
+        const statusEmoji = o.status === 'completed' ? 'вњ…' : o.status === 'delivering' ? 'рџ›µ' : 'вЏі';
+        listText += `${idx + 1}. *#${o.id}* вЂ” ${statusEmoji} ${o.status || 'Yangi'}\nрџ‘¤ Mijoz: ${o.customer?.name || 'Mijoz'} | рџ“ћ ${o.customer?.phone || '-'}\nрџ’° Jami: ${(o.total || 0).toLocaleString('uz-UZ')} soвЂm\n\n`;
       });
 
       await tg('sendMessage', {
@@ -636,13 +636,13 @@ Kerakli bo‘limni tanlang:`;
 
   // 6. Manzilimiz va Mo'ljal
   if (text.includes('Manzilimiz') || text === '/location') {
-    const locationText = `📍 **"FAIZA CAFE" Manzili:**
+    const locationText = `рџ“Ќ **"Ibrohim Ota Choyxonasi" Manzili:**
 
-🏛 **Viloyat:** Farg'ona viloyati
-🏙 **Tuman:** Rishton tumani
-🏢 **Mo'ljal:** Milliy bank ro'parasi
+рџЏ› **Viloyat:** Farg'ona viloyati
+рџЏ™ **Tuman:** Rishton tumani
+рџЏў **Mo'ljal:** Milliy bank ro'parasi
 
-🚗 Kafemiz qulay joylashuvga ega bo'lib, keng avtoturargoh va shinam oilaviy xonalarga ega.
+рџљ— Kafemiz qulay joylashuvga ega bo'lib, keng avtoturargoh va shinam oilaviy xonalarga ega.
 
 Xaritada ko'rish yoki yetkazib berish manzilini belgilash uchun Mini App'dan foydalaning!`;
 
@@ -657,14 +657,14 @@ Xaritada ko'rish yoki yetkazib berish manzilini belgilash uchun Mini App'dan foy
 
   // 7. Aloqa / Telefon
   if (text.includes('Aloqa') || text === '/contact') {
-    const contactText = `📞 **FAIZA CAFE bilan bog'lanish:**
+    const contactText = `рџ“ћ **Ibrohim Ota Choyxonasi bilan bog'lanish:**
 
 Biz har doim sizning xizmatingizdamiz! Savollaringiz, takliflaringiz yoki maxsus buyurtmalaringiz bo'lsa, quyidagi raqamlarga qo'ng'iroq qiling:
 
-📞 **1-aloqa liniyasi:** \`+998903773000\`
-📞 **2-aloqa liniyasi:** \`+998985710067\`
+рџ“ћ **1-aloqa liniyasi:** \`+998903773000\`
+рџ“ћ **2-aloqa liniyasi:** \`+998985710067\`
 
-🛵 Yetkazib berish xizmati: **BEPUL**`;
+рџ›µ Yetkazib berish xizmati: **BEPUL**`;
 
     await tg('sendMessage', {
       chat_id: chatId,
@@ -677,11 +677,11 @@ Biz har doim sizning xizmatingizdamiz! Savollaringiz, takliflaringiz yoki maxsus
 
   // 8. Ish vaqti
   if (text.includes('Ish vaqti') || text === '/hours') {
-    const hoursText = `⏰ **FAIZA CAFE Ish Vaqti:**
+    const hoursText = `вЏ° **Ibrohim Ota Choyxonasi Ish Vaqti:**
 
 Har kuni: **08:00 dan 03:00 gacha** (tungi 3 gacha)
 
-🌙 Tungi vaqtda ham mazali fastfud, issiq pitsa va shashliklarga buyurtma berishingiz mumkin!
+рџЊ™ Tungi vaqtda ham mazali fastfud, issiq pitsa va shashliklarga buyurtma berishingiz mumkin!
 Yetkazib berish xizmatimiz soat 03:00 gacha faol.`;
 
     await tg('sendMessage', {
@@ -695,15 +695,15 @@ Yetkazib berish xizmatimiz soat 03:00 gacha faol.`;
 
   // 9. Biz haqimizda
   if (text.includes('Biz haqimizda') || text === '/about') {
-    const aboutText = `ℹ️ **"FAIZA CAFE" Haqida:**
+    const aboutText = `в„№пёЏ **"Ibrohim Ota Choyxonasi" Haqida:**
 
-"Faiza Cafe" — Rishton tumanidagi eng shinam, zamonaviy va shirin taomlar maskani!
+"Ibrohim Ota Choyxonasi" вЂ” Rishton tumanidagi eng shinam, zamonaviy va shirin taomlar maskani!
 
 Bizda:
-✅ Faqat 100% Halol va sara go'sht mahsulotlari
-✅ Har kuni yangi pishirilgan xamir va non mahsulotlari
-✅ O'zbek milliy taomlari va zamonaviy yevropa fastfudi
-✅ Tezkor va butunlay bepul yetkazib berish xizmati`;
+вњ… Faqat 100% Halol va sara go'sht mahsulotlari
+вњ… Har kuni yangi pishirilgan xamir va non mahsulotlari
+вњ… O'zbek milliy taomlari va zamonaviy yevropa fastfudi
+вњ… Tezkor va butunlay bepul yetkazib berish xizmati`;
 
     await tg('sendMessage', {
       chat_id: chatId,
@@ -717,7 +717,7 @@ Bizda:
   // Boshqa har qanday xabar kelganda
   await tg('sendMessage', {
     chat_id: chatId,
-    text: `Buyurtma berish uchun pastdagi **"🍽 Menyu va Buyurtma berish"** tugmasini bosing yoki kerakli bo‘limni tanlang:`,
+    text: `Buyurtma berish uchun pastdagi **"рџЌЅ Menyu va Buyurtma berish"** tugmasini bosing yoki kerakli boвЂlimni tanlang:`,
     parse_mode: 'Markdown',
     reply_markup: getMainKeyboard(chatId)
   });
@@ -740,11 +740,11 @@ async function handleCallbackQuery(query) {
     const custChatId = parts[3] ? parseInt(parts[3], 10) : 0;
 
     const statusMap = {
-      prep: { key: 'preparing', label: '👨‍🍳 Qabul qilindi', statusText: 'Qabul qilindi' },
-      cook: { key: 'preparing', label: '🍳 Oshxonada tayyorlanmoqda', statusText: 'Oshxonada tayyorlanmoqda' },
-      delv: { key: 'delivering', label: '🛵 Yetkazilmoqda (Kuryer yo‘lda)', statusText: 'Yetkazilmoqda' },
-      comp: { key: 'completed', label: '✅ Yetkazildi (Yakunlangan)', statusText: 'Yetkazildi' },
-      canc: { key: 'cancelled', label: '❌ Bekor qilindi', statusText: 'Bekor qilindi' }
+      prep: { key: 'preparing', label: 'рџ‘ЁвЂЌрџЌі Qabul qilindi', statusText: 'Qabul qilindi' },
+      cook: { key: 'preparing', label: 'рџЌі Oshxonada tayyorlanmoqda', statusText: 'Oshxonada tayyorlanmoqda' },
+      delv: { key: 'delivering', label: 'рџ›µ Yetkazilmoqda (Kuryer yoвЂlda)', statusText: 'Yetkazilmoqda' },
+      comp: { key: 'completed', label: 'вњ… Yetkazildi (Yakunlangan)', statusText: 'Yetkazildi' },
+      canc: { key: 'cancelled', label: 'вќЊ Bekor qilindi', statusText: 'Bekor qilindi' }
     };
 
     const statusObj = statusMap[action] || statusMap.comp;
@@ -762,11 +762,11 @@ async function handleCallbackQuery(query) {
     const oldText = message?.text || '';
 
     let updatedText = oldText;
-    const operatorInfo = `\n👤 *Xodim:* ${senderTag} (🕒 ${timeStr})`;
-    if (updatedText.includes('📌 Holati:')) {
-      updatedText = updatedText.replace(/📌 Holati:[\s\S]*?(?=(\n\n|$))/m, `📌 Holati: ${statusObj.label}${operatorInfo}`);
+    const operatorInfo = `\nрџ‘¤ *Xodim:* ${senderTag} (рџ•’ ${timeStr})`;
+    if (updatedText.includes('рџ“Њ Holati:')) {
+      updatedText = updatedText.replace(/рџ“Њ Holati:[\s\S]*?(?=(\n\n|$))/m, `рџ“Њ Holati: ${statusObj.label}${operatorInfo}`);
     } else {
-      updatedText += `\n\n📌 *Holati:* ${statusObj.label}${operatorInfo}`;
+      updatedText += `\n\nрџ“Њ *Holati:* ${statusObj.label}${operatorInfo}`;
     }
 
     // Tugmalarni faol holat bilan yangilash (Xarita navigatsiya tugmasini saqlab qolgan holda)
@@ -778,27 +778,27 @@ async function handleCallbackQuery(query) {
     updatedKeyboard.push(
       [
         {
-          text: action === 'prep' ? '• 👨‍🍳 Qabul qilindi •' : '👨‍🍳 Qabul qilish',
+          text: action === 'prep' ? 'вЂў рџ‘ЁвЂЌрџЌі Qabul qilindi вЂў' : 'рџ‘ЁвЂЌрџЌі Qabul qilish',
           callback_data: `st:prep:${orderId}:${custChatId}`
         },
         {
-          text: action === 'cook' ? '• 🍳 Tayyorlanmoqda •' : '🍳 Tayyorlanmoqda',
+          text: action === 'cook' ? 'вЂў рџЌі Tayyorlanmoqda вЂў' : 'рџЌі Tayyorlanmoqda',
           callback_data: `st:cook:${orderId}:${custChatId}`
         }
       ],
       [
         {
-          text: action === 'delv' ? '• 🛵 Yetkazilmoqda •' : '🛵 Yetkazilmoqda',
+          text: action === 'delv' ? 'вЂў рџ›µ Yetkazilmoqda вЂў' : 'рџ›µ Yetkazilmoqda',
           callback_data: `st:delv:${orderId}:${custChatId}`
         },
         {
-          text: action === 'comp' ? '• ✅ Yetkazildi •' : '✅ Yetkazildi',
+          text: action === 'comp' ? 'вЂў вњ… Yetkazildi вЂў' : 'вњ… Yetkazildi',
           callback_data: `st:comp:${orderId}:${custChatId}`
         }
       ],
       [
         {
-          text: action === 'canc' ? '• ❌ Bekor qilindi •' : '❌ Bekor qilish',
+          text: action === 'canc' ? 'вЂў вќЊ Bekor qilindi вЂў' : 'вќЊ Bekor qilish',
           callback_data: `st:canc:${orderId}:${custChatId}`
         }
       ]
@@ -815,11 +815,11 @@ async function handleCallbackQuery(query) {
     // 2. Mijozga (agar Telegram ID ma'lum bo'lsa) darhol xabar yuborish
     if (custChatId && custChatId > 0) {
       const customerMsgMap = {
-        prep: `👨‍🍳 *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz ma'muriyat tomonidan qabul qilindi. Tez orada oshxonaga topshiriladi.`,
-        cook: `🍳 *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz oshxonamizda mehr bilan tayyorlanmoqda!`,
-        delv: `🛵 *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz kuryerga topshirildi va manzil tomon yo‘lga chiqdi! Kuryerimiz tez orada eshigingizda bo‘ladi.`,
-        comp: `🎉 *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz muvaffaqiyatli yetkazildi! Faiza Cafe taomlaridan bahramand bo‘ling. Yoqimli ishtaha! ✨`,
-        canc: `❌ *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz bekor qilindi. Savollar bo‘lsa: +998 90 377 30 00`
+        prep: `рџ‘ЁвЂЌрџЌі *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz ma'muriyat tomonidan qabul qilindi. Tez orada oshxonaga topshiriladi.`,
+        cook: `рџЌі *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz oshxonamizda mehr bilan tayyorlanmoqda!`,
+        delv: `рџ›µ *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz kuryerga topshirildi va manzil tomon yoвЂlga chiqdi! Kuryerimiz tez orada eshigingizda boвЂladi.`,
+        comp: `рџЋ‰ *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz muvaffaqiyatli yetkazildi! Ibrohim Ota Choyxonasi taomlaridan bahramand boвЂling. Yoqimli ishtaha! вњЁ`,
+        canc: `вќЊ *Hurmatli mijoz!* Sizning *#${orderId}* raqamli buyurtmangiz bekor qilindi. Savollar boвЂlsa: +998 90 377 30 00`
       };
 
       await tg('sendMessage', {
@@ -830,7 +830,7 @@ async function handleCallbackQuery(query) {
           inline_keyboard: [
             [
               {
-                text: '📦 Buyurtma holatini ko‘rish (Mini App)',
+                text: 'рџ“¦ Buyurtma holatini koвЂrish (Mini App)',
                 web_app: {
                   url: `${webAppUrl}?tab=orders&updateOrder=${orderId}&status=${statusObj.key}`
                 }
@@ -858,10 +858,10 @@ async function handleCallbackQuery(query) {
       return;
     }
 
-    let summaryText = `📋 *${data === 'adm_active' ? 'Faol buyurtmalar' : 'So‘nggi buyurtmalar'}:*\n━━━━━━━━━━━━━━━━━━━━\n`;
+    let summaryText = `рџ“‹ *${data === 'adm_active' ? 'Faol buyurtmalar' : 'SoвЂnggi buyurtmalar'}:*\nв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓв”Ѓ\n`;
     filtered.slice(0, 8).forEach((o, idx) => {
-      const statusEmoji = o.status === 'completed' ? '✅' : o.status === 'delivering' ? '🛵' : '⏳';
-      summaryText += `${idx + 1}. *#${o.id}* — ${statusEmoji} ${o.status || 'Yangi'}\n👤 Mijoz: ${o.customer?.name || 'Mijoz'} | 📞 ${o.customer?.phone || '-'}\n💰 Jami: ${(o.total || 0).toLocaleString('uz-UZ')} so‘m\n\n`;
+      const statusEmoji = o.status === 'completed' ? 'вњ…' : o.status === 'delivering' ? 'рџ›µ' : 'вЏі';
+      summaryText += `${idx + 1}. *#${o.id}* вЂ” ${statusEmoji} ${o.status || 'Yangi'}\nрџ‘¤ Mijoz: ${o.customer?.name || 'Mijoz'} | рџ“ћ ${o.customer?.phone || '-'}\nрџ’° Jami: ${(o.total || 0).toLocaleString('uz-UZ')} soвЂm\n\n`;
     });
 
     await tg('sendMessage', {
@@ -880,8 +880,8 @@ let isPolling = true;
 
 async function startPolling() {
   console.log("==================================================");
-  console.log("   FAIZA CAFE TELEGRAM BOTI ISHGA TUSHDI!        ");
-  console.log("   Bot: @faizacafe_rishton_bot                    ");
+  console.log("   Ibrohim Ota Choyxonasi TELEGRAM BOTI ISHGA TUSHDI!        ");
+  console.log("   Bot: @ibrohim_ota_bot                    ");
   console.log(`   Admin IDs: ${ADMIN_IDS.join(', ')}             `);
   console.log(`   WebApp URL: ${webAppUrl}                     `);
   console.log("==================================================");
@@ -916,7 +916,8 @@ startPolling();
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log("\nBot to‘xtatilmoqda...");
+  console.log("\nBot toвЂxtatilmoqda...");
   isPolling = false;
   process.exit(0);
 });
+

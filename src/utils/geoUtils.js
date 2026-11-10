@@ -9,7 +9,7 @@ export async function reverseGeocode(lat, lon) {
     const response = await fetch(url, {
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'FaizaCafeMiniApp/1.0'
+        'User-Agent': 'IbrohimOtaMiniApp/1.0'
       }
     });
 
