@@ -3,21 +3,30 @@
 @tailwind utilities;
 
 :root {
-  --app-bg: #F8FAF9;
-  --brand-green: #0d3b2e;
-  --emerald-accent: #059669;
+  --app-bg: #150305;
+  --card-bg: #27080b;
+  --gold-accent: #f59e0b;
 }
 
 body {
-  background-color: var(--app-bg);
-  color: #111827;
+  background-color: #150305;
+  color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
 
-/* Hide scrollbar everywhere for pure app feel */
+/* Has luxury Oriental repeating star watermark pattern over deep crimson velvet */
+.choyxona-bg {
+  background-color: #150305;
+  background-image: 
+    radial-gradient(circle at 50% 0%, #360c10 0%, #150305 75%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 6 L33.5 24.5 L52 28 L33.5 31.5 L30 50 L26.5 31.5 L8 28 L26.5 24.5 Z' fill='none' stroke='rgba(245, 158, 11, 0.05)' stroke-width='0.8'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* Hide scrollbar everywhere for pure native app feel */
 ::-webkit-scrollbar {
   display: none;
   width: 0px;
@@ -29,7 +38,6 @@ body {
   scrollbar-width: none;
 }
 
-/* Telegram bottom safe padding */
 .safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 16px);
+  padding-bottom: env(safe-area-inset-bottom, 18px);
 }

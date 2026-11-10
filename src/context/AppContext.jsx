@@ -56,6 +56,21 @@ export function AppProvider({ children }) {
     return telegram.user?.first_name || 'Mijoz';
   });
 
+  // Qo'shimcha telefon raqami (Ixtiyoriy)
+  const [secondaryPhone, setSecondaryPhone] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('ibrohim_ota_secondary_phone') || '';
+    }
+    return '';
+  });
+
+  const updateSecondaryPhone = (phone) => {
+    setSecondaryPhone(phone);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('ibrohim_ota_secondary_phone', phone);
+    }
+  };
+
   // Active view tab
   const [activeTab, setActiveTab] = useState('home');
 
@@ -134,13 +149,24 @@ export function AppProvider({ children }) {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // GPS orqali manzilni aniqlash funksiyasi
+  // GPS orqali manzilni 2 martalab tekshirib aniqlash funksiyasi
   const detectAndSetLocation = async (silent = false) => {
     setIsDetectingLocation(true);
     if (!silent) telegram.triggerHaptic('medium');
 
     try {
-      const coords = await getCurrentCoordinates();
+      // 1-tekshirish: Dastlabki koordinatalar
+      let coords = await getCurrentCoordinates();
+
+      // 2-tekshirish: Aniqlikni qayta tekshirish va barqarorlashtirish
+      try {
+        await new Promise((r) => setTimeout(r, 450));
+        const secondCoords = await getCurrentCoordinates();
+        if (secondCoords?.latitude && secondCoords?.longitude) {
+          coords = secondCoords;
+        }
+      } catch (e2) {}
+
       const geoResult = await reverseGeocode(coords.latitude, coords.longitude);
 
       const detectedAddr = geoResult.formattedAddress;
@@ -161,7 +187,7 @@ export function AppProvider({ children }) {
 
       setShowLocationPrompt(false);
       telegram.triggerHaptic('success');
-      showToast(`📍 Manzilingiz aniqlandi: ${detectedAddr}`);
+      showToast(`📍 Manzilingiz aniqlandi (2x tekshirildi): ${detectedAddr}`);
       return { success: true, address: detectedAddr, coords: normalizedCoords };
     } catch (err) {
       console.warn("GPS xatoligi:", err);
@@ -456,6 +482,7 @@ export function AppProvider({ children }) {
       customer: {
         name: customerDetails.name || userName || telegram.user?.first_name || 'Mijoz',
         phone: customerDetails.phone || userPhone || '',
+        secondaryPhone: customerDetails.secondaryPhone || secondaryPhone || undefined,
         address: orderType === 'delivery' ? customerDetails.address || deliveryAddress : undefined,
         coords: validCoords,
         mapsUrl,
@@ -607,6 +634,9 @@ export function AppProvider({ children }) {
         showToast,
         userPhone,
         setUserPhone,
+        secondaryPhone,
+        setSecondaryPhone,
+        updateSecondaryPhone,
         userName,
         setUserName
       }}

@@ -1,16 +1,15 @@
 import React from 'react';
-import { Home, Utensils, ShoppingBasket, ReceiptText, User } from 'lucide-react';
+import { Home, LayoutGrid, ShoppingBag, User } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export default function BottomNav() {
   const { activeTab, setActiveTab, setSelectedCategory, cartCount, t, telegram } = useApp();
 
   const navItems = [
-    { id: 'home', label: t.home, icon: Home },
-    { id: 'menu', label: t.menu, icon: Utensils },
-    { id: 'cart', label: t.cart, icon: ShoppingBasket, badge: cartCount },
-    { id: 'orders', label: t.orders, icon: ReceiptText },
-    { id: 'profile', label: t.profile, icon: User },
+    { id: 'home', label: t.home || 'Asosiy', icon: Home },
+    { id: 'menu', label: t.menu || 'Menyu', icon: LayoutGrid },
+    { id: 'cart', label: t.cart || 'Savat', icon: ShoppingBag, badge: cartCount },
+    { id: 'profile', label: t.profile || 'Profil', icon: User },
   ];
 
   const handleNav = (tabId) => {
@@ -22,39 +21,37 @@ export default function BottomNav() {
   };
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 bg-[#170e0f]/95 backdrop-blur-md text-white border-t border-red-950/40 safe-area-bottom select-none">
-      <div className="max-w-lg mx-auto flex items-center justify-around px-2 py-2">
+    <div className="fixed bottom-0 inset-x-0 z-40 bg-[#170406]/95 backdrop-blur-md text-white border-t border-amber-500/15 safe-area-bottom select-none">
+      <div className="max-w-md mx-auto flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
-          const isActive = activeTab === item.id;
+          const isActive = activeTab === item.id || (item.id === 'profile' && activeTab === 'orders');
           const Icon = item.icon;
 
           return (
             <button
               key={item.id}
               onClick={() => handleNav(item.id)}
-              className={`flex flex-col items-center justify-center flex-1 py-1 transition-all duration-200 relative group active:scale-95`}
+              className={`flex flex-col items-center justify-center flex-1 py-1 transition-all duration-150 relative active:scale-95 ${
+                isActive ? 'text-amber-400' : 'text-stone-400 hover:text-stone-200'
+              }`}
             >
-              <div
-                className={`flex items-center justify-center rounded-2xl transition-all duration-200 relative ${
-                  isActive
-                    ? 'bg-red-600 text-white px-4 py-1.5 shadow-sm'
-                    : 'text-gray-400 group-hover:text-gray-200 py-1'
-                }`}
-              >
-                <Icon size={isActive ? 20 : 19} strokeWidth={isActive ? 2.5 : 2} />
+              <div className="relative flex items-center justify-center">
+                <Icon
+                  size={21}
+                  strokeWidth={isActive ? 2.5 : 1.8}
+                  className={isActive ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-stone-400'}
+                />
 
                 {item.badge > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#170e0f]">
+                  <span className="absolute -top-1.5 -right-2.5 bg-amber-500 text-stone-950 text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-[#170406] shadow-xs">
                     {item.badge}
                   </span>
                 )}
               </div>
 
-              <span
-                className={`text-[10px] mt-1 font-semibold transition-colors ${
-                  isActive ? 'text-red-400 font-bold' : 'text-gray-400'
-                }`}
-              >
+              <span className={`text-[11px] mt-1 font-medium transition-colors ${
+                isActive ? 'text-amber-400 font-bold' : 'text-stone-400'
+              }`}>
                 {item.label}
               </span>
             </button>

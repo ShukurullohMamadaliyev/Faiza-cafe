@@ -228,10 +228,14 @@ async function notifyAdminsAboutOrder(order, custChatId = 0) {
     addressInfo += `\n📍 *GPS koordinatalar:* \`${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}\`\n🗺 *Navigatsiya:* [Google Maps orqali ochish](https://maps.google.com/?q=${lat},${lon})`;
   }
 
+  const phoneLine = customerInfo.secondaryPhone
+    ? `📞 *Telefon:* \`${customerInfo.phone || 'Nomaʼlum'}\`\n📱 *Qo‘shimcha tel:* \`${customerInfo.secondaryPhone}\``
+    : `📞 *Telefon:* \`${customerInfo.phone || 'Nomaʼlum'}\``;
+
   const messageText = `🔔 *YANGI BUYURTMA! #${order.id}*
 ━━━━━━━━━━━━━━━━━━━━
 👤 *Mijoz:* ${customerInfo.name || 'Mijoz'} (${userTag})
-📞 *Telefon:* \`${customerInfo.phone || 'Nomaʼlum'}\`
+${phoneLine}
 ${addressInfo}
 💬 *Izoh:* ${customerInfo.note ? `_${customerInfo.note}_` : 'Mavjud emas'}
 

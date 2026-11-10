@@ -1,445 +1,395 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  ArrowLeft,
+  User,
   Edit3,
-  Receipt,
-  Heart,
-  MapPin,
-  Tag,
-  Bell,
-  Globe,
-  ShieldAlert,
-  ChevronRight,
-  Sparkles,
-  PhoneCall,
   Phone,
+  PhoneCall,
+  MapPin,
   Clock,
-  X
+  RotateCw,
+  Receipt,
+  CheckCircle2,
+  ExternalLink,
+  ShieldAlert,
+  Plus
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export default function ProfilePage() {
   const {
     telegram,
-    lang,
-    setLang,
     t,
-    setActiveTab,
-    favorites,
-    productList,
-    setSelectedProduct,
-    showToast,
-    userPhone,
     userName,
-    setUserName
+    setUserName,
+    userPhone,
+    setUserPhone,
+    secondaryPhone,
+    updateSecondaryPhone,
+    deliveryAddress,
+    userCoords,
+    detectAndSetLocation,
+    isDetectingLocation,
+    orders,
+    showToast,
+    setActiveTab
   } = useApp();
 
-  const [editNameVal, setEditNameVal] = useState(userName || telegram.user?.first_name || 'Mijoz');
   const [isEditingName, setIsEditingName] = useState(false);
-  const [showFavoritesModal, setShowFavoritesModal] = useState(false);
-  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [nameInput, setNameInput] = useState(userName || '');
 
-  const favProducts = productList.filter((p) => favorites.includes(p.id));
+  const [isEditingPrimaryPhone, setIsEditingPrimaryPhone] = useState(false);
+  const [primaryPhoneInput, setPrimaryPhoneInput] = useState(userPhone || '');
 
-  // Faqat belgilangan admin (8340079081) uchungina admin imkoniyati
+  const [isEditingSecPhone, setIsEditingSecPhone] = useState(false);
+  const [secPhoneInput, setSecPhoneInput] = useState(secondaryPhone || '');
+
+  // Profil ochilganda GPS manzilni avtomatik ravishda 2 martalab tekshirib olish
+  useEffect(() => {
+    // Agar manzil hali aniqlanmagan yoki standart bo'lsa, o'zi avtomatik 2x aniqlaydi
+    if (!userCoords || !deliveryAddress || deliveryAddress.includes('(Joriy joylashuv)')) {
+      detectAndSetLocation(true);
+    }
+  }, []);
+
+  const handleSaveName = () => {
+    if (nameInput.trim()) {
+      setUserName(nameInput.trim());
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('ibrohim_ota_user_name', nameInput.trim());
+      }
+      showToast('Ism saqlandi');
+    }
+    setIsEditingName(false);
+  };
+
+  const handleSavePrimaryPhone = () => {
+    if (primaryPhoneInput.trim()) {
+      setUserPhone(primaryPhoneInput.trim());
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('ibrohim_ota_user_phone', primaryPhoneInput.trim());
+      }
+      showToast('Asosiy telefon saqlandi');
+    }
+    setIsEditingPrimaryPhone(false);
+  };
+
+  const handleSaveSecPhone = () => {
+    updateSecondaryPhone(secPhoneInput.trim());
+    showToast(secPhoneInput.trim() ? "Qo'shimcha telefon saqlandi" : "Qo'shimcha telefon o'chirildi");
+    setIsEditingSecPhone(false);
+  };
+
+  const handleLocationRefresh = async () => {
+    telegram.triggerHaptic('medium');
+    await detectAndSetLocation(false);
+  };
+
   const isAdmin =
     telegram.user?.id == 8340079081 ||
     (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('admin') === '8340079081');
 
   return (
-    <div className="pb-28 min-h-screen bg-[#F8FAF9]">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-30 flex items-center justify-between">
-        <button
-          onClick={() => {
-            telegram.triggerHaptic('light');
-            setActiveTab('home');
-          }}
-          className="flex items-center gap-2 font-black text-base text-[#991b1b]"
-        >
-          <ArrowLeft size={20} />
-          <span>{t.profileTitle}</span>
-        </button>
-      </div>
-
-      <div className="p-4 space-y-4">
-        {/* User Card */}
-        <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-card flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-[#991b1b] text-white flex items-center justify-center font-black text-xl shadow-md border-2 border-red-400/30 overflow-hidden">
-              <img
-                src="/logo.png"
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            <div>
-              {isEditingName ? (
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="text"
-                    value={editNameVal}
-                    onChange={(e) => setEditNameVal(e.target.value)}
-                    className="text-sm font-bold border border-red-500 rounded-lg px-2 py-0.5 focus:outline-none"
-                    autoFocus
-                  />
-                  <button
-                    onClick={() => {
-                      setIsEditingName(false);
-                      setUserName(editNameVal);
-                      if (typeof window !== 'undefined') {
-                        localStorage.setItem('ibrohim_ota_user_name', editNameVal);
-                      }
-                      showToast(t.nameUpdated || 'Ism yangilandi');
-                    }}
-                    className="text-xs bg-[#991b1b] text-white px-2 py-1 rounded-md"
-                  >
-                    OK
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <h3 className="font-black text-base text-gray-900 leading-tight">
-                    {userName || 'Mijoz'}
-                  </h3>
-                  <button
-                    onClick={() => {
-                      setEditNameVal(userName);
-                      setIsEditingName(true);
-                    }}
-                    className="text-gray-400 hover:text-red-700"
-                  >
-                    <Edit3 size={14} />
-                  </button>
-                </div>
-              )}
-              <span className="text-xs text-red-800 font-bold block mt-1 bg-red-50 px-2.5 py-0.5 rounded-lg border border-red-200/60 inline-flex items-center gap-1">
-                <span>📱</span>
-                <span>{userPhone || '+998 20 000 01 49'}</span>
-              </span>
-            </div>
+    <div className="pb-32 px-4 pt-4 space-y-4 min-h-screen">
+      {/* User Card matching Screenshot 5 */}
+      <div className="bg-[#28080b]/90 border border-amber-500/20 rounded-3xl p-4 shadow-xl shadow-black/40 flex items-center justify-between">
+        <div className="flex items-center gap-3.5 min-w-0">
+          <div className="w-13 h-13 rounded-2xl bg-[#1c0507] border border-amber-400/40 flex items-center justify-center font-serif text-xl font-black text-amber-400 shrink-0 shadow-md">
+            {userName ? userName.charAt(0).toUpperCase() : 'M'}
           </div>
 
-          <div className="w-8 h-8 rounded-full bg-red-50 text-red-700 flex items-center justify-center">
-            <Sparkles size={16} />
-          </div>
-        </div>
-
-        {/* Menu list "Ma'lumotlarim" */}
-        <div className="bg-white rounded-3xl p-2 border border-gray-100 shadow-card divide-y divide-gray-100">
-          <div className="px-4 py-2.5 text-xs font-black text-gray-400 uppercase tracking-wider">
-            {t.myInfo}
-          </div>
-
-          <button
-            onClick={() => {
-              telegram.triggerHaptic('light');
-              setActiveTab('orders');
-            }}
-            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                <Receipt size={17} />
+          <div className="min-w-0 flex-1">
+            {isEditingName ? (
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="text"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  className="bg-[#150305] border border-amber-400 text-amber-200 text-xs rounded-lg px-2 py-1 focus:outline-none w-32"
+                  autoFocus
+                />
+                <button
+                  onClick={handleSaveName}
+                  className="bg-amber-500 text-stone-950 px-2 py-1 rounded-lg text-xs font-bold"
+                >
+                  OK
+                </button>
               </div>
-              <span className="text-xs font-bold text-gray-800">{t.orderHistory}</span>
-            </div>
-            <ChevronRight size={16} className="text-gray-300" />
-          </button>
-
-          <button
-            onClick={() => {
-              telegram.triggerHaptic('light');
-              setShowFavoritesModal(true);
-            }}
-            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
-                <Heart size={17} />
-              </div>
-              <span className="text-xs font-bold text-gray-800">{t.favorites}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-gray-400">{favorites.length} {t.itemsInCart || 'ta'}</span>
-              <ChevronRight size={16} className="text-gray-300" />
-            </div>
-          </button>
-
-          <button
-            onClick={() => {
-              telegram.triggerHaptic('light');
-              showToast(t.addressesSaved || 'Manzillar saqlandi');
-            }}
-            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                <MapPin size={17} />
-              </div>
-              <span className="text-xs font-bold text-gray-800">{t.deliveryAddresses}</span>
-            </div>
-            <ChevronRight size={16} className="text-gray-300" />
-          </button>
-
-          <button
-            onClick={() => {
-              telegram.triggerHaptic('light');
-              showToast(t.promosAvailable || 'Mavjud promokodlar: IBROHIM10, IBROHIM20K');
-            }}
-            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
-                <Tag size={17} />
-              </div>
-              <span className="text-xs font-bold text-gray-800">{t.myPromoCodes}</span>
-            </div>
-            <ChevronRight size={16} className="text-gray-300" />
-          </button>
-
-          <button
-            onClick={() => {
-              telegram.triggerHaptic('light');
-              showToast(t.notificationsEnabled || 'Bildirishnomalar yoqilgan');
-            }}
-            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                <Bell size={17} />
-              </div>
-              <span className="text-xs font-bold text-gray-800">{t.notifications}</span>
-            </div>
-            <ChevronRight size={16} className="text-gray-300" />
-          </button>
-        </div>
-
-        {/* Aloqa va Choyxona Ma'lumotlari Bo'limi */}
-        <div className="bg-gradient-to-br from-red-50 via-white to-amber-50/40 rounded-3xl p-4.5 border border-red-200/80 shadow-card space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-[#991b1b] text-white flex items-center justify-center shadow-md">
-                <PhoneCall size={20} className="text-amber-300" />
-              </div>
-              <div>
-                <h4 className="text-sm font-black text-[#991b1b] tracking-tight">
-                  IBROHIM OTA CHOYXONASI
-                </h4>
-                <p className="text-[11px] text-amber-900/80 font-bold">
-                  Milliy taomlar, tandir kabob & fayzli choyxona
-                </p>
-              </div>
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-wider bg-red-100 text-red-800 px-2 py-0.5 rounded-full border border-red-200">
-              Aloqa
-            </span>
-          </div>
-
-          <p className="text-xs text-gray-600 leading-relaxed italic bg-white/80 p-3 rounded-2xl border border-red-100">
-            «Qadrdon mehmonga eshigimiz hamisha ochiq! Mazali milliy taomlar, sarxil shashliklar va xushbo‘y damlama choylar bilan dasturxoningiz to‘kin bo‘lsin.»
-          </p>
-
-          <div className="space-y-2 pt-1 text-xs">
-            <div className="flex items-center gap-2.5 text-gray-700 bg-white/90 p-2.5 rounded-xl border border-red-100/70">
-              <Clock size={16} className="text-red-700 shrink-0" />
-              <div>
-                <span className="text-[11px] text-gray-400 block font-medium">Ish vaqti:</span>
-                <span className="font-extrabold text-gray-800">Har kuni 08:00 dan 23:00 gacha</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 text-gray-700 bg-white/90 p-2.5 rounded-xl border border-red-100/70">
-              <MapPin size={16} className="text-red-700 shrink-0" />
-              <div>
-                <span className="text-[11px] text-gray-400 block font-medium">Manzil:</span>
-                <span className="font-bold text-gray-800">Rishton tumani, Milliy bank ro‘parasi</span>
-              </div>
-            </div>
-          </div>
-
-          <a
-            href="tel:+998200000149"
-            onClick={() => telegram.triggerHaptic('medium')}
-            className="w-full py-3 bg-[#991b1b] hover:bg-red-800 active:scale-98 text-white font-black text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2"
-          >
-            <Phone size={16} className="text-amber-300" />
-            <span>Qo‘ng‘iroq qilish: +998 20 000 01 49</span>
-          </a>
-        </div>
-
-        {/* Language Switcher */}
-        <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-card space-y-2.5">
-          <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider">
-            {t.language}
-          </h4>
-
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { id: 'ru', label: 'RU' },
-              { id: 'uz', label: "O'Z" },
-              { id: 'en', label: 'EN' },
-            ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  telegram.triggerHaptic('selection');
-                  setLang(item.id);
-                  showToast(item.id === 'ru' ? 'Язык изменен: RU' : item.id === 'en' ? 'Language switched: EN' : "Til o'zgartirildi: O'Z");
-                }}
-                className={`py-2 rounded-xl text-xs font-extrabold transition-all ${
-                  lang === item.id
-                    ? 'bg-[#991b1b] text-white shadow-sm ring-2 ring-red-500/30'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Admin Panel Access - Faqat Telegram ID 8340079081 bo'lganda ko'rinadi */}
-        {isAdmin && (
-          <div className="pt-2">
-            <button
-              onClick={() => {
-                telegram.triggerHaptic('medium');
-                setActiveTab('admin');
-              }}
-              className="w-full py-3.5 bg-gray-900 hover:bg-black active:scale-98 text-white font-extrabold text-xs rounded-2xl shadow-md transition flex items-center justify-center gap-2"
-            >
-              <ShieldAlert size={16} className="text-amber-400" />
-              <span>🔐 {t.adminPanel}</span>
-            </button>
-          </div>
-        )}
-
-        {/* Support & Version */}
-        <div className="text-center pt-2 space-y-2">
-          <p className="text-[11px] text-gray-400 font-medium">
-            Ibrohim Ota Choyxonasi Telegram Mini App v1.0.0
-          </p>
-          <button
-            onClick={() => {
-              telegram.triggerHaptic('selection');
-              setShowSupportModal(true);
-            }}
-            className="inline-flex items-center gap-1.5 text-xs text-red-800 font-bold bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl border border-red-200 transition active:scale-95"
-          >
-            <PhoneCall size={14} className="text-red-700" />
-            <span>{t.supportService}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Qo'llab-quvvatlash Modali (Support Modal) */}
-      {showSupportModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 select-none animate-fade-in">
-          <div className="bg-white w-full max-w-sm rounded-t-[32px] sm:rounded-3xl p-5 space-y-4 shadow-2xl animate-slide-up border border-red-100">
-            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-full bg-red-100 text-red-700 flex items-center justify-center">
-                  <PhoneCall size={18} />
-                </div>
-                <div>
-                  <h3 className="font-black text-sm text-[#991b1b]">Ibrohim Ota Aloqa Markazi</h3>
-                  <p className="text-[11px] text-gray-400">Har kuni 08:00 – 23:00 xizmatingizdamiz</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowSupportModal(false)}
-                className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200"
-              >
-                <X size={15} />
-              </button>
-            </div>
-
-            <p className="text-xs text-gray-600 bg-red-50/50 p-3 rounded-xl border border-red-100">
-              Savol, taklif yoki buyurtmalar bo‘yicha to‘g‘ridan-to‘g‘ri ma‘muriyatga qo‘ng‘iroq qilishingiz mumkin.
-            </p>
-
-            <a
-              href="tel:+998200000149"
-              onClick={() => telegram.triggerHaptic('medium')}
-              className="p-3.5 bg-gradient-to-r from-red-50 to-red-100/70 hover:from-red-100 hover:to-red-200 border border-red-200 rounded-2xl flex items-center justify-between transition group active:scale-98 shadow-xs"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#991b1b] text-white flex items-center justify-center shadow-xs">
-                  <Phone size={20} className="text-amber-300" />
-                </div>
-                <div>
-                  <div className="text-[11px] font-bold text-gray-500">Ibrohim Ota Choyxonasi</div>
-                  <div className="text-sm font-black text-[#991b1b] tracking-wide">+998 20 000 01 49</div>
-                </div>
-              </div>
-              <span className="text-xs font-black text-white bg-[#991b1b] px-3 py-1.5 rounded-xl shadow-xs">
-                {t.call || 'Qo‘ng‘iroq'}
-              </span>
-            </a>
-
-            <button
-              onClick={() => setShowSupportModal(false)}
-              className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs rounded-xl transition"
-            >
-              {t.cancel}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Favorites Modal */}
-      {showFavoritesModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 select-none">
-          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[80vh] overflow-y-auto animate-slide-up shadow-2xl">
-            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-              <h3 className="font-bold text-base text-[#991b1b] flex items-center gap-2">
-                <Heart size={18} className="text-red-500 fill-red-500" />
-                <span>{t.favorites} ({favProducts.length})</span>
-              </h3>
-              <button
-                onClick={() => setShowFavoritesModal(false)}
-                className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500"
-              >
-                ✕
-              </button>
-            </div>
-
-            {favProducts.length === 0 ? (
-              <p className="text-center text-xs text-gray-400 py-6">
-                {t.noFavoritesYet || "Hozircha sevimli taomlar yo'q"}
-              </p>
             ) : (
-              <div className="space-y-2">
-                {favProducts.map((p) => (
-                  <div
-                    key={p.id}
-                    onClick={() => {
-                      setSelectedProduct(p);
-                      setShowFavoritesModal(false);
-                    }}
-                    className="p-3 bg-gray-50 hover:bg-red-50 rounded-2xl flex items-center gap-3 cursor-pointer transition border border-gray-100"
-                  >
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      className="w-12 h-12 rounded-xl object-cover"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-bold text-gray-800 truncate">
-                        {p.name}
-                      </div>
-                      <div className="text-xs font-black text-red-800">
-                        {p.price.toLocaleString('uz-UZ')} {t.currency}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-serif font-bold text-amber-300 truncate">
+                  {userName || 'Mehmon'}
+                </h2>
+                <button
+                  onClick={() => {
+                    setNameInput(userName);
+                    setIsEditingName(true);
+                  }}
+                  className="text-stone-400 hover:text-amber-400"
+                >
+                  <Edit3 size={13} />
+                </button>
+              </div>
+            )}
+
+            {/* Asosiy Telefon raqam */}
+            {isEditingPrimaryPhone ? (
+              <div className="flex items-center gap-1.5 mt-1">
+                <input
+                  type="text"
+                  value={primaryPhoneInput}
+                  onChange={(e) => setPrimaryPhoneInput(e.target.value)}
+                  placeholder="+998 90 123 45 67"
+                  className="bg-[#150305] border border-amber-400 text-amber-200 text-xs rounded-lg px-2 py-1 focus:outline-none w-36"
+                  autoFocus
+                />
+                <button
+                  onClick={handleSavePrimaryPhone}
+                  className="bg-amber-500 text-stone-950 px-2 py-1 rounded-lg text-xs font-bold"
+                >
+                  OK
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="text-xs text-stone-300 font-medium truncate">
+                  {userPhone || 'Telefon kiritilmagan'}
+                </span>
+                <button
+                  onClick={() => {
+                    setPrimaryPhoneInput(userPhone || '');
+                    setIsEditingPrimaryPhone(true);
+                  }}
+                  className="text-stone-400 hover:text-amber-400"
+                >
+                  <Edit3 size={12} />
+                </button>
               </div>
             )}
           </div>
         </div>
+      </div>
+
+      {/* Qo'shimcha Telefon Raqami (Ixtiyoriy) */}
+      <div className="bg-[#28080b]/90 border border-amber-500/20 rounded-3xl p-4 shadow-md space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+              <Phone size={15} />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-amber-200">
+                Qo‘shimcha telefon raqami
+              </h3>
+              <p className="text-[10px] text-stone-400">
+                Ixtiyoriy (yaqinlar yoki ikkinchi raqam uchun)
+              </p>
+            </div>
+          </div>
+
+          {!isEditingSecPhone && (
+            <button
+              onClick={() => {
+                setSecPhoneInput(secondaryPhone || '');
+                setIsEditingSecPhone(true);
+              }}
+              className="text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20"
+            >
+              {secondaryPhone ? "O'zgartirish" : "Qo'shish"}
+            </button>
+          )}
+        </div>
+
+        {isEditingSecPhone ? (
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="text"
+              value={secPhoneInput}
+              onChange={(e) => setSecPhoneInput(e.target.value)}
+              placeholder="+998 90 123 45 67"
+              className="flex-1 bg-[#150305] border border-amber-400 text-stone-100 placeholder-stone-500 text-xs rounded-xl px-3 py-2 focus:outline-none"
+              autoFocus
+            />
+            <button
+              onClick={handleSaveSecPhone}
+              className="px-3.5 py-2 bg-amber-500 text-stone-950 font-bold text-xs rounded-xl shadow-md"
+            >
+              Saqlash
+            </button>
+            <button
+              onClick={() => setIsEditingSecPhone(false)}
+              className="px-2.5 py-2 text-stone-400 hover:text-white text-xs"
+            >
+              Bekor
+            </button>
+          </div>
+        ) : (
+          secondaryPhone && (
+            <div className="flex items-center justify-between bg-[#150305]/70 p-2.5 rounded-xl border border-amber-500/10">
+              <span className="text-xs font-bold text-stone-200">{secondaryPhone}</span>
+              <span className="text-[10px] text-amber-400/80 bg-amber-500/10 px-2 py-0.5 rounded-md">Biriktirilgan</span>
+            </div>
+          )
+        )}
+      </div>
+
+      {/* Avtomatik GPS Lokatsiya (2 martalab tekshirish) */}
+      <div className="bg-[#28080b]/90 border border-amber-500/20 rounded-3xl p-4 shadow-md space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+              <MapPin size={16} />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-amber-200">
+                Aniq GPS Manzilingiz
+              </h3>
+              <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold mt-0.5">
+                <CheckCircle2 size={11} />
+                <span>2 marta tekshirildi (Yuqori aniqlikda)</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handleLocationRefresh}
+            disabled={isDetectingLocation}
+            className="flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 px-2.5 py-1.5 rounded-xl border border-amber-500/20 active:scale-95 transition"
+          >
+            <RotateCw size={12} className={isDetectingLocation ? 'animate-spin' : ''} />
+            <span>{isDetectingLocation ? 'Aniqlanmoqda...' : 'Qayta tekshirish'}</span>
+          </button>
+        </div>
+
+        <div className="bg-[#150305]/80 p-3 rounded-2xl border border-amber-500/10 space-y-1.5">
+          <p className="text-xs font-bold text-stone-100 leading-relaxed">
+            {deliveryAddress || 'Manzil aniqlanmoqda...'}
+          </p>
+
+          {userCoords && (
+            <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1 border-t border-white/5">
+              <span>GPS: {Number(userCoords.lat || userCoords.latitude).toFixed(5)}, {Number(userCoords.lon || userCoords.longitude).toFixed(5)}</span>
+              <a
+                href={`https://maps.google.com/?q=${userCoords.lat || userCoords.latitude},${userCoords.lon || userCoords.longitude}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-amber-400 font-bold hover:underline inline-flex items-center gap-0.5"
+              >
+                <span>Xarita</span>
+                <ExternalLink size={10} />
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Buyurtmalarim Section matching Screenshot 5 */}
+      <div className="space-y-3 pt-1">
+        <div className="flex items-center gap-2">
+          <Receipt size={17} className="text-amber-400" />
+          <h3 className="font-serif text-base font-bold text-amber-300">
+            Buyurtmalarim
+          </h3>
+        </div>
+
+        {orders.length === 0 ? (
+          <div className="bg-[#28080b]/90 border border-amber-500/15 rounded-3xl p-8 text-center space-y-1 shadow-md">
+            <p className="text-sm font-serif text-stone-300">
+              Hozircha buyurtmalar yo'q
+            </p>
+            <p className="text-xs text-stone-500">
+              Menyudan taom tanlang va buyurtma bering
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {orders.slice(0, 5).map((ord) => (
+              <div
+                key={ord.id}
+                className="bg-[#28080b]/90 border border-amber-500/15 rounded-2xl p-3.5 space-y-2 shadow-md"
+              >
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-amber-300">#{ord.id}</span>
+                  <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${
+                    ord.status === 'completed'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      : ord.status === 'delivering'
+                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                      : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                  }`}>
+                    {ord.statusText || ord.status || 'Kutilmoqda'}
+                  </span>
+                </div>
+
+                <div className="text-xs text-stone-300 space-y-0.5">
+                  {(ord.items || []).map((it, idx) => (
+                    <div key={idx} className="flex justify-between">
+                      <span>{it.quantity}x {it.name}</span>
+                      <span>{(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between text-xs font-bold pt-1 border-t border-white/5">
+                  <span className="text-stone-400">{ord.date}</span>
+                  <span className="text-amber-400 font-extrabold font-serif text-sm">
+                    {(ord.total || 0).toLocaleString('uz-UZ')} so‘m
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Aloqa Markazi Card */}
+      <div className="bg-[#28080b]/90 border border-amber-500/20 rounded-3xl p-4 shadow-md space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-xs font-bold text-amber-300">
+              Ibrohim Ota Choyxonasi
+            </h4>
+            <p className="text-[11px] text-stone-400">
+              Milliy taomlar, tandir kabob va shashlik
+            </p>
+          </div>
+          <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+            Aloqa
+          </span>
+        </div>
+
+        <div className="space-y-1.5 text-xs text-stone-300">
+          <div className="flex items-center gap-2">
+            <Clock size={13} className="text-amber-400 shrink-0" />
+            <span>Ish vaqti: 08:00 dan 23:00 gacha</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin size={13} className="text-amber-400 shrink-0" />
+            <span>Manzil: Rishton tumani, Milliy bank ro‘parasi</span>
+          </div>
+        </div>
+
+        <a
+          href="tel:+998200000149"
+          onClick={() => telegram.triggerHaptic('medium')}
+          className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2"
+        >
+          <PhoneCall size={14} />
+          <span>Qo‘ng‘iroq qilish: +998 20 000 01 49</span>
+        </a>
+      </div>
+
+      {/* Admin Panel button if authorized */}
+      {isAdmin && (
+        <button
+          onClick={() => {
+            telegram.triggerHaptic('medium');
+            setActiveTab('admin');
+          }}
+          className="w-full py-3 bg-stone-900 border border-amber-500/30 text-amber-300 font-bold text-xs rounded-2xl flex items-center justify-center gap-2"
+        >
+          <ShieldAlert size={15} />
+          <span>Admin Panel (Boshqaruv)</span>
+        </button>
       )}
     </div>
   );

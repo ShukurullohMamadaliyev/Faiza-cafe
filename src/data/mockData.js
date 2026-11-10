@@ -2,12 +2,12 @@
 import { MENU_ITEMS } from './menuData';
 
 export const CATEGORIES = [
-  { id: 'all', name: 'Barchasi', icon: '🍽️', color: 'from-amber-400 to-amber-600' },
-  { id: 'fastfood', name: 'Fastfud', icon: '🍔', color: 'from-orange-400 to-amber-500' },
-  { id: 'pizza', name: 'Pitsa', icon: '🍕', color: 'from-amber-500 to-orange-600' },
-  { id: 'hotdishes', name: 'Issiq Taomlar & Salatlar', icon: '🍲', color: 'from-emerald-500 to-teal-600' },
-  { id: 'shashlik', name: 'Shashlik Setlari', icon: '🥩', color: 'from-rose-500 to-red-600' },
-  { id: 'drinks_dessert', name: 'Ichimlik & Desert', icon: '☕', color: 'from-blue-400 to-indigo-600' },
+  { id: 'all', name: 'Barchasi', icon: '🍽️', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=300&q=80' },
+  { id: 'hotdishes', name: 'Milliy taomlar', icon: '🍲', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=300&q=80' },
+  { id: 'shashlik', name: 'Shashliklar', icon: '🥩', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=300&q=80' },
+  { id: 'fastfood', name: 'Fastfud', icon: '🍔', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=300&q=80' },
+  { id: 'pizza', name: 'Pitsa', icon: '🍕', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=300&q=80' },
+  { id: 'drinks_dessert', name: 'Ichimliklar', icon: '☕', image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=300&q=80' },
 ];
 
 export const BANNERS = [

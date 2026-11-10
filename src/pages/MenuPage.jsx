@@ -1,72 +1,76 @@
 import React from 'react';
-import Header from '../components/Header';
-import CategoryChips from '../components/CategoryChips';
 import FoodCard from '../components/FoodCard';
 import { useApp } from '../context/AppContext';
 import { CATEGORIES } from '../data/mockData';
 
 export default function MenuPage() {
-  const { productList, searchQuery, selectedCategory, t } = useApp();
+  const { productList, searchQuery, selectedCategory, setSelectedCategory, telegram } = useApp();
 
-  // Noto'g'ri toifa tushib qolmasligi uchun himoya
-  const validCategoryIds = ['fastfood', 'pizza', 'hotdishes', 'shashlik', 'drinks_dessert'];
-  const activeCategory = validCategoryIds.includes(selectedCategory) ? selectedCategory : 'all';
+  const categories = CATEGORIES.filter((c) => c.id !== 'all');
+  const activeCategory = selectedCategory === 'all' ? categories[0]?.id || 'hotdishes' : selectedCategory;
+
+  const currentCategory = categories.find((c) => c.id === activeCategory) || categories[0];
 
   const filteredProducts = productList.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    if (activeCategory === 'all') return matchesSearch;
     return matchesSearch && product.category === activeCategory;
   });
 
-  const currentCategory = CATEGORIES.find((c) => c.id === activeCategory) || CATEGORIES[0];
-  const translatedCatName = t.categories?.[currentCategory.id] || currentCategory.name;
+  const handleTabClick = (catId) => {
+    telegram.triggerHaptic('selection');
+    setSelectedCategory(catId);
+  };
 
   return (
-    <div className="pb-28">
-      {/* Top Header */}
-      <Header showSearch={true} />
+    <div className="pb-28 px-4 pt-4 space-y-4">
+      {/* Title matching Screenshot 3 */}
+      <h1 className="text-2xl font-serif font-black text-amber-400 tracking-wide">
+        Menyu
+      </h1>
 
-      {/* Sticky Category Chips */}
-      <div className="sticky top-12 z-30 bg-white shadow-xs">
-        <CategoryChips />
+      {/* Horizontal Pill Category Bar */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar bg-[#27080b]/90 p-1.5 rounded-2xl border border-amber-500/15">
+        {categories.map((cat) => {
+          const isActive = activeCategory === cat.id;
+
+          return (
+            <button
+              key={cat.id}
+              onClick={() => handleTabClick(cat.id)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 active:scale-95 ${
+                isActive
+                  ? 'bg-amber-500 text-stone-950 font-bold shadow-md shadow-amber-500/20'
+                  : 'text-stone-300 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              {cat.name}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="px-4 pt-4 space-y-4">
-        {/* Category Heading Banner */}
-        <div className="flex items-center justify-between pb-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">{currentCategory.icon}</span>
-            <h2 className="text-lg font-black text-[#991b1b]">
-              {searchQuery ? `"${searchQuery}"` : translatedCatName}
-            </h2>
-          </div>
-          <span className="text-xs font-semibold text-gray-400">
-            {filteredProducts.length} {t.dishesCount}
-          </span>
+      {/* Category Heading in gold serif */}
+      <div className="pt-1">
+        <h2 className="text-lg font-serif font-bold text-amber-300">
+          {currentCategory.name}
+        </h2>
+      </div>
+
+      {/* 2-Column Grid */}
+      {filteredProducts.length > 0 ? (
+        <div className="grid grid-cols-2 gap-3.5">
+          {filteredProducts.map((product) => (
+            <FoodCard key={product.id} product={product} />
+          ))}
         </div>
-
-        {/* 2-Column Grid */}
-        {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
-            {filteredProducts.map((product) => (
-              <FoodCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16 bg-white rounded-3xl border border-gray-100 p-6 space-y-2">
-            <div className="w-12 h-12 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mx-auto text-xl">
-              🔍
-            </div>
-            <p className="font-bold text-gray-800 text-sm">{t.cartEmpty}</p>
-            <p className="text-xs text-gray-400">
-              {t.cartEmptyDesc}
-            </p>
-          </div>
-        )}
-      </div>
+      ) : (
+        <div className="text-center py-16 text-stone-400 space-y-2">
+          <p className="text-sm font-serif text-amber-300">Bu bo‘limda hozircha taomlar yo‘q</p>
+        </div>
+      )}
     </div>
   );
 }

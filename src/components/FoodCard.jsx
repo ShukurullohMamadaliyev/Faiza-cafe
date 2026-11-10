@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Minus, Heart } from 'lucide-react';
+import { Plus, Check } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export default function FoodCard({ product }) {
@@ -7,14 +7,10 @@ export default function FoodCard({ product }) {
     setSelectedProduct,
     getProductCartCount,
     quickAddToCart,
-    quickDecrement,
-    favorites,
-    toggleFavorite,
     t,
     telegram
   } = useApp();
 
-  const isFavorite = favorites.includes(product.id);
   const cartCount = getProductCartCount(product.id);
 
   const handleCardClick = () => {
@@ -24,54 +20,17 @@ export default function FoodCard({ product }) {
 
   const handlePlus = (e) => {
     e.stopPropagation();
+    telegram.triggerHaptic('medium');
     quickAddToCart(product);
-  };
-
-  const handleMinus = (e) => {
-    e.stopPropagation();
-    quickDecrement(product.id);
   };
 
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white rounded-3xl p-3 border border-gray-100/90 shadow-card flex flex-col justify-between cursor-pointer transition-all duration-200 active:scale-98 hover:shadow-soft relative overflow-hidden group"
+      className="bg-[#28080b]/90 border border-amber-500/15 rounded-3xl p-2.5 flex flex-col justify-between cursor-pointer transition-all duration-200 active:scale-[0.98] hover:border-amber-500/30 shadow-lg shadow-black/30 relative overflow-hidden group"
     >
-      {/* Top Bar: Badge & Favorite Button */}
-      <div className="flex items-center justify-between mb-2 z-10">
-        <div>
-          {product.badge && (
-            <span
-              className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full text-white ${
-                product.isSpicy
-                  ? 'bg-red-500'
-                  : product.isNew
-                  ? 'bg-emerald-600'
-                  : product.isPromo
-                  ? 'bg-rose-600'
-                  : 'bg-amber-500'
-              } shadow-xs`}
-            >
-              {product.badge}
-            </span>
-          )}
-        </div>
-
-        <button
-          onClick={(e) => toggleFavorite(product.id, e)}
-          className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform active:scale-80 ${
-            isFavorite
-              ? 'text-red-500 bg-red-50'
-              : 'text-gray-300 hover:text-red-400 bg-gray-50'
-          }`}
-          aria-label="Sevimlilar"
-        >
-          <Heart size={15} fill={isFavorite ? '#ef4444' : 'none'} strokeWidth={2} />
-        </button>
-      </div>
-
       {/* Food Image */}
-      <div className="relative w-full aspect-square max-h-[140px] flex items-center justify-center mb-2 overflow-hidden rounded-2xl bg-gray-50">
+      <div className="relative w-full aspect-[4/3] overflow-hidden rounded-2xl bg-[#1a0507]">
         <img
           src={product.image}
           alt={product.name}
@@ -79,69 +38,50 @@ export default function FoodCard({ product }) {
           loading="lazy"
         />
 
-        {/* Out of stock overlay */}
+        {product.badge && (
+          <span className="absolute top-2 left-2 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-lg text-white bg-red-700/90 border border-amber-400/30 shadow-sm backdrop-blur-xs">
+            {product.badge}
+          </span>
+        )}
+
         {product.isOutOfStock && (
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-bold rounded-2xl">
-            {t.outOfStock}
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center text-white text-xs font-bold rounded-2xl">
+            {t.outOfStock || 'Mavjud emas'}
           </div>
         )}
       </div>
 
-      {/* Info & Pricing */}
-      <div className="space-y-1">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-[15px] font-black text-gray-900 tracking-tight">
-            {product.price.toLocaleString('uz-UZ')} {t.currency}
+      {/* Info & Title */}
+      <div className="pt-2">
+        <h4 className="text-xs font-bold text-stone-100 line-clamp-1 leading-snug">
+          {product.name}
+        </h4>
+      </div>
+
+      {/* Pricing & Add Button row */}
+      <div className="flex items-center justify-between pt-2 mt-auto">
+        <div className="flex flex-col">
+          <span className="text-[13px] font-extrabold text-amber-400 tracking-tight">
+            {product.price.toLocaleString('uz-UZ')} so‘m
           </span>
           {product.oldPrice && (
-            <span className="text-[11px] text-gray-400 line-through">
+            <span className="text-[10px] text-stone-400 line-through">
               {product.oldPrice.toLocaleString('uz-UZ')}
             </span>
           )}
         </div>
 
-        <h4 className="text-xs font-bold text-gray-800 line-clamp-1 leading-snug">
-          {product.name}
-        </h4>
-
-        {product.weight && (
-          <p className="text-[11px] text-gray-400 font-medium">
-            {product.weight}
-          </p>
-        )}
-      </div>
-
-      {/* Add / Qty Control Button (Exact layout as screenshots) */}
-      <div className="mt-2.5 pt-1 border-t border-gray-50 flex items-center justify-end">
-        {cartCount > 0 ? (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-2 bg-[#991b1b] text-white px-2.5 py-1.5 rounded-full shadow-xs text-xs font-bold"
-          >
-            <button
-              onClick={handleMinus}
-              className="w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center active:scale-75 transition"
-            >
-              <Minus size={12} strokeWidth={2.5} />
-            </button>
-            <span className="min-w-[14px] text-center">{cartCount}</span>
-            <button
-              onClick={handlePlus}
-              className="w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center active:scale-75 transition"
-            >
-              <Plus size={12} strokeWidth={2.5} />
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={handlePlus}
-            disabled={product.isOutOfStock}
-            className="w-8 h-8 rounded-full bg-red-50 hover:bg-red-600 hover:text-white text-red-800 border border-red-200/60 flex items-center justify-center active:scale-90 transition-all shadow-xs"
-            aria-label={t.addToCart}
-          >
-            <Plus size={16} strokeWidth={2.5} />
-          </button>
-        )}
+        <button
+          onClick={handlePlus}
+          className="w-8 h-8 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-90 text-stone-950 font-black text-lg flex items-center justify-center shadow-md shadow-amber-500/20 transition relative"
+          aria-label="Savatga qo‘shish"
+        >
+          {cartCount > 0 ? (
+            <span className="text-xs font-black">{cartCount}</span>
+          ) : (
+            <Plus size={18} strokeWidth={3} />
+          )}
+        </button>
       </div>
     </div>
   );
