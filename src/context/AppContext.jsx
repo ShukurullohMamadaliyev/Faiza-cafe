@@ -152,8 +152,54 @@ export function AppProvider({ children }) {
     }
   }, [orders]);
 
-  // Admin Products state
-  const [productList, setProductList] = useState(PRODUCTS);
+  // Admin Products state (LocalStorage va Cloud Menu bilan)
+  const [productList, setProductList] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('ibrohim_ota_menu_custom');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return PRODUCTS;
+  });
+
+  // Admin autentifikatsiyasi
+  const [isAdminAuth, setIsAdminAuth] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const param = new URLSearchParams(window.location.search).get('admin');
+      if (param === '8340079081' || param === '7777') return true;
+      if (localStorage.getItem('ibrohim_is_admin') === 'true') return true;
+    }
+    return telegram.user?.id == 8340079081;
+  });
+
+  const loginAdmin = (pin) => {
+    const cleanPin = (pin || '').trim();
+    if (cleanPin === '7777' || cleanPin === '1234' || cleanPin === '8340079081') {
+      setIsAdminAuth(true);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('ibrohim_is_admin', 'true');
+      }
+      telegram.triggerHaptic('success');
+      showToast('Admin panelga xush kelibsiz! 👑');
+      return true;
+    }
+    telegram.triggerHaptic('warning');
+    showToast("Noto‘g‘ri PIN-kod! (Standart PIN: 7777)");
+    return false;
+  };
+
+  const logoutAdmin = () => {
+    setIsAdminAuth(false);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('ibrohim_is_admin');
+    }
+    setActiveTab('home');
+    showToast('Admin paneldan chiqildi');
+  };
 
   // Toast notification
   const [toastMessage, setToastMessage] = useState(null);
@@ -583,15 +629,102 @@ export function AppProvider({ children }) {
     showToast(`Buyurtma #${orderId} holati: ${statusLabels[newStatus]}`);
   };
 
+  const syncMenuToServer = (newMenu, actionSummary = '') => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('ibrohim_ota_menu_custom', JSON.stringify(newMenu));
+      } catch (e) {}
+      fetch('/api/menu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ products: newMenu, actionSummary })
+      }).catch(() => {});
+    }
+  };
+
+  const addProduct = (productData) => {
+    const newId = `dish-${Date.now()}`;
+    const product = {
+      id: newId,
+      name: productData.name.trim(),
+      category: productData.category || 'hotdishes',
+      price: Number(productData.price) || 0,
+      description: (productData.description || '').trim(),
+      image: (productData.image || '').trim() || 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80',
+      badge: productData.badge || 'Yangi',
+      isOutOfStock: false,
+      isNew: true,
+      modifiers: []
+    };
+
+    setProductList(prev => {
+      const updated = [product, ...prev];
+      syncMenuToServer(updated, `➕ *Yangi taom qo'shildi:* "${product.name}" (${product.price.toLocaleString('uz-UZ')} so'm)`);
+      return updated;
+    });
+
+    telegram.triggerHaptic('success');
+    showToast(`"${product.name}" menyuga qo'shildi! 🎉`);
+    return product;
+  };
+
+  const updateProduct = (productId, updatedFields) => {
+    setProductList(prev => {
+      let changedName = '';
+      const updated = prev.map(p => {
+        if (p.id === productId) {
+          changedName = updatedFields.name || p.name;
+          return {
+            ...p,
+            ...updatedFields,
+            price: updatedFields.price !== undefined ? Number(updatedFields.price) : p.price
+          };
+        }
+        return p;
+      });
+      syncMenuToServer(updated, `✏️ *Taom tahrirlandi:* "${changedName}"`);
+      return updated;
+    });
+
+    telegram.triggerHaptic('success');
+    showToast("Taom muvaffaqiyatli saqlandi! ✅");
+  };
+
+  const deleteProduct = (productId) => {
+    setProductList(prev => {
+      const target = prev.find(p => p.id === productId);
+      const updated = prev.filter(p => p.id !== productId);
+      syncMenuToServer(updated, `🗑 *Taom o'chirildi:* "${target?.name || productId}"`);
+      return updated;
+    });
+
+    telegram.triggerHaptic('medium');
+    showToast("Taom menyudan o'chirildi");
+  };
+
   const toggleProductStock = (productId) => {
-    setProductList(prev => prev.map(p => {
-      if (p.id === productId) {
-        const isOutOfStock = !p.isOutOfStock;
-        showToast(`${p.name} - ${isOutOfStock ? 'Tugagan deb belgilandi' : 'Sotuvda mavjud'}`);
-        return { ...p, isOutOfStock };
-      }
-      return p;
-    }));
+    setProductList(prev => {
+      const updated = prev.map(p => {
+        if (p.id === productId) {
+          const nextState = !p.isOutOfStock;
+          showToast(nextState ? `"${p.name}" tugagan deb belgilandi` : `"${p.name}" mavjud deb belgilandi`);
+          return { ...p, isOutOfStock: nextState };
+        }
+        return p;
+      });
+      syncMenuToServer(updated, `🔄 *Taom mavjudligi o'zgartirildi*`);
+      return updated;
+    });
+  };
+
+  const resetMenuToDefault = () => {
+    setProductList(PRODUCTS);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('ibrohim_ota_menu_custom');
+    }
+    syncMenuToServer(PRODUCTS, '🔄 *Menyu asl holatiga qaytarildi*');
+    telegram.triggerHaptic('success');
+    showToast('Menyu asl holatiga qaytarildi');
   };
 
   return (
@@ -649,7 +782,14 @@ export function AppProvider({ children }) {
         submitOrder,
         updateOrderStatus,
         productList,
+        addProduct,
+        updateProduct,
+        deleteProduct,
         toggleProductStock,
+        resetMenuToDefault,
+        isAdminAuth,
+        loginAdmin,
+        logoutAdmin,
         toastMessage,
         showToast,
         userPhone,

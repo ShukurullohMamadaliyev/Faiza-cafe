@@ -442,19 +442,17 @@ export default function ProfilePage() {
         </a>
       </div>
 
-      {/* Admin Panel button if authorized */}
-      {isAdmin && (
-        <button
-          onClick={() => {
-            telegram.triggerHaptic('medium');
-            setActiveTab('admin');
-          }}
-          className="w-full py-3 bg-stone-900 border border-amber-500/30 text-amber-300 font-bold text-xs rounded-2xl flex items-center justify-center gap-2"
-        >
-          <ShieldAlert size={15} />
-          <span>Admin Panel (Boshqaruv)</span>
-        </button>
-      )}
+      {/* Admin Panel tugmasi (Boshqaruv, taomlar va narxlar) */}
+      <button
+        onClick={() => {
+          telegram.triggerHaptic('medium');
+          setActiveTab('admin');
+        }}
+        className="w-full py-3.5 bg-gradient-to-r from-[#28080b] to-[#1c0507] hover:from-[#350a0f] hover:to-[#24070a] border border-amber-500/30 text-amber-300 font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-98 transition"
+      >
+        <ShieldAlert size={16} className="text-amber-400" />
+        <span>👑 Admin Panel (Taomlar va Narxlar)</span>
+      </button>
     </div>
   );
 }
