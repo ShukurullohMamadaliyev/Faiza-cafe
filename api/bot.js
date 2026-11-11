@@ -91,11 +91,6 @@ function getMainKeyboard(userId) {
     }
   }
 
-  // Faqat ruxsat etilgan adminlar (8340079081 va b.) uchun admin parametri
-  if (ADMIN_IDS.includes(String(userId))) {
-    queryParts.push(`admin=${encodeURIComponent(userId)}`);
-  }
-
   if (queryParts.length > 0) {
     const sep = appUrl.includes('?') ? '&' : '?';
     appUrl = `${appUrl}${sep}${queryParts.join('&')}`;
@@ -135,10 +130,6 @@ function getInlineActionKeyboard(userId = 0) {
     if (user.name) {
       queryParts.push(`name=${encodeURIComponent(user.name)}`);
     }
-  }
-
-  if (ADMIN_IDS.includes(String(userId))) {
-    queryParts.push(`admin=${encodeURIComponent(userId)}`);
   }
 
   if (queryParts.length > 0) {

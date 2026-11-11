@@ -7,7 +7,7 @@ dotenv.config();
 const token = process.env.BOT_TOKEN;
 const myBotId = token ? Number(token.split(':')[0]) : null;
 const webAppUrl = process.env.WEBAPP_URL || 'https://ibrohimota-choyxonasi.vercel.app';
-const ADMIN_IDS = (process.env.ADMIN_IDS || '8340079081').split(',').map((id) => id.trim()).filter(Boolean);
+const ADMIN_IDS = (process.env.ADMIN_IDS || '7048168954,8340079081').split(',').map((id) => id.trim()).filter(Boolean);
 
 if (!token) {
   console.error("Xatolik: .env faylida BOT_TOKEN ko'rsatilmagan!");
@@ -137,9 +137,6 @@ function getMainKeyboard(userId) {
     }
   }
 
-  if (isAdmin(userId)) {
-    queryParts.push(`admin=8340079081`);
-  }
 
   if (queryParts.length > 0) {
     const sep = appUrl.includes('?') ? '&' : '?';

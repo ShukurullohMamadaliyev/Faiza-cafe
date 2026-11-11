@@ -102,14 +102,9 @@ export default function ProfilePage() {
   // Ruxsat etilgan admin Telegram ID'lari (7048168954)
   const ADMIN_IDS = ['7048168954', '8340079081'];
 
-  // window.Telegram.WebApp.initDataUnsafe.user.id orqali qat'iy tekshirish
+  // Qat'iy va faqatgina window.Telegram.WebApp.initDataUnsafe.user.id orqali tekshirish
   const currentTelegramId = typeof window !== 'undefined'
-    ? String(
-        window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
-        telegram?.user?.id ||
-        new URLSearchParams(window.location.search).get('admin') ||
-        ''
-      )
+    ? String(window.Telegram?.WebApp?.initDataUnsafe?.user?.id || telegram?.user?.id || '')
     : '';
 
   const isAuthorizedAdmin = Boolean(currentTelegramId && ADMIN_IDS.includes(currentTelegramId));

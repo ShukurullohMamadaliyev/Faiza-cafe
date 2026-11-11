@@ -168,34 +168,25 @@ export function AppProvider({ children }) {
     return PRODUCTS;
   });
 
-  // Admin tekshiruvi: faqat ruxsat etilgan Telegram ID'lar (7048168954 va b.)
+  // Admin tekshiruvi: faqat ruxsat etilgan Telegram ID'lar (7048168954 va 8340079081)
   const isAdmin = useMemo(() => {
-    let currentUserId = '';
-    if (typeof window !== 'undefined') {
-      currentUserId = String(
-        window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
-        telegram.user?.id ||
-        new URLSearchParams(window.location.search).get('admin') ||
-        ''
-      );
-    } else {
-      currentUserId = String(telegram.user?.id || '');
-    }
+    if (typeof window === 'undefined') return false;
+    const currentUserId = String(
+      window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
+      telegram.user?.id ||
+      ''
+    );
     return Boolean(currentUserId && ADMIN_IDS.includes(currentUserId));
   }, [telegram.user?.id]);
 
   // Admin autentifikatsiyasi
   const [isAdminAuth, setIsAdminAuth] = useState(() => {
-    let currentId = '';
-    if (typeof window !== 'undefined') {
-      currentId = String(
-        window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
-        new URLSearchParams(window.location.search).get('admin') ||
-        ''
-      );
-      if (currentId && ADMIN_IDS.includes(currentId)) return true;
-      if (localStorage.getItem('ibrohim_is_admin') === 'true') return true;
-    }
+    if (typeof window === 'undefined') return false;
+    const currentId = String(
+      window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
+      telegram.user?.id ||
+      ''
+    );
     return Boolean(currentId && ADMIN_IDS.includes(currentId));
   });
 
@@ -297,11 +288,8 @@ export function AppProvider({ children }) {
         localStorage.setItem('ibrohim_ota_user_name', nameParam);
       }
 
-      // Admin tekshiruvi (8340079081)
-      if (adminParam === '8340079081' || telegram.user?.id == 8340079081) {
-        if (adminParam === '8340079081') {
-          setActiveTab('admin');
-        }
+      if (!isAdmin) {
+        localStorage.removeItem('ibrohim_is_admin');
       }
 
       if (tabParam) {
