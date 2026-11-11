@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Plus,
@@ -16,6 +16,10 @@ import {
   Sparkles,
   Loader2,
   Crop,
+  PhoneCall,
+  RefreshCw,
+  TrendingUp,
+  MapPin,
   Image as ImageIcon
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -26,6 +30,11 @@ import ImageCropperModal from '../components/ImageCropperModal';
 export default function AdminPage() {
   const {
     orders,
+    adminOrders,
+    adminKassaStats,
+    isLoadingAdminOrders,
+    fetchAdminOrders,
+    updateAdminOrderStatus,
     productList,
     addProduct,
     updateProduct,
@@ -42,6 +51,7 @@ export default function AdminPage() {
   } = useApp();
 
   const [activeAdminTab, setActiveAdminTab] = useState('menu'); // 'menu' | 'orders'
+  const [orderPeriodFilter, setOrderPeriodFilter] = useState('today'); // 'today' | 'week' | 'all'
   const [pinInput, setPinInput] = useState('');
   const [menuSearch, setMenuSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -205,7 +215,50 @@ export default function AdminPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const newOrdersCount = orders.filter((o) => o.status === 'new').length;
+  // O'zbekiston vaqti bo'yicha bugungi sana (YYYY-MM-DD)
+  const todayDateStr = (() => {
+    const d = new Date();
+    const uz = new Date(d.getTime() + (5 * 60 + d.getTimezoneOffset()) * 60000);
+    return `${uz.getFullYear()}-${String(uz.getMonth() + 1).padStart(2, '0')}-${String(uz.getDate()).padStart(2, '0')}`;
+  })();
+
+  // Barcha mijozlarning buyurtmalari ro'yxati (Markaziy kassa bazasi, 7 kunlik)
+  const allOrdersList = Array.isArray(adminOrders) && adminOrders.length > 0 ? adminOrders : orders;
+
+  const todayOrders = allOrdersList.filter((o) => {
+    const oDate = o.date || '';
+    if (oDate.startsWith(todayDateStr)) return true;
+    if (o.timestamp) {
+      const d = new Date(o.timestamp);
+      const uz = new Date(d.getTime() + (5 * 60 + d.getTimezoneOffset()) * 60000);
+      const uzStr = `${uz.getFullYear()}-${String(uz.getMonth() + 1).padStart(2, '0')}-${String(uz.getDate()).padStart(2, '0')}`;
+      return uzStr === todayDateStr;
+    }
+    return false;
+  });
+
+  const weekOrders = allOrdersList;
+
+  const displayedOrders =
+    orderPeriodFilter === 'today'
+      ? todayOrders
+      : orderPeriodFilter === 'week'
+      ? weekOrders
+      : allOrdersList;
+
+  const currentPeriodTotal = displayedOrders
+    .filter((o) => o.status !== 'cancelled')
+    .reduce((acc, o) => acc + (Number(o.total) || 0), 0);
+
+  const todayKassaSum = adminKassaStats?.todayTotal || todayOrders
+    .filter((o) => o.status !== 'cancelled')
+    .reduce((acc, o) => acc + (Number(o.total) || 0), 0);
+
+  const weekKassaSum = adminKassaStats?.weekTotal || weekOrders
+    .filter((o) => o.status !== 'cancelled')
+    .reduce((acc, o) => acc + (Number(o.total) || 0), 0);
+
+  const newOrdersCount = allOrdersList.filter((o) => o.status === 'new').length;
 
   const handleOpenAddModal = () => {
     setFormData({
@@ -298,21 +351,32 @@ export default function AdminPage() {
       </div>
 
       <div className="p-4 space-y-4">
-        {/* KPI Cards */}
+        {/* KPI Cards: Taomlar, Bugungi Kassa, 7 Kunlik Kassa */}
         <div className="grid grid-cols-3 gap-2">
-          <div className="bg-[#28080b]/90 border border-amber-500/20 p-3 rounded-2xl shadow-sm">
+          <div className="bg-[#28080b]/90 border border-amber-500/20 p-2.5 rounded-2xl shadow-sm flex flex-col justify-between">
             <span className="text-[10px] text-stone-400 font-semibold block">Taomlar</span>
-            <span className="text-base font-serif font-black text-amber-300">{productList.length} ta</span>
+            <span className="text-sm font-serif font-black text-amber-300 mt-1">{productList.length} ta</span>
+            <span className="text-[9px] text-stone-500 block mt-0.5">Sotuvda faol</span>
           </div>
 
-          <div className="bg-[#28080b]/90 border border-amber-500/20 p-3 rounded-2xl shadow-sm">
-            <span className="text-[10px] text-stone-400 font-semibold block">Yangi lid</span>
-            <span className="text-base font-serif font-black text-amber-400">{newOrdersCount} ta</span>
+          <div className="bg-[#28080b]/90 border border-amber-500/25 p-2.5 rounded-2xl shadow-sm flex flex-col justify-between">
+            <span className="text-[10px] text-amber-300 font-semibold block">Bugungi Kassa</span>
+            <span className="text-xs font-serif font-black text-amber-400 mt-1 truncate">
+              {todayKassaSum.toLocaleString('uz-UZ')} so‘m
+            </span>
+            <span className="text-[9px] text-amber-300/80 font-bold block mt-0.5">
+              {todayOrders.length} ta buyurtma
+            </span>
           </div>
 
-          <div className="bg-[#28080b]/90 border border-amber-500/20 p-3 rounded-2xl shadow-sm">
-            <span className="text-[10px] text-stone-400 font-semibold block">Buyurtmalar</span>
-            <span className="text-base font-serif font-black text-stone-100">{orders.length} ta</span>
+          <div className="bg-[#28080b]/90 border border-amber-500/20 p-2.5 rounded-2xl shadow-sm flex flex-col justify-between">
+            <span className="text-[10px] text-stone-400 font-semibold block">7 kunlik Kassa</span>
+            <span className="text-xs font-serif font-black text-stone-100 mt-1 truncate">
+              {weekKassaSum.toLocaleString('uz-UZ')} so‘m
+            </span>
+            <span className="text-[9px] text-stone-400 block mt-0.5">
+              {weekOrders.length} ta buyurtma
+            </span>
           </div>
         </div>
 
@@ -331,14 +395,17 @@ export default function AdminPage() {
           </button>
 
           <button
-            onClick={() => setActiveAdminTab('orders')}
+            onClick={() => {
+              setActiveAdminTab('orders');
+              fetchAdminOrders();
+            }}
             className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 ${
               activeAdminTab === 'orders'
                 ? 'bg-amber-500 text-stone-950 font-black shadow-sm'
                 : 'text-stone-400 hover:text-white'
             }`}
           >
-            <span>Buyurtmalar ({orders.length})</span>
+            <span>Kassa & Buyurtmalar ({todayOrders.length})</span>
           </button>
         </div>
 
@@ -571,64 +638,314 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 2: ORDERS DASHBOARD */}
+        {/* TAB 2: ORDERS & CASHIER (KASSA) DASHBOARD */}
         {activeAdminTab === 'orders' && (
-          <div className="space-y-3">
-            {orders.length === 0 ? (
-              <div className="p-8 text-center text-stone-500 bg-[#28080b]/50 rounded-3xl border border-amber-500/15">
-                Hozircha buyurtmalar yo'q
-              </div>
-            ) : (
-              orders.map((order) => (
-                <div
-                  key={order.id}
-                  className="bg-[#28080b]/90 border border-amber-500/20 rounded-2xl p-3.5 space-y-2.5 shadow-md"
+          <div className="space-y-3.5 animate-fadeIn">
+            {/* Period Filters & Refresh Button */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 p-1 bg-[#28080b]/90 border border-amber-500/20 rounded-2xl text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => setOrderPeriodFilter('today')}
+                  className={`px-3 py-1.5 rounded-xl transition ${
+                    orderPeriodFilter === 'today'
+                      ? 'bg-amber-500 text-stone-950 font-black shadow-sm'
+                      : 'text-stone-400 hover:text-white'
+                  }`}
                 >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <span className="font-serif font-black text-sm text-amber-300">
-                        Buyurtma #{order.id}
-                      </span>
-                      <span className="text-[11px] text-stone-400 block">{order.date}</span>
-                    </div>
+                  Bugun ({todayOrders.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOrderPeriodFilter('week')}
+                  className={`px-3 py-1.5 rounded-xl transition ${
+                    orderPeriodFilter === 'week'
+                      ? 'bg-amber-500 text-stone-950 font-black shadow-sm'
+                      : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  Oxirgi 7 kun ({weekOrders.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOrderPeriodFilter('all')}
+                  className={`px-3 py-1.5 rounded-xl transition ${
+                    orderPeriodFilter === 'all'
+                      ? 'bg-amber-500 text-stone-950 font-black shadow-sm'
+                      : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  Barchasi
+                </button>
+              </div>
 
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                      {order.orderTypeName || order.orderType}
-                    </span>
+              <button
+                type="button"
+                onClick={() => {
+                  telegram.triggerHaptic('light');
+                  fetchAdminOrders();
+                }}
+                disabled={isLoadingAdminOrders}
+                className="p-2.5 bg-[#28080b] hover:bg-[#340c10] text-amber-300 border border-amber-500/25 rounded-2xl active:scale-95 transition flex items-center justify-center shrink-0 shadow-sm"
+                title="Yangilash"
+              >
+                <RefreshCw size={15} className={isLoadingAdminOrders ? 'animate-spin text-amber-400' : ''} />
+              </button>
+            </div>
+
+            {/* Kassa Dashboard Summary Card */}
+            <div className="bg-gradient-to-br from-[#30090d] via-[#24070a] to-[#1a0406] border border-amber-500/30 rounded-3xl p-4 shadow-xl space-y-3 relative overflow-hidden">
+              <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+              <div className="flex items-center justify-between border-b border-amber-500/15 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center">
+                    <TrendingUp size={16} />
                   </div>
-
-                  <div className="bg-[#150305]/70 p-2.5 rounded-xl text-xs space-y-1">
-                    <div className="font-bold text-stone-200">
-                      {order.customer?.name} • {order.customer?.phone}
-                    </div>
-                    {order.customer?.address && (
-                      <div className="text-[11px] text-stone-400">📍 {order.customer.address}</div>
-                    )}
-                  </div>
-
-                  <div className="space-y-1 text-xs">
-                    {(order.items || []).map((it, idx) => (
-                      <div key={idx} className="flex justify-between text-stone-300">
-                        <span>
-                          {it.quantity}x {it.name}
-                        </span>
-                        <span className="font-bold text-amber-300">
-                          {(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="pt-2 border-t border-white/5 flex items-center justify-between">
-                    <span className="text-xs font-black text-amber-400">
-                      Jami: {(order.total || 0).toLocaleString('uz-UZ')} so‘m
-                    </span>
-                    <span className="text-xs font-bold text-stone-400">
-                      {order.paymentMethod || 'Naqd'}
-                    </span>
+                  <div>
+                    <h3 className="font-serif font-black text-sm text-amber-300">
+                      {orderPeriodFilter === 'today' ? 'Bugungi Kassa Tushumi' : '7 Kunlik Kassa Tushumi'}
+                    </h3>
+                    <p className="text-[10px] text-stone-400">
+                      {orderPeriodFilter === 'today' ? 'Bugun amalga oshirilgan buyurtmalar' : 'Oxirgi 1 haftalik barcha buyurtmalar'}
+                    </p>
                   </div>
                 </div>
-              ))
+
+                <div className="text-right">
+                  <span className="text-[10px] font-semibold text-stone-400 block">Kassa summasi</span>
+                  <span className="text-sm font-serif font-black text-amber-400">
+                    {currentPeriodTotal.toLocaleString('uz-UZ')} so‘m
+                  </span>
+                </div>
+              </div>
+
+              {/* Status Breakdown Pills */}
+              <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
+                <div className="bg-[#150305]/70 border border-amber-500/15 rounded-xl p-1.5">
+                  <span className="text-stone-400 block">Jami</span>
+                  <span className="font-black text-stone-100 text-xs">{displayedOrders.length} ta</span>
+                </div>
+                <div className="bg-[#150305]/70 border border-amber-500/15 rounded-xl p-1.5">
+                  <span className="text-amber-400 block">Oshxona</span>
+                  <span className="font-black text-amber-300 text-xs">
+                    {displayedOrders.filter((o) => o.status === 'preparing' || o.status === 'new').length} ta
+                  </span>
+                </div>
+                <div className="bg-[#150305]/70 border border-emerald-500/20 rounded-xl p-1.5">
+                  <span className="text-emerald-400 block">Yetkazildi</span>
+                  <span className="font-black text-emerald-300 text-xs">
+                    {displayedOrders.filter((o) => o.status === 'completed').length} ta
+                  </span>
+                </div>
+                <div className="bg-[#150305]/70 border border-red-500/20 rounded-xl p-1.5">
+                  <span className="text-red-400 block">Bekor</span>
+                  <span className="font-black text-red-300 text-xs">
+                    {displayedOrders.filter((o) => o.status === 'cancelled').length} ta
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-[10px] text-stone-400 pt-0.5">
+                <span>⏱ 7 kundan keyin eski buyurtmalar avtomatik tozalanadi</span>
+                <span className="text-amber-400/80 font-bold">Ibrohim Ota Kassa tizimi</span>
+              </div>
+            </div>
+
+            {/* Orders Cards List */}
+            {displayedOrders.length === 0 ? (
+              <div className="p-8 text-center text-stone-400 bg-[#28080b]/50 rounded-3xl border border-amber-500/15 space-y-2">
+                <span className="text-3xl block">🧾</span>
+                <p className="text-xs font-bold text-amber-300">
+                  {orderPeriodFilter === 'today' ? 'Bugun hali buyurtmalar tushmadi' : 'Buyurtmalar topilmadi'}
+                </p>
+                <p className="text-[11px] text-stone-500">
+                  Mijozlar buyurtma berishi bilan bu yerda kassa hisob-kitobi va chek ko‘rinishida chiqadi.
+                </p>
+              </div>
+            ) : (
+              displayedOrders.map((order) => {
+                const statusStyles = {
+                  new: { label: '🟡 Yangi qabul qilindi', bg: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+                  preparing: { label: '🍳 Oshxonada tayyorlanmoqda', bg: 'bg-blue-500/15 text-blue-300 border-blue-500/30' },
+                  delivering: { label: '🛵 Yetkazilmoqda (Kuryer)', bg: 'bg-purple-500/15 text-purple-300 border-purple-500/30' },
+                  completed: { label: '✅ Yetkazildi', bg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
+                  cancelled: { label: '❌ Bekor qilindi', bg: 'bg-red-500/15 text-red-400 border-red-500/30' }
+                };
+                const currentStatus = statusStyles[order.status] || statusStyles.new;
+                const phone = order.customer?.phone || '';
+
+                return (
+                  <div
+                    key={order.id}
+                    className="bg-[#28080b]/90 border border-amber-500/20 rounded-3xl p-4 space-y-3 shadow-md hover:border-amber-500/35 transition"
+                  >
+                    {/* Order Top: ID, Date & Type */}
+                    <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-serif font-black text-sm text-amber-300">
+                            Buyurtma #{order.id}
+                          </span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                            {order.orderTypeName || order.orderType}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-stone-400 block mt-0.5">{order.date}</span>
+                      </div>
+
+                      <span className={`text-[10px] font-black px-2 py-1 rounded-xl border ${currentStatus.bg}`}>
+                        {currentStatus.label}
+                      </span>
+                    </div>
+
+                    {/* Customer Info Card with Direct Call Button */}
+                    <div className="bg-[#150305]/75 p-3 rounded-2xl border border-white/5 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-xs font-black text-stone-100 block">
+                            👤 {order.customer?.name || 'Mijoz'}
+                          </span>
+                          {phone && (
+                            <span className="text-xs text-amber-300 font-mono block mt-0.5">
+                              📞 {phone}
+                            </span>
+                          )}
+                        </div>
+
+                        {phone && (
+                          <a
+                            href={`tel:${phone.replace(/\s+/g, '')}`}
+                            onClick={() => telegram.triggerHaptic('medium')}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition"
+                          >
+                            <PhoneCall size={13} />
+                            <span>Qo‘ng‘iroq</span>
+                          </a>
+                        )}
+                      </div>
+
+                      {order.customer?.address && (
+                        <div className="text-[11px] text-stone-300 flex items-start gap-1 pt-1 border-t border-white/5">
+                          <MapPin size={13} className="text-amber-400 shrink-0 mt-0.5" />
+                          <span className="flex-1">{order.customer.address}</span>
+                          {order.mapsUrl && (
+                            <a
+                              href={order.mapsUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[10px] text-amber-400 underline shrink-0 ml-1"
+                            >
+                              Xarita ↗
+                            </a>
+                          )}
+                        </div>
+                      )}
+
+                      {order.customer?.table && (
+                        <div className="text-[11px] text-amber-300 font-bold">
+                          🍽 Stol: #{order.customer.table}-stol
+                        </div>
+                      )}
+
+                      {order.customer?.note && (
+                        <div className="text-[10px] text-stone-400 italic">
+                          💬 Izoh: {order.customer.note}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Items List (Receipt) */}
+                    <div className="space-y-1.5 text-xs bg-[#150305]/40 p-2.5 rounded-xl border border-white/5">
+                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block mb-1">
+                        Taomlar:
+                      </span>
+                      {(order.items || []).map((it, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-stone-300">
+                          <span className="truncate pr-2">
+                            <b className="text-amber-300">{it.quantity}x</b> {it.name}
+                          </span>
+                          <span className="font-bold text-amber-400 shrink-0">
+                            {(it.price * it.quantity).toLocaleString('uz-UZ')} so‘m
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Total & Payment method */}
+                    <div className="pt-1 flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] text-stone-400 block">Jami to‘lov:</span>
+                        <span className="text-sm font-black text-amber-300">
+                          {(order.total || 0).toLocaleString('uz-UZ')} so‘m
+                        </span>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="text-[10px] text-stone-400 block">To‘lov turi:</span>
+                        <span className="text-xs font-bold text-stone-200">
+                          💵 {order.paymentMethod || 'Naqd'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Status Action Buttons for Quick Change */}
+                    <div className="pt-2 border-t border-white/5 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                      <button
+                        type="button"
+                        onClick={() => updateAdminOrderStatus(order.id, 'preparing', 'Oshxonada tayyorlanmoqda')}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shrink-0 ${
+                          order.status === 'preparing'
+                            ? 'bg-blue-600 text-white ring-2 ring-blue-400/30'
+                            : 'bg-white/5 text-stone-300 hover:bg-white/10'
+                        }`}
+                      >
+                        🍳 Oshxona
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => updateAdminOrderStatus(order.id, 'delivering', 'Yetkazilmoqda (Kuryerda)')}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shrink-0 ${
+                          order.status === 'delivering'
+                            ? 'bg-purple-600 text-white ring-2 ring-purple-400/30'
+                            : 'bg-white/5 text-stone-300 hover:bg-white/10'
+                        }`}
+                      >
+                        🛵 Kuryerda
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => updateAdminOrderStatus(order.id, 'completed', 'Yetkazildi')}
+                        className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shrink-0 ${
+                          order.status === 'completed'
+                            ? 'bg-emerald-600 text-white ring-2 ring-emerald-400/30'
+                            : 'bg-white/5 text-stone-300 hover:bg-white/10'
+                        }`}
+                      >
+                        ✅ Yetkazildi
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`Buyurtma #${order.id} ni bekor qilishni tasdiqlaysizmi?`)) {
+                            updateAdminOrderStatus(order.id, 'cancelled', 'Bekor qilindi');
+                          }
+                        }}
+                        className={`py-1.5 px-2.5 rounded-xl text-[10px] font-bold transition shrink-0 ${
+                          order.status === 'cancelled'
+                            ? 'bg-red-600 text-white'
+                            : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                        }`}
+                      >
+                        ❌ Bekor
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
             )}
           </div>
         )}

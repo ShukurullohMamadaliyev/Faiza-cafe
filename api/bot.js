@@ -4,6 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 import { SEED_USERS } from './usersDb.js';
+import { addOrderToDb, updateOrderStatusInDb } from './ordersDb.js';
 
 const _SEC_TOKEN = Buffer.from('ODUxOTE0NDgwODpBQUdaNzJ5Vm9MM3dCN3BYOFdHcllmVWp3R0ZaeXZrNHYwdw==', 'base64').toString('utf-8');
 const token = (process.env.BOT_TOKEN && !process.env.BOT_TOKEN.startsWith('9229821218'))
@@ -352,6 +353,7 @@ Oshpazlarimiz taomni tayyorlashni boshlashdi. Tashrifingizdan mamnunmiz! 🫖✨
       });
 
       await sendOrderToGroup(order, chatId);
+      addOrderToDb(order).catch(() => {});
     } catch (e) {
       console.error('Web App data parse error:', e);
     }
@@ -570,6 +572,9 @@ async function handleCallbackQuery(query) {
       callback_query_id: query.id,
       text: `Buyurtma #${orderId}: ${statusObj.statusText} (${senderName})`
     });
+
+    // Markaziy kassa bazasidagi buyurtma holatini ham yangilash
+    updateOrderStatusInDb(orderId, statusObj.key, statusObj.statusText).catch(() => {});
 
     const now = new Date();
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;

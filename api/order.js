@@ -1,5 +1,7 @@
 // Vercel Serverless Function: /api/order
-// Ibrohim Ota Choyxonasi - Telegram Admin Alert
+// Ibrohim Ota Choyxonasi - Telegram Admin Alert & Central Cloud Orders Storage
+
+import { addOrderToDb } from './ordersDb.js';
 
 export default async function handler(req, res) {
   // CORS sozlamalari
@@ -46,6 +48,13 @@ export default async function handler(req, res) {
 
     if (!order || !order.id) {
       return res.status(400).json({ error: 'Order data required' });
+    }
+
+    // Markaziy bulutli buyurtmalar bazasiga saqlash (Kassa tizimi uchun 7 kunlik doimiy saqlash)
+    try {
+      await addOrderToDb(order);
+    } catch (dbErr) {
+      console.warn('Orders DB save error in /api/order:', dbErr.message);
     }
 
     const cleanId = String(order.id).replace(/^FC-/, '');

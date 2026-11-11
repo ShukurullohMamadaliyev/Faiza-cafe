@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { PRODUCTS, BRANCHES, INITIAL_ORDERS } from '../data/mockData';
 import { translations } from '../data/translations';
 import { useTelegram } from '../hooks/useTelegram';
@@ -153,6 +153,55 @@ export function AppProvider({ children }) {
       }
     }
   }, [orders]);
+
+  // Admin Kassa & Barcha mijozlar buyurtmalari (Markaziy bulutli baza, 7 kunlik doimiy saqlash)
+  const [adminOrders, setAdminOrders] = useState([]);
+  const [adminKassaStats, setAdminKassaStats] = useState({
+    todayCount: 0,
+    todayTotal: 0,
+    todayCompletedTotal: 0,
+    weekCount: 0,
+    weekTotal: 0,
+    newCount: 0
+  });
+  const [isLoadingAdminOrders, setIsLoadingAdminOrders] = useState(false);
+
+  const fetchAdminOrders = useCallback(async () => {
+    try {
+      setIsLoadingAdminOrders(true);
+      const res = await fetch('/api/orders');
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.orders)) {
+        setAdminOrders(data.orders);
+        if (data.stats) setAdminKassaStats(data.stats);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch admin orders:', err);
+    } finally {
+      setIsLoadingAdminOrders(false);
+    }
+  }, []);
+
+  const updateAdminOrderStatus = async (orderId, newStatus, statusText) => {
+    telegram.triggerHaptic('medium');
+    setAdminOrders((prev) =>
+      prev.map((o) =>
+        String(o.id) === String(orderId) ? { ...o, status: newStatus, statusText: statusText || newStatus } : o
+      )
+    );
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update_status', orderId, status: newStatus, statusText })
+      });
+      const data = await res.json();
+      if (data.ok && data.stats) {
+        setAdminKassaStats(data.stats);
+      }
+    } catch (e) {}
+    showToast(`Buyurtma #${orderId} holati: ${statusText || newStatus}`);
+  };
 
   // Admin Products state (LocalStorage va Cloud Menu bilan)
   const [productList, setProductList] = useState(() => {
@@ -379,6 +428,9 @@ export function AppProvider({ children }) {
       .catch((err) => {
         console.warn('Bulutli menyuni yuklashda xatolik:', err);
       });
+
+    // Markaziy kassa buyurtmalarini yuklash
+    fetchAdminOrders();
 
     if (!savedAddress) {
       // Birinchi marta kirganda 500ms kutib avtomatik GPS ruxsatini so'raymiz
@@ -646,13 +698,19 @@ export function AppProvider({ children }) {
     setIsCheckoutOpen(false);
     clearCart();
 
-    // Serverless API orqali Admin (8340079081)ga buyurtma yuborish
+    // Serverless API orqali Admin (8340079081)ga buyurtma yuborish va kassa bazasiga saqlash
     try {
       fetch('/api/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newOrder)
-      }).catch(err => console.warn('Order API error:', err));
+      }).catch((err) => console.warn('Order API error:', err));
+
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'create', order: newOrder })
+      }).catch(() => {});
     } catch (e) {
       console.warn('Order API fetch error:', e);
     }
@@ -865,6 +923,11 @@ export function AppProvider({ children }) {
         placedOrder,
         setPlacedOrder,
         orders,
+        adminOrders,
+        adminKassaStats,
+        isLoadingAdminOrders,
+        fetchAdminOrders,
+        updateAdminOrderStatus,
         submitOrder,
         updateOrderStatus,
         productList,
