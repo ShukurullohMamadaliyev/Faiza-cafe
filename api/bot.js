@@ -25,7 +25,7 @@ function getOrderGroupId() {
       if (cfg?.groupId) return cfg.groupId;
     }
   } catch (e) {}
-  return '-5370487830';
+  return '-1004467874001';
 }
 
 function saveCurrentGroup(chatId, title) {

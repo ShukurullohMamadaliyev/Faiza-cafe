@@ -34,7 +34,7 @@ function getGroupConfig() {
   if (process.env.ORDER_GROUP_ID) {
     return { groupId: process.env.ORDER_GROUP_ID, groupTitle: 'Dastafka buyurtmalar' };
   }
-  return { groupId: '-5370487830', groupTitle: 'Dastafka buyurtmalar' };
+  return { groupId: '-1004467874001', groupTitle: 'Dastafka buyurtmalar' };
 }
 
 function saveGroupConfig(config) {
