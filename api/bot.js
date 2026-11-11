@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { SEED_USERS } from './usersDb.js';
 
-const token = process.env.BOT_TOKEN || '9229821218:AAGEk0sZA4W27UIw5Sbh4E2bADK6IpQZ6G8';
+const token = process.env.BOT_TOKEN || '8519144808:AAGZ72yVoL3wB7pX8WGrYfUjwGFZyvk4v0w';
 const myBotId = token ? Number(token.split(':')[0]) : null;
 const webAppUrl = process.env.WEBAPP_URL || 'https://ibrohimota-choyxonasi.vercel.app';
 const ADMIN_IDS = (process.env.ADMIN_IDS || '7048168954,8340079081').split(',').map((id) => id.trim()).filter(Boolean);

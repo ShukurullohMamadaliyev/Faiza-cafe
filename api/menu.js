@@ -5,7 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const token = process.env.BOT_TOKEN || '9229821218:AAGEk0sZA4W27UIw5Sbh4E2bADK6IpQZ6G8';
+const token = process.env.BOT_TOKEN || '8519144808:AAGZ72yVoL3wB7pX8WGrYfUjwGFZyvk4v0w';
 const groupId = process.env.ORDER_GROUP_ID || '-5370487830';
 const API_BASE = `https://api.telegram.org/bot${token}`;
 const TMP_FILE = '/tmp/ibrohim_menu_db.json';
