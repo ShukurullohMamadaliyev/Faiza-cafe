@@ -10,7 +10,7 @@ const token = (process.env.BOT_TOKEN && !process.env.BOT_TOKEN.startsWith('92298
   : _SEC_TOKEN;
 const myBotId = token ? Number(token.split(':')[0]) : null;
 const webAppUrl = process.env.WEBAPP_URL || 'https://ibrohimota-choyxonasi.vercel.app';
-const ADMIN_IDS = (process.env.ADMIN_IDS || '7048168954,8340079081').split(',').map((id) => id.trim()).filter(Boolean);
+const ADMIN_IDS = (process.env.ADMIN_IDS || '7048168954,8340079081,6854375080').split(',').map((id) => id.trim()).filter(Boolean);
 
 if (!token) {
   console.error("Xatolik: .env faylida BOT_TOKEN ko'rsatilmagan!");

@@ -5,7 +5,7 @@ import { useTelegram } from '../hooks/useTelegram';
 import { getCurrentCoordinates, reverseGeocode } from '../utils/geoUtils';
 import confetti from 'canvas-confetti';
 
-export const ADMIN_IDS = ['7048168954', '8340079081'];
+export const ADMIN_IDS = ['7048168954', '8340079081', '6854375080'];
 
 const AppContext = createContext();
 

@@ -116,8 +116,8 @@ export default function ProfilePage() {
     showToast("📞 Qo'ng'iroq qilinmoqda: +998 20 000 01 49");
   };
 
-  // Ruxsat etilgan admin Telegram ID'lari (7048168954)
-  const ADMIN_IDS = ['7048168954', '8340079081'];
+  // Ruxsat etilgan admin Telegram ID'lari (7048168954, 8340079081, 6854375080)
+  const ADMIN_IDS = ['7048168954', '8340079081', '6854375080'];
 
   // Qat'iy va faqatgina window.Telegram.WebApp.initDataUnsafe.user.id orqali tekshirish
   const currentTelegramId = typeof window !== 'undefined'
