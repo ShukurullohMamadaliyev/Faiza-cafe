@@ -31,11 +31,7 @@ async function setup() {
   console.log("   FAIZA CAFE - TELEGRAM BOT PROFILE SOZLANMOQDA  ");
   console.log("==================================================");
 
-  // 1. Bot Nomi (Title)
-  const nameRes = await callApi('setMyName', {
-    name: 'Faiza Cafe | Rishton 🍔🍕'
-  });
-  console.log('1. Bot nomi o‘rnatildi:', nameRes.ok ? '✅ OK' : nameRes.description);
+  // 1. Bot Nomi saqlanadi (o'zgartirilmaydi)
 
   // 2. Short Description (Bio / About - Botga kirmasdan oldin ko'rinadigan qism)
   const shortDesc = "Faiza Cafe (Rishton) — Mazali fastfud, pitsa, shashlik va bepul yetkazib berish! ⏰ 08:00 - 03:00 | 📞 90 377 30 00";
