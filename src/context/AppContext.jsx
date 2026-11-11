@@ -200,7 +200,11 @@ export function AppProvider({ children }) {
         setAdminKassaStats(data.stats);
       }
     } catch (e) {}
-    showToast(`Buyurtma #${orderId} holati: ${statusText || newStatus}`);
+    if (newStatus === 'returned' || newStatus === 'vozvrat') {
+      showToast(`Buyurtma #${orderId} vozvrat qilindi va kassadan ayrildi 🔄`);
+    } else {
+      showToast(`Buyurtma #${orderId} holati: ${statusText || newStatus}`);
+    }
   };
 
   // Admin Products state (LocalStorage va Cloud Menu bilan)

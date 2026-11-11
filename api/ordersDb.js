@@ -12,7 +12,8 @@ const token = (process.env.BOT_TOKEN && !process.env.BOT_TOKEN.startsWith('92298
 const groupId = process.env.ORDER_GROUP_ID || '-1004467874001';
 const API_BASE = `https://api.telegram.org/bot${token}`;
 const TMP_ORDERS_FILE = '/tmp/ibrohim_orders_db.json';
-const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+// Faqat Bugungi va Kechagi buyurtmalarni saqlash (48 soatlik avtomatik tozalanish)
+const TWO_DAYS_MS = 48 * 60 * 60 * 1000;
 
 let inMemoryOrders = null;
 
@@ -39,13 +40,30 @@ export function getUzbekistanDateStr(dateObj = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
-// 7 kundan oshgan buyurtmalarni avtomatik tozalash (Prune)
+// O'zbekiston vaqti bo'yicha kechagi sana (YYYY-MM-DD)
+export function getUzbekistanYesterdayStr() {
+  const now = new Date();
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  return getUzbekistanDateStr(yesterday);
+}
+
+// Faqat Bugungi va Kechagi buyurtmalarni qoldirib, undan eskilarini avtomatik tozalash (Prune)
 export function pruneOldOrders(orders) {
   if (!Array.isArray(orders)) return [];
+  const todayStr = getUzbekistanDateStr(new Date());
+  const yesterdayStr = getUzbekistanYesterdayStr();
   const now = Date.now();
+
   return orders.filter((o) => {
-    const orderTime = o.timestamp || (o.date ? new Date(o.date).getTime() : now);
-    return now - orderTime < SEVEN_DAYS_MS;
+    const oDate = o.date || '';
+    if (oDate.startsWith(todayStr) || oDate.startsWith(yesterdayStr)) {
+      return true;
+    }
+    const orderTime = o.timestamp || (oDate ? new Date(oDate).getTime() : 0);
+    if (orderTime > 0 && now - orderTime < TWO_DAYS_MS) {
+      return true;
+    }
+    return false;
   });
 }
 
@@ -191,41 +209,67 @@ export async function updateOrderStatusInDb(orderId, newStatus, statusText) {
   return { ok: found, orders: updatedOrders };
 }
 
-// Kassa statistikasi hisobi (Bugungi va 7 kunlik)
+// Kassa statistikasi hisobi (Bugungi va Kechagi savdo, Vozvrat ayrilgan sof summa)
 export function calculateKassaStats(orders) {
   const todayStr = getUzbekistanDateStr(new Date());
+  const yesterdayStr = getUzbekistanYesterdayStr();
 
+  let todaySales = 0;
+  let todayVozvrat = 0;
   let todayCount = 0;
-  let todayTotal = 0;
-  let todayCompletedTotal = 0;
+  let todayVozvratCount = 0;
 
-  let weekCount = 0;
-  let weekTotal = 0;
+  let yesterdaySales = 0;
+  let yesterdayVozvrat = 0;
+  let yesterdayCount = 0;
+  let yesterdayVozvratCount = 0;
+
+  let totalSales = 0;
+  let totalVozvrat = 0;
 
   let newCount = 0;
   let preparingCount = 0;
   let deliveringCount = 0;
   let completedCount = 0;
   let cancelledCount = 0;
+  let vozvratCount = 0;
 
   for (const o of orders) {
     const oDate = o.date || '';
-    const isToday = oDate.startsWith(todayStr) || (o.timestamp && getUzbekistanDateStr(new Date(o.timestamp)) === todayStr);
-    const orderTotal = Number(o.total) || 0;
-    const isCancelled = o.status === 'cancelled';
+    const orderDateStr = oDate.length >= 10
+      ? oDate.slice(0, 10)
+      : (o.timestamp ? getUzbekistanDateStr(new Date(o.timestamp)) : '');
 
-    weekCount++;
-    if (!isCancelled) {
-      weekTotal += orderTotal;
+    const isToday = orderDateStr === todayStr || oDate.startsWith(todayStr);
+    const isYesterday = orderDateStr === yesterdayStr || oDate.startsWith(yesterdayStr);
+    const orderTotal = Math.round(Number(o.total) || 0);
+    const isCancelled = o.status === 'cancelled';
+    const isReturned = o.status === 'returned' || o.status === 'vozvrat';
+
+    if (isReturned) {
+      vozvratCount++;
+      totalVozvrat += orderTotal;
+    } else if (!isCancelled) {
+      totalSales += orderTotal;
     }
 
     if (isToday) {
       todayCount++;
-      if (!isCancelled) {
-        todayTotal += orderTotal;
-        if (o.status === 'completed') {
-          todayCompletedTotal += orderTotal;
-        }
+      if (isReturned) {
+        todayVozvrat += orderTotal;
+        todayVozvratCount++;
+      } else if (!isCancelled) {
+        todaySales += orderTotal;
+      }
+    }
+
+    if (isYesterday) {
+      yesterdayCount++;
+      if (isReturned) {
+        yesterdayVozvrat += orderTotal;
+        yesterdayVozvratCount++;
+      } else if (!isCancelled) {
+        yesterdaySales += orderTotal;
       }
     }
 
@@ -236,17 +280,37 @@ export function calculateKassaStats(orders) {
     else if (o.status === 'cancelled') cancelledCount++;
   }
 
+  // Sof kassa tushumi = Jami savdo - Vozvrat
+  const todayNet = Math.max(0, todaySales - todayVozvrat);
+  const yesterdayNet = Math.max(0, yesterdaySales - yesterdayVozvrat);
+  const totalNet = Math.max(0, totalSales - totalVozvrat);
+
   return {
     todayStr,
+    yesterdayStr,
+    todaySales,
+    todayVozvrat,
+    todayTotal: todayNet, // Bugungi sof kassa
     todayCount,
-    todayTotal,
-    todayCompletedTotal,
-    weekCount,
-    weekTotal,
+    todayVozvratCount,
+
+    yesterdaySales,
+    yesterdayVozvrat,
+    yesterdayTotal: yesterdayNet, // Kechagi sof kassa
+    yesterdayCount,
+    yesterdayVozvratCount,
+
+    totalSales,
+    totalVozvrat,
+    totalTotal: totalNet,
+    weekTotal: totalNet, // Moslik uchun
+    weekCount: orders.length,
+
     newCount,
     preparingCount,
     deliveringCount,
     completedCount,
-    cancelledCount
+    cancelledCount,
+    vozvratCount
   };
 }

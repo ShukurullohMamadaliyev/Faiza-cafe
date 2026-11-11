@@ -57,6 +57,21 @@ export default async function handler(req, res) {
         });
       }
 
+      if (action === 'vozvrat' || action === 'refund') {
+        const { orderId } = body;
+        if (!orderId) {
+          return res.status(400).json({ ok: false, error: 'orderId required' });
+        }
+        const result = await updateOrderStatusInDb(orderId, 'returned', 'Vozvrat qilindi');
+        const stats = calculateKassaStats(result.orders);
+        return res.status(200).json({
+          ok: true,
+          message: 'Buyurtma vozvrat qilindi va kassadan ayrildi',
+          orders: result.orders,
+          stats
+        });
+      }
+
       if (action === 'create') {
         const order = body?.order;
         if (!order || !order.id) {

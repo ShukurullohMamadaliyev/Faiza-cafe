@@ -215,48 +215,78 @@ export default function AdminPage() {
     return matchesSearch && matchesCategory;
   });
 
-  // O'zbekiston vaqti bo'yicha bugungi sana (YYYY-MM-DD)
+  // O'zbekiston vaqti bo'yicha bugungi va kechagi sana (YYYY-MM-DD)
   const todayDateStr = (() => {
     const d = new Date();
     const uz = new Date(d.getTime() + (5 * 60 + d.getTimezoneOffset()) * 60000);
     return `${uz.getFullYear()}-${String(uz.getMonth() + 1).padStart(2, '0')}-${String(uz.getDate()).padStart(2, '0')}`;
   })();
 
-  // Barcha mijozlarning buyurtmalari ro'yxati (Markaziy kassa bazasi, 7 kunlik)
+  const yesterdayDateStr = (() => {
+    const d = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const uz = new Date(d.getTime() + (5 * 60 + d.getTimezoneOffset()) * 60000);
+    return `${uz.getFullYear()}-${String(uz.getMonth() + 1).padStart(2, '0')}-${String(uz.getDate()).padStart(2, '0')}`;
+  })();
+
+  // Barcha mijozlarning buyurtmalari ro'yxati (Faqat Bugun va Kecha)
   const allOrdersList = Array.isArray(adminOrders) && adminOrders.length > 0 ? adminOrders : orders;
 
-  const todayOrders = allOrdersList.filter((o) => {
+  const getOrderDateKey = (o) => {
     const oDate = o.date || '';
-    if (oDate.startsWith(todayDateStr)) return true;
+    if (oDate.length >= 10 && oDate.slice(0, 10).match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return oDate.slice(0, 10);
+    }
     if (o.timestamp) {
       const d = new Date(o.timestamp);
       const uz = new Date(d.getTime() + (5 * 60 + d.getTimezoneOffset()) * 60000);
-      const uzStr = `${uz.getFullYear()}-${String(uz.getMonth() + 1).padStart(2, '0')}-${String(uz.getDate()).padStart(2, '0')}`;
-      return uzStr === todayDateStr;
+      return `${uz.getFullYear()}-${String(uz.getMonth() + 1).padStart(2, '0')}-${String(uz.getDate()).padStart(2, '0')}`;
     }
-    return false;
-  });
+    return '';
+  };
 
-  const weekOrders = allOrdersList;
+  const todayOrders = allOrdersList.filter(
+    (o) => getOrderDateKey(o) === todayDateStr || (o.date && o.date.startsWith(todayDateStr))
+  );
+
+  const yesterdayOrders = allOrdersList.filter(
+    (o) => getOrderDateKey(o) === yesterdayDateStr || (o.date && o.date.startsWith(yesterdayDateStr))
+  );
 
   const displayedOrders =
     orderPeriodFilter === 'today'
       ? todayOrders
-      : orderPeriodFilter === 'week'
-      ? weekOrders
+      : orderPeriodFilter === 'yesterday'
+      ? yesterdayOrders
       : allOrdersList;
 
-  const currentPeriodTotal = displayedOrders
-    .filter((o) => o.status !== 'cancelled')
-    .reduce((acc, o) => acc + (Number(o.total) || 0), 0);
+  // Aniq kassa hisobi: Jami savdo - Vozvrat = Sof Kassa
+  const calculatePeriodStats = (list) => {
+    let sales = 0;
+    let vozvrat = 0;
+    let vozvratCount = 0;
+    let validSalesCount = 0;
 
-  const todayKassaSum = adminKassaStats?.todayTotal || todayOrders
-    .filter((o) => o.status !== 'cancelled')
-    .reduce((acc, o) => acc + (Number(o.total) || 0), 0);
+    for (const o of list) {
+      const amount = Math.round(Number(o.total) || 0);
+      const isReturned = o.status === 'returned' || o.status === 'vozvrat';
+      const isCancelled = o.status === 'cancelled';
 
-  const weekKassaSum = adminKassaStats?.weekTotal || weekOrders
-    .filter((o) => o.status !== 'cancelled')
-    .reduce((acc, o) => acc + (Number(o.total) || 0), 0);
+      if (isReturned) {
+        vozvrat += amount;
+        vozvratCount++;
+      } else if (!isCancelled) {
+        sales += amount;
+        validSalesCount++;
+      }
+    }
+
+    const net = Math.max(0, sales - vozvrat);
+    return { sales, vozvrat, net, vozvratCount, validSalesCount };
+  };
+
+  const currentPeriodStats = calculatePeriodStats(displayedOrders);
+  const todayPeriodStats = calculatePeriodStats(todayOrders);
+  const yesterdayPeriodStats = calculatePeriodStats(yesterdayOrders);
 
   const newOrdersCount = allOrdersList.filter((o) => o.status === 'new').length;
 
@@ -362,20 +392,21 @@ export default function AdminPage() {
           <div className="bg-[#28080b]/90 border border-amber-500/25 p-2.5 rounded-2xl shadow-sm flex flex-col justify-between">
             <span className="text-[10px] text-amber-300 font-semibold block">Bugungi Kassa</span>
             <span className="text-xs font-serif font-black text-amber-400 mt-1 truncate">
-              {todayKassaSum.toLocaleString('uz-UZ')} so‘m
+              {todayPeriodStats.net.toLocaleString('uz-UZ')} so‘m
             </span>
-            <span className="text-[9px] text-amber-300/80 font-bold block mt-0.5">
+            <span className="text-[9px] text-amber-300/80 font-bold block mt-0.5 truncate">
               {todayOrders.length} ta buyurtma
+              {todayPeriodStats.vozvrat > 0 && ` (${todayPeriodStats.vozvratCount} vozvrat)`}
             </span>
           </div>
 
           <div className="bg-[#28080b]/90 border border-amber-500/20 p-2.5 rounded-2xl shadow-sm flex flex-col justify-between">
-            <span className="text-[10px] text-stone-400 font-semibold block">7 kunlik Kassa</span>
+            <span className="text-[10px] text-stone-400 font-semibold block">Kechagi Kassa</span>
             <span className="text-xs font-serif font-black text-stone-100 mt-1 truncate">
-              {weekKassaSum.toLocaleString('uz-UZ')} so‘m
+              {yesterdayPeriodStats.net.toLocaleString('uz-UZ')} so‘m
             </span>
-            <span className="text-[9px] text-stone-400 block mt-0.5">
-              {weekOrders.length} ta buyurtma
+            <span className="text-[9px] text-stone-400 block mt-0.5 truncate">
+              {yesterdayOrders.length} ta buyurtma
             </span>
           </div>
         </div>
@@ -641,7 +672,7 @@ export default function AdminPage() {
         {/* TAB 2: ORDERS & CASHIER (KASSA) DASHBOARD */}
         {activeAdminTab === 'orders' && (
           <div className="space-y-3.5 animate-fadeIn">
-            {/* Period Filters & Refresh Button */}
+            {/* Period Filters: Bugun, Kecha, Barchasi & Refresh */}
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 p-1 bg-[#28080b]/90 border border-amber-500/20 rounded-2xl text-xs font-bold">
                 <button
@@ -657,14 +688,14 @@ export default function AdminPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setOrderPeriodFilter('week')}
+                  onClick={() => setOrderPeriodFilter('yesterday')}
                   className={`px-3 py-1.5 rounded-xl transition ${
-                    orderPeriodFilter === 'week'
+                    orderPeriodFilter === 'yesterday'
                       ? 'bg-amber-500 text-stone-950 font-black shadow-sm'
                       : 'text-stone-400 hover:text-white'
                   }`}
                 >
-                  Oxirgi 7 kun ({weekOrders.length})
+                  Kecha ({yesterdayOrders.length})
                 </button>
                 <button
                   type="button"
@@ -675,7 +706,7 @@ export default function AdminPage() {
                       : 'text-stone-400 hover:text-white'
                   }`}
                 >
-                  Barchasi
+                  Barchasi ({allOrdersList.length})
                 </button>
               </div>
 
@@ -693,7 +724,7 @@ export default function AdminPage() {
               </button>
             </div>
 
-            {/* Kassa Dashboard Summary Card */}
+            {/* Kassa Dashboard Summary Card: Sof Kassa = Savdo - Vozvrat */}
             <div className="bg-gradient-to-br from-[#30090d] via-[#24070a] to-[#1a0406] border border-amber-500/30 rounded-3xl p-4 shadow-xl space-y-3 relative overflow-hidden">
               <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
@@ -704,24 +735,56 @@ export default function AdminPage() {
                   </div>
                   <div>
                     <h3 className="font-serif font-black text-sm text-amber-300">
-                      {orderPeriodFilter === 'today' ? 'Bugungi Kassa Tushumi' : '7 Kunlik Kassa Tushumi'}
+                      {orderPeriodFilter === 'today'
+                        ? 'Bugungi Kassa Hisoboti'
+                        : orderPeriodFilter === 'yesterday'
+                        ? 'Kechagi Kassa Hisoboti'
+                        : 'Jami Kassa Hisoboti'}
                     </h3>
                     <p className="text-[10px] text-stone-400">
-                      {orderPeriodFilter === 'today' ? 'Bugun amalga oshirilgan buyurtmalar' : 'Oxirgi 1 haftalik barcha buyurtmalar'}
+                      {orderPeriodFilter === 'today'
+                        ? 'Bugungi barcha savdolar va vozvratlar'
+                        : orderPeriodFilter === 'yesterday'
+                        ? 'Kechagi barcha buyurtmalar va vozvratlar'
+                        : 'Bugun va kechagi barcha buyurtmalar'}
                     </p>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-[10px] font-semibold text-stone-400 block">Kassa summasi</span>
-                  <span className="text-sm font-serif font-black text-amber-400">
-                    {currentPeriodTotal.toLocaleString('uz-UZ')} so‘m
+                  <span className="text-[10px] font-semibold text-stone-400 block">Sof Kassa</span>
+                  <span className="text-base font-serif font-black text-amber-400">
+                    {currentPeriodStats.net.toLocaleString('uz-UZ')} so‘m
+                  </span>
+                </div>
+              </div>
+
+              {/* Aniq hisob-kitob (Jami savdo - Vozvrat = Sof kassa) */}
+              <div className="bg-[#150305]/80 border border-amber-500/20 rounded-2xl p-2.5 flex items-center justify-between text-xs font-bold">
+                <div className="text-left">
+                  <span className="text-[10px] text-stone-400 block">Jami savdo:</span>
+                  <span className="text-stone-200 font-mono">
+                    +{currentPeriodStats.sales.toLocaleString('uz-UZ')} so‘m
+                  </span>
+                </div>
+
+                <div className="text-center px-2">
+                  <span className="text-[10px] text-rose-400 block">Vozvrat:</span>
+                  <span className="text-rose-400 font-mono">
+                    -{currentPeriodStats.vozvrat.toLocaleString('uz-UZ')} so‘m
+                  </span>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-[10px] text-amber-300 block">Sof tushum:</span>
+                  <span className="text-amber-400 font-black font-mono">
+                    ={currentPeriodStats.net.toLocaleString('uz-UZ')} so‘m
                   </span>
                 </div>
               </div>
 
               {/* Status Breakdown Pills */}
-              <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
+              <div className="grid grid-cols-5 gap-1 text-center text-[10px]">
                 <div className="bg-[#150305]/70 border border-amber-500/15 rounded-xl p-1.5">
                   <span className="text-stone-400 block">Jami</span>
                   <span className="font-black text-stone-100 text-xs">{displayedOrders.length} ta</span>
@@ -738,16 +801,22 @@ export default function AdminPage() {
                     {displayedOrders.filter((o) => o.status === 'completed').length} ta
                   </span>
                 </div>
+                <div className="bg-[#150305]/70 border border-rose-500/20 rounded-xl p-1.5">
+                  <span className="text-rose-400 block">Vozvrat</span>
+                  <span className="font-black text-rose-300 text-xs">
+                    {currentPeriodStats.vozvratCount} ta
+                  </span>
+                </div>
                 <div className="bg-[#150305]/70 border border-red-500/20 rounded-xl p-1.5">
-                  <span className="text-red-400 block">Bekor</span>
-                  <span className="font-black text-red-300 text-xs">
+                  <span className="text-stone-400 block">Bekor</span>
+                  <span className="font-black text-stone-400 text-xs">
                     {displayedOrders.filter((o) => o.status === 'cancelled').length} ta
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between text-[10px] text-stone-400 pt-0.5">
-                <span>⏱ 7 kundan keyin eski buyurtmalar avtomatik tozalanadi</span>
+                <span>⏱ Faqat bugungi va kechagi buyurtmalar saqlanadi</span>
                 <span className="text-amber-400/80 font-bold">Ibrohim Ota Kassa tizimi</span>
               </div>
             </div>
@@ -757,7 +826,11 @@ export default function AdminPage() {
               <div className="p-8 text-center text-stone-400 bg-[#28080b]/50 rounded-3xl border border-amber-500/15 space-y-2">
                 <span className="text-3xl block">🧾</span>
                 <p className="text-xs font-bold text-amber-300">
-                  {orderPeriodFilter === 'today' ? 'Bugun hali buyurtmalar tushmadi' : 'Buyurtmalar topilmadi'}
+                  {orderPeriodFilter === 'today'
+                    ? 'Bugun hali buyurtmalar tushmadi'
+                    : orderPeriodFilter === 'yesterday'
+                    ? 'Kecha buyurtmalar bo‘lmagan'
+                    : 'Buyurtmalar topilmadi'}
                 </p>
                 <p className="text-[11px] text-stone-500">
                   Mijozlar buyurtma berishi bilan bu yerda kassa hisob-kitobi va chek ko‘rinishida chiqadi.
@@ -765,12 +838,15 @@ export default function AdminPage() {
               </div>
             ) : (
               displayedOrders.map((order) => {
+                const isReturned = order.status === 'returned' || order.status === 'vozvrat';
                 const statusStyles = {
                   new: { label: '🟡 Yangi qabul qilindi', bg: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
                   preparing: { label: '🍳 Oshxonada tayyorlanmoqda', bg: 'bg-blue-500/15 text-blue-300 border-blue-500/30' },
                   delivering: { label: '🛵 Yetkazilmoqda (Kuryer)', bg: 'bg-purple-500/15 text-purple-300 border-purple-500/30' },
                   completed: { label: '✅ Yetkazildi', bg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
-                  cancelled: { label: '❌ Bekor qilindi', bg: 'bg-red-500/15 text-red-400 border-red-500/30' }
+                  cancelled: { label: '❌ Bekor qilindi', bg: 'bg-stone-500/15 text-stone-400 border-stone-500/30' },
+                  returned: { label: '🔄 Vozvrat qilindi', bg: 'bg-rose-500/20 text-rose-300 border-rose-500/40' },
+                  vozvrat: { label: '🔄 Vozvrat qilindi', bg: 'bg-rose-500/20 text-rose-300 border-rose-500/40' }
                 };
                 const currentStatus = statusStyles[order.status] || statusStyles.new;
                 const phone = order.customer?.phone || '';
@@ -778,8 +854,25 @@ export default function AdminPage() {
                 return (
                   <div
                     key={order.id}
-                    className="bg-[#28080b]/90 border border-amber-500/20 rounded-3xl p-4 space-y-3 shadow-md hover:border-amber-500/35 transition"
+                    className={`border rounded-3xl p-4 space-y-3 shadow-md transition ${
+                      isReturned
+                        ? 'bg-[#22070b]/95 border-rose-500/50 shadow-rose-950/20'
+                        : 'bg-[#28080b]/90 border-amber-500/20 hover:border-amber-500/35'
+                    }`}
                   >
+                    {/* Vozvrat Alert Banner */}
+                    {isReturned && (
+                      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[11px] font-bold">
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                          <span>Tovar vozvrat bo‘lgan (Kassa summasidan ayrildi)</span>
+                        </span>
+                        <span className="text-[9px] bg-rose-600 text-white px-2 py-0.5 rounded-md font-black uppercase tracking-wider">
+                          Vozvrat
+                        </span>
+                      </div>
+                    )}
+
                     {/* Order Top: ID, Date & Type */}
                     <div className="flex items-center justify-between pb-2 border-b border-white/5">
                       <div>
@@ -876,9 +969,18 @@ export default function AdminPage() {
                     <div className="pt-1 flex items-center justify-between">
                       <div>
                         <span className="text-[10px] text-stone-400 block">Jami to‘lov:</span>
-                        <span className="text-sm font-black text-amber-300">
+                        <span
+                          className={`text-sm font-black ${
+                            isReturned ? 'text-rose-400 line-through' : 'text-amber-300'
+                          }`}
+                        >
                           {(order.total || 0).toLocaleString('uz-UZ')} so‘m
                         </span>
+                        {isReturned && (
+                          <span className="text-[10px] font-black text-rose-400 block">
+                            (Kassadan ayrildi: -{(order.total || 0).toLocaleString('uz-UZ')} so‘m)
+                          </span>
+                        )}
                       </div>
 
                       <div className="text-right">
@@ -894,7 +996,7 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => updateAdminOrderStatus(order.id, 'preparing', 'Oshxonada tayyorlanmoqda')}
-                        className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shrink-0 ${
+                        className={`py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shrink-0 ${
                           order.status === 'preparing'
                             ? 'bg-blue-600 text-white ring-2 ring-blue-400/30'
                             : 'bg-white/5 text-stone-300 hover:bg-white/10'
@@ -906,7 +1008,7 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => updateAdminOrderStatus(order.id, 'delivering', 'Yetkazilmoqda (Kuryerda)')}
-                        className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shrink-0 ${
+                        className={`py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shrink-0 ${
                           order.status === 'delivering'
                             ? 'bg-purple-600 text-white ring-2 ring-purple-400/30'
                             : 'bg-white/5 text-stone-300 hover:bg-white/10'
@@ -918,13 +1020,38 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => updateAdminOrderStatus(order.id, 'completed', 'Yetkazildi')}
-                        className={`flex-1 py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shrink-0 ${
+                        className={`py-1.5 px-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shrink-0 ${
                           order.status === 'completed'
                             ? 'bg-emerald-600 text-white ring-2 ring-emerald-400/30'
                             : 'bg-white/5 text-stone-300 hover:bg-white/10'
                         }`}
                       >
                         ✅ Yetkazildi
+                      </button>
+
+                      {/* Vozvrat qilish / Vozvratni bekor qilish tugmasi */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const orderSum = (Number(order.total) || 0).toLocaleString('uz-UZ');
+                          if (isReturned) {
+                            if (window.confirm(`Buyurtma #${order.id} ning vozvratini bekor qilib, qayta yetkazildi deb belgilamoqchimisiz?`)) {
+                              updateAdminOrderStatus(order.id, 'completed', 'Yetkazildi');
+                            }
+                          } else {
+                            if (window.confirm(`Buyurtma #${order.id} ni VOZVRAT qilmoqchimisiz?\n\nKassadan ${orderSum} so'm ayriladi.`)) {
+                              updateAdminOrderStatus(order.id, 'returned', 'Vozvrat qilindi');
+                            }
+                          }
+                        }}
+                        className={`py-1.5 px-2.5 rounded-xl text-[10px] font-black transition flex items-center justify-center gap-1 shrink-0 ${
+                          isReturned
+                            ? 'bg-rose-600 text-white ring-2 ring-rose-400/40'
+                            : 'bg-rose-500/15 text-rose-400 border border-rose-500/30 hover:bg-rose-500/25'
+                        }`}
+                        title="Tovarni vozvrat qilish va kassadan ayirish"
+                      >
+                        🔄 {isReturned ? 'Vozvrat bo‘lgan' : 'Vozvrat'}
                       </button>
 
                       <button
@@ -936,8 +1063,8 @@ export default function AdminPage() {
                         }}
                         className={`py-1.5 px-2.5 rounded-xl text-[10px] font-bold transition shrink-0 ${
                           order.status === 'cancelled'
-                            ? 'bg-red-600 text-white'
-                            : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                            ? 'bg-stone-600 text-white'
+                            : 'bg-stone-500/10 text-stone-400 hover:bg-stone-500/20'
                         }`}
                       >
                         ❌ Bekor
