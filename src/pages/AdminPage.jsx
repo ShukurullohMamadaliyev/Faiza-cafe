@@ -22,14 +22,14 @@ import { CATEGORIES } from '../data/mockData';
 import { compressImage, formatFileSize } from '../utils/imageUtils';
 
 const PRESET_IMAGES = [
-  { label: 'Osh / Palov', url: 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Shashlik / Kabob', url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Lavash / Donar', url: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Burger', url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Tandir Non', url: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Choy / Choynak', url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Somsa', url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80' },
-  { label: 'Salat', url: 'https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=600&q=80' }
+  { label: 'Osh / Palov', url: '/images/dishes/osh.webp' },
+  { label: 'Shashlik / Kabob', url: '/images/dishes/polvonqiymashashlik.webp' },
+  { label: 'Lavash / Donar', url: '/images/dishes/kattalavash.webp' },
+  { label: 'Burger', url: '/images/dishes/chizburger.webp' },
+  { label: 'Tandir Non', url: '/images/dishes/issiqtandirnon.jpg' },
+  { label: 'Choy / Choynak', url: '/images/dishes/qorachoy.jpg' },
+  { label: 'Somsa', url: '/images/dishes/tandir_somsa.jpg' },
+  { label: 'Salat', url: '/images/dishes/shakarob.jpg' }
 ];
 
 export default function AdminPage() {

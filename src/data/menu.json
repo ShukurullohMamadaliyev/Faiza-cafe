@@ -5,7 +5,7 @@
     "name": "Go'shtli tandir somsa",
     "description": "Tandirda qizargan qarsildoq xamir, mayin mol go'shti va xushbo'y piyozli shirali tandir somsa",
     "price": 12000,
-    "image": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/tandir_somsa.jpg",
     "badge": "Tandir Xit"
   },
   {
@@ -14,7 +14,7 @@
     "name": "Osh (Choyxona Palov)",
     "description": "Devzira/lazer guruchidan tayyorlangan mayin mol go'shti, sariq sabzi va no'xatli an'anaviy choyxona oshi",
     "price": 35000,
-    "image": "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/osh.webp",
     "badge": "Bosh Taom"
   },
   {
@@ -23,7 +23,7 @@
     "name": "Lag'mon (Cho'zma)",
     "description": "Qo'lda cho'zilgan yangi xamir, shirali go'sht, sabzavotlar va xushbo'y sousli to'yimli milliy lag'mon",
     "price": 32000,
-    "image": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/lagmon.jpg",
     "badge": "Issiq & To'yimli"
   },
   {
@@ -32,7 +32,7 @@
     "name": "Mastava",
     "description": "Qaynoq sho'rva, mayda to'g'ralgan go'sht, guruch, sabzavotlar va qatiq bilan tortiladigan xushxo'r mastava",
     "price": 28000,
-    "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/mastava.jpg",
     "badge": "Qaynoq"
   },
   {
@@ -41,7 +41,7 @@
     "name": "Polvon qiyma shashlik",
     "description": "Maxsus retsept asosida tayyorlangan, katta va shirali polvonona qiyma go'sht kabobi",
     "price": 22000,
-    "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/polvonqiymashashlik.webp",
     "badge": "Eng Katta"
   },
   {
@@ -50,7 +50,7 @@
     "name": "Oddiy qiyma shashlik",
     "description": "Mayin mol go'shti va dumba yog'i uyg'unligida ko'mirda qovurilgan klassik qiyma shashlik",
     "price": 16000,
-    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/oddiyqiyma.jpg",
     "badge": "Klassik"
   },
   {
@@ -59,7 +59,7 @@
     "name": "Burda shashlik",
     "description": "Saralangan mayin lahm mol go'shti va eruvchan dumba bo'laklari terilgan choyxona burda shashligi",
     "price": 20000,
-    "image": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/burda.jpg",
     "badge": "Lahm Go'sht"
   },
   {
@@ -68,7 +68,7 @@
     "name": "O'rdak shashlik",
     "description": "Choyxonamizning o'zgacha ta'mli, xushbo'y ziravorlar bilan marinadlangan yumshoq o'rdak go'shti shashligi",
     "price": 24000,
-    "image": "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/ordakshashlik.jpg",
     "badge": "Maxsus Ta'm"
   },
   {
@@ -77,7 +77,7 @@
     "name": "Tovuq qanot shashlik",
     "description": "Ko'mir olovida qarsildoq qilib qizartirilgan, ichi shirali va xushbo'y tovuq qanotlari",
     "price": 18000,
-    "image": "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/tovuqqanot.webp",
     "badge": "Qarsildoq"
   },
   {
@@ -86,7 +86,7 @@
     "name": "Tovuq burda shashlik",
     "description": "Yumshoq tovuq filesi bo'laklari va maxsus sous bilan cho'qda pishirilgan yengil shashlik",
     "price": 17000,
-    "image": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/tovuqburda.jpg",
     "badge": "Yengil & Mayin"
   },
   {
@@ -95,7 +95,7 @@
     "name": "Katta lavash",
     "description": "Yupqa xamirda to'yimli mol go'shti, pomidor, bodring, qarsildoq chips va maxsus sousli ulkan lavash",
     "price": 34000,
-    "image": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/kattalavash.webp",
     "badge": "Katta & To'yimli"
   },
   {
@@ -104,7 +104,7 @@
     "name": "Kichkina lavash",
     "description": "Yangi mol go'shti, sabzavotlar va choyxona sousi solingan ixcham va mazali lavash",
     "price": 28000,
-    "image": "https://images.unsplash.com/photo-1561651823-34feb02250e4?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/kichkinalavash.webp",
     "badge": "Standart"
   },
   {
@@ -113,7 +113,7 @@
     "name": "Sosiskali xotdog",
     "description": "Yumshoq bulyonli bulochka, sifatli pishirilgan sosiska, bodring, pomidor, xantal va mayonez",
     "price": 15000,
-    "image": "https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/sosiskalihoddog.jpg",
     "badge": "Klassik"
   },
   {
@@ -122,7 +122,7 @@
     "name": "Kolbasali xotdog",
     "description": "Tosterda qizdirilgan non, dudlangan mazali kolbasa bo'laklari, sabzavotlar va xushxo'r sous",
     "price": 18000,
-    "image": "https://images.unsplash.com/photo-1612392062631-94dd858cba88?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/koblasalixoddog.jpg",
     "badge": "Dudlangan"
   },
   {
@@ -131,7 +131,7 @@
     "name": "Chizburger",
     "description": "Yumshoq kunjutli bulochka, shirali go'shtli kotlet, erigan Cheddar pishlog'i, marinadlangan bodring va sous",
     "price": 26000,
-    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/chizburger.webp",
     "badge": "Pishloqli Xit"
   },
   {
@@ -140,7 +140,7 @@
     "name": "Pepsi",
     "description": "Muzdek tetiklashtiruvchi gazlangan klassik Pepsi ichimligi",
     "price": 14000,
-    "image": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/pepsi.jpg",
     "badge": "Muzdek"
   },
   {
@@ -149,7 +149,7 @@
     "name": "Coca-Cola",
     "description": "Klassik ta'mli muzdek Coca-Cola shishada",
     "price": 14000,
-    "image": "https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/cocacola.webp",
     "badge": "Muzdek"
   },
   {
@@ -158,7 +158,7 @@
     "name": "Garden sharbati",
     "description": "Tabiiy mevalardan tayyorlangan quyuq va shirin Garden meva sharbati",
     "price": 15000,
-    "image": "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/gardensharbati.webp",
     "badge": "Tabiiy"
   },
   {
@@ -167,7 +167,7 @@
     "name": "Flavis sharbati",
     "description": "Meva ta'mli, xushbo'y va chanqoqbosti Flavis sharbati",
     "price": 14000,
-    "image": "https://images.unsplash.com/photo-1534353473418-4cfa6c56fd38?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/flavissharbati.jpg",
     "badge": "Chanqoqbosti"
   },
   {
@@ -176,7 +176,7 @@
     "name": "Qora choy (Choynakda)",
     "description": "Choyxona an'anasiga xos yangi damlangan, xushbo'y qora choy choynakda",
     "price": 5000,
-    "image": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/qorachoy.jpg",
     "badge": "Choyxona"
   },
   {
@@ -185,7 +185,7 @@
     "name": "Ko'k choy (Choynakda)",
     "description": "Haqiqiy 95-ko'k choy, osh va shashlikdan keyin kayfiyatni ko'taruvchi barra choy",
     "price": 5000,
-    "image": "https://images.unsplash.com/photo-1627435601361-ec25f5b1d0e5?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/kok-choy.webp",
     "badge": "95-Ko'k Choy"
   },
   {
@@ -194,7 +194,7 @@
     "name": "Gazli suv",
     "description": "Muzdek mineral gazlangan toza ichimlik suvi",
     "price": 5000,
-    "image": "https://images.unsplash.com/photo-1559839914-17aae19cec71?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/gazlisuv.webp",
     "badge": "Muzdek"
   },
   {
@@ -203,7 +203,7 @@
     "name": "Shakarob (Achchiq-chuchuk)",
     "description": "Yangi barra pomidor, piyoz, mayin ko'katlar va achchiq qalampir qo'shilgan haqiqiy oshbop shakarob",
     "price": 10000,
-    "image": "https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/shakarob.jpg",
     "badge": "Oshga Xos"
   },
   {
@@ -212,7 +212,7 @@
     "name": "Karamli salat",
     "description": "Qarsildoq yangi karam, sabzi, ukrop va zaytun yog'i bilan tayyorlangan yengil salat",
     "price": 8000,
-    "image": "https://images.unsplash.com/photo-1607532941433-304659e8198a?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/karamlisalat.jpg",
     "badge": "Qarsildoq"
   },
   {
@@ -221,7 +221,7 @@
     "name": "Bahor salat",
     "description": "Barra rediska, yangi bodring, barra ko'katlar va o'simlik yog'i qo'shilgan vitaminli bahor salati",
     "price": 10000,
-    "image": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/bahorsalat.jpg",
     "badge": "Vitaminli"
   },
   {
@@ -230,7 +230,7 @@
     "name": "Qatiq (Choyxona suzmasi)",
     "description": "Yog'li, quyuq tabiiy choyxona qatig'i — osh va shashlik uchun ajoyib qo'shimcha",
     "price": 8000,
-    "image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/qatiq.jpg",
     "badge": "Tabiiy"
   },
   {
@@ -239,7 +239,7 @@
     "name": "Bodring salat",
     "description": "Shirin va barra yangi bodringlar, ko'katlar va yengil tuzlangan ishtahaochar salat",
     "price": 8000,
-    "image": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/bodringsalat.jpg",
     "badge": "Yangi Barra"
   },
   {
@@ -248,7 +248,7 @@
     "name": "Achchiq salat",
     "description": "Achchiq qalampir, pomidor, sarimsoq va maxsus o'tkir ziravorlar bilan tayyorlangan ishtahaochar salat",
     "price": 9000,
-    "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/achchiqsalat.jpg",
     "badge": "Achchiq 🌶️"
   },
   {
@@ -257,7 +257,7 @@
     "name": "Issiq tandir non",
     "description": "Tandirdan uzilgan qasqondek qizarib pishgan, kunjutli qaynoq choyxona noni",
     "price": 4000,
-    "image": "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=600&q=80",
+    "image": "/images/dishes/issiqtandirnon.jpg",
     "badge": "Qaynoq Tandir"
   }
 ]

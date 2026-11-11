@@ -86,10 +86,50 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+const DISH_IMAGES = {
+  'hd-tandir-somsa': '/images/dishes/tandir_somsa.jpg',
+  'hd-osh-choyxona': '/images/dishes/osh.webp',
+  'hd-lagmon': '/images/dishes/lagmon.jpg',
+  'hd-masta-va': '/images/dishes/mastava.jpg',
+  'sh-polvon-qiyma': '/images/dishes/polvonqiymashashlik.webp',
+  'sh-oddiy-qiyma': '/images/dishes/oddiyqiyma.jpg',
+  'sh-burda': '/images/dishes/burda.jpg',
+  'sh-ordak': '/images/dishes/ordakshashlik.jpg',
+  'sh-tovuq-qanot': '/images/dishes/tovuqqanot.webp',
+  'sh-tovuq-burda': '/images/dishes/tovuqburda.jpg',
+  'ff-lavash-katta': '/images/dishes/kattalavash.webp',
+  'ff-lavash-kichik': '/images/dishes/kichkinalavash.webp',
+  'ff-xotdog-sosiska': '/images/dishes/sosiskalihoddog.jpg',
+  'ff-xotdog-kolbasa': '/images/dishes/koblasalixoddog.jpg',
+  'ff-chizburger': '/images/dishes/chizburger.webp',
+  'dr-pepsi': '/images/dishes/pepsi.jpg',
+  'dr-cola': '/images/dishes/cocacola.webp',
+  'dr-garden': '/images/dishes/gardensharbati.webp',
+  'dr-flavis': '/images/dishes/flavissharbati.jpg',
+  'dr-qora-choy': '/images/dishes/qorachoy.jpg',
+  'dr-kok-choy': '/images/dishes/kok-choy.webp',
+  'dr-gazli-suv': '/images/dishes/gazlisuv.webp',
+  'sl-shakarob': '/images/dishes/shakarob.jpg',
+  'sl-karamli': '/images/dishes/karamlisalat.jpg',
+  'sl-bahor': '/images/dishes/bahorsalat.jpg',
+  'sl-qatiq': '/images/dishes/qatiq.jpg',
+  'sl-bodring': '/images/dishes/bodringsalat.jpg',
+  'sl-achchiq': '/images/dishes/achchiqsalat.jpg',
+  'sl-non': '/images/dishes/issiqtandirnon.jpg'
+};
+
   // GET: Eng so'nggi menyuni barcha mijozlarga tarqatish
   if (req.method === 'GET') {
     try {
-      const products = await loadMenuFromCloud();
+      let products = await loadMenuFromCloud();
+      if (products && Array.isArray(products)) {
+        products = products.map((item) => {
+          if (DISH_IMAGES[item.id] && (!item.image || item.image.includes('unsplash.com') || !item.image.startsWith('/images/'))) {
+            return { ...item, image: DISH_IMAGES[item.id] };
+          }
+          return item;
+        });
+      }
       return res.status(200).json({
         ok: true,
         source: products ? 'cloud' : 'default',

@@ -156,16 +156,26 @@ export function AppProvider({ children }) {
 
   // Admin Products state (LocalStorage va Cloud Menu bilan)
   const [productList, setProductList] = useState(() => {
+    let list = PRODUCTS;
     if (typeof window !== 'undefined') {
       try {
         const stored = localStorage.getItem('ibrohim_ota_menu_custom');
         if (stored) {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            list = parsed;
+          }
         }
       } catch (e) {}
     }
-    return PRODUCTS;
+    // Yangi tabiiy taom rasmlarini avtomatik biriktirish
+    return list.map((item) => {
+      const defaultMatch = PRODUCTS.find((p) => p.id === item.id);
+      if (defaultMatch && (!item.image || item.image.includes('unsplash.com') || !item.image.startsWith('/images/'))) {
+        return { ...item, image: defaultMatch.image };
+      }
+      return item;
+    });
   });
 
   // Admin tekshiruvi: faqat ruxsat etilgan Telegram ID'lar (7048168954 va 8340079081)
@@ -351,10 +361,17 @@ export function AppProvider({ children }) {
       .then((res) => res.json())
       .then((data) => {
         if (data.ok && Array.isArray(data.products) && data.products.length > 0) {
-          setProductList(data.products);
+          const cleanProducts = data.products.map((item) => {
+            const defaultMatch = PRODUCTS.find((p) => p.id === item.id);
+            if (defaultMatch && (!item.image || item.image.includes('unsplash.com') || !item.image.startsWith('/images/'))) {
+              return { ...item, image: defaultMatch.image };
+            }
+            return item;
+          });
+          setProductList(cleanProducts);
           if (typeof window !== 'undefined') {
             try {
-              localStorage.setItem('ibrohim_ota_menu_custom', JSON.stringify(data.products));
+              localStorage.setItem('ibrohim_ota_menu_custom', JSON.stringify(cleanProducts));
             } catch (e) {}
           }
         }

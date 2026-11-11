@@ -2,12 +2,12 @@
 import { MENU_ITEMS } from './menuData';
 
 export const CATEGORIES = [
-  { id: 'all', name: 'Barchasi', icon: '🍽️', image: 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=300&q=80' },
-  { id: 'hotdishes', name: 'Milliy taomlar', icon: '🍲', image: 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=300&q=80' },
-  { id: 'shashlik', name: 'Shashliklar', icon: '🥩', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=300&q=80' },
-  { id: 'fastfood', name: 'Fastfud', icon: '🍔', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=300&q=80' },
-  { id: 'drinks_dessert', name: 'Ichimliklar', icon: '☕', image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=300&q=80' },
-  { id: 'salads', name: 'Salatlar va Non', icon: '🥗', image: 'https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=300&q=80' }
+  { id: 'all', name: 'Barchasi', icon: '🍽️', image: '/images/dishes/osh.webp' },
+  { id: 'hotdishes', name: 'Milliy taomlar', icon: '🍲', image: '/images/dishes/osh.webp' },
+  { id: 'shashlik', name: 'Shashliklar', icon: '🥩', image: '/images/dishes/polvonqiymashashlik.webp' },
+  { id: 'fastfood', name: 'Fastfud', icon: '🍔', image: '/images/dishes/kattalavash.webp' },
+  { id: 'drinks_dessert', name: 'Ichimliklar', icon: '☕', image: '/images/dishes/qorachoy.jpg' },
+  { id: 'salads', name: 'Salatlar va Non', icon: '🥗', image: '/images/dishes/shakarob.jpg' }
 ];
 
 export const BANNERS = [
@@ -21,7 +21,7 @@ export const BANNERS = [
     tag: 'Choyxona Xiti',
     category: 'hotdishes',
     productId: 'hd-osh-choyxona',
-    image: 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=700&q=80',
+    image: '/images/dishes/osh.webp',
     bgGradient: 'linear-gradient(135deg, #78350f 0%, #b45309 50%, #451a03 100%)',
     badgeColor: 'bg-amber-400/25 text-amber-100 border-amber-400/40',
     glowColor: 'rgba(245, 158, 11, 0.45)',
@@ -37,7 +37,7 @@ export const BANNERS = [
     tag: 'Tavsiya',
     category: 'shashlik',
     productId: 'sh-polvon-qiyma',
-    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=700&q=80',
+    image: '/images/dishes/polvonqiymashashlik.webp',
     bgGradient: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #450a0a 100%)',
     badgeColor: 'bg-red-400/25 text-red-100 border-red-400/40',
     glowColor: 'rgba(239, 68, 68, 0.45)',
@@ -53,7 +53,7 @@ export const BANNERS = [
     tag: 'Qaynoq',
     category: 'hotdishes',
     productId: 'hd-tandir-somsa',
-    image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=700&q=80',
+    image: '/images/dishes/tandir_somsa.jpg',
     bgGradient: 'linear-gradient(135deg, #713f12 0%, #a16207 50%, #422006 100%)',
     badgeColor: 'bg-yellow-400/25 text-yellow-100 border-yellow-400/40',
     glowColor: 'rgba(234, 179, 8, 0.45)',
@@ -69,7 +69,7 @@ export const BANNERS = [
     tag: 'Sevimli',
     category: 'fastfood',
     productId: 'ff-lavash-katta',
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=700&q=80',
+    image: '/images/dishes/kattalavash.webp',
     bgGradient: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #0f172a 100%)',
     badgeColor: 'bg-indigo-400/25 text-indigo-100 border-indigo-400/40',
     glowColor: 'rgba(99, 102, 241, 0.45)',
