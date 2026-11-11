@@ -99,6 +99,23 @@ export default function ProfilePage() {
     await detectAndSetLocation(false);
   };
 
+  const handleCallChoyxona = (e) => {
+    telegram.triggerHaptic('medium');
+    const phoneNumber = '+998200000149';
+    try {
+      window.location.href = `tel:${phoneNumber}`;
+    } catch (err) {}
+    try {
+      const a = document.createElement('a');
+      a.href = `tel:${phoneNumber}`;
+      a.target = '_self';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {}
+    showToast("📞 Qo'ng'iroq qilinmoqda: +998 20 000 01 49");
+  };
+
   // Ruxsat etilgan admin Telegram ID'lari (7048168954)
   const ADMIN_IDS = ['7048168954', '8340079081'];
 
@@ -439,14 +456,14 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <a
-          href="tel:+998200000149"
-          onClick={() => telegram.triggerHaptic('medium')}
-          className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2"
+        <button
+          type="button"
+          onClick={handleCallChoyxona}
+          className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
         >
           <PhoneCall size={14} />
           <span>Qo‘ng‘iroq qilish: +998 20 000 01 49</span>
-        </a>
+        </button>
       </div>
 
       {/* Admin Panel tugmasi - faqat tasdiqlangan Adminlar (7048168954) uchun ko'rinadi */}

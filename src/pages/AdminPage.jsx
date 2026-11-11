@@ -15,22 +15,13 @@ import {
   Camera,
   Sparkles,
   Loader2,
+  Crop,
   Image as ImageIcon
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CATEGORIES } from '../data/mockData';
 import { compressImage, formatFileSize } from '../utils/imageUtils';
-
-const PRESET_IMAGES = [
-  { label: 'Osh / Palov', url: '/images/dishes/osh.webp' },
-  { label: 'Shashlik / Kabob', url: '/images/dishes/polvonqiymashashlik.webp' },
-  { label: 'Lavash / Donar', url: '/images/dishes/kattalavash.webp' },
-  { label: 'Burger', url: '/images/dishes/chizburger.webp' },
-  { label: 'Tandir Non', url: '/images/dishes/issiqtandirnon.jpg' },
-  { label: 'Choy / Choynak', url: '/images/dishes/qorachoy.jpg' },
-  { label: 'Somsa', url: '/images/dishes/tandir_somsa.jpg' },
-  { label: 'Salat', url: '/images/dishes/shakarob.jpg' }
-];
+import ImageCropperModal from '../components/ImageCropperModal';
 
 export default function AdminPage() {
   const {
@@ -59,8 +50,13 @@ export default function AdminPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  // Siqish holatlari (Loading & Info)
+  // Rasm qirqish va o'lchamini to'g'rilash holati (Cropper)
   const [isCompressing, setIsCompressing] = useState(false);
+  const [cropperState, setCropperState] = useState({
+    isOpen: false,
+    imageSrc: '',
+    isEditing: false
+  });
   const [addCompressInfo, setAddCompressInfo] = useState(null);
   const [editCompressInfo, setEditCompressInfo] = useState(null);
 
@@ -74,7 +70,7 @@ export default function AdminPage() {
     category: 'hotdishes',
     price: '',
     description: '',
-    image: PRESET_IMAGES[0].url,
+    image: '',
     badge: 'Yangi'
   });
 
@@ -156,40 +152,50 @@ export default function AdminPage() {
     );
   }
 
-  // Galereyadan rasm tanlash va sifatini yo'qotmasdan siqish
-  const handleImageFileSelect = async (e, isEditing = false) => {
+  // Galereyadan rasm tanlash va qirqish oynasini ochish
+  const handleImageFileSelect = (e, isEditing = false) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    try {
-      setIsCompressing(true);
-      telegram.triggerHaptic('light');
-
-      // 800x800px o'lchamda, 0.85 yuqori sifatda siqish
-      const res = await compressImage(file, 800, 800, 0.85);
-
-      const origText = formatFileSize(res.originalSize);
-      const compText = formatFileSize(res.compressedSize);
-      const infoText = `${origText} ➡️ ${compText} (Sifatli siqildi)`;
-
-      if (isEditing) {
-        setEditingProduct((prev) => ({ ...prev, image: res.dataUrl }));
-        setEditCompressInfo(infoText);
-      } else {
-        setFormData((prev) => ({ ...prev, image: res.dataUrl }));
-        setAddCompressInfo(infoText);
+    telegram.triggerHaptic('light');
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result;
+      if (dataUrl) {
+        setCropperState({
+          isOpen: true,
+          imageSrc: dataUrl,
+          isEditing
+        });
       }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
-      telegram.triggerHaptic('success');
-      showToast(`Rasm muvaffaqiyatli siqildi: ${origText} dan ${compText} ga! ✨`);
-    } catch (err) {
-      console.warn('Rasm siqish xatosi:', err);
-      telegram.triggerHaptic('warning');
-      showToast(err.message || 'Rasmni yuklashda xatolik');
-    } finally {
-      setIsCompressing(false);
-      e.target.value = '';
+  // Qirqilgan va to'g'rilangan rasmni qabul qilish
+  const handleCropperApply = (croppedDataUrl, infoText) => {
+    if (cropperState.isEditing) {
+      setEditingProduct((prev) => ({ ...prev, image: croppedDataUrl }));
+      setEditCompressInfo(infoText);
+    } else {
+      setFormData((prev) => ({ ...prev, image: croppedDataUrl }));
+      setAddCompressInfo(infoText);
     }
+    setCropperState({ isOpen: false, imageSrc: '', isEditing: false });
+    telegram.triggerHaptic('success');
+    showToast('Rasm o‘lchami muvaffaqiyatli moslashtirildi! ✨');
+  };
+
+  // Mavjud rasm o'lchamini qayta to'g'rilash (Cropper ni qayta ochish)
+  const handleReopenCropper = (imageSrc, isEditing = false) => {
+    if (!imageSrc) return;
+    setCropperState({
+      isOpen: true,
+      imageSrc,
+      isEditing
+    });
+    telegram.triggerHaptic('light');
   };
 
   // Filtrlangan menyu
@@ -207,7 +213,7 @@ export default function AdminPage() {
       category: 'hotdishes',
       price: '',
       description: '',
-      image: PRESET_IMAGES[0].url,
+      image: '',
       badge: 'Yangi'
     });
     setAddCompressInfo(null);
@@ -679,32 +685,50 @@ export default function AdminPage() {
 
                 {/* Tanlangan rasm ko'rinishi */}
                 {formData.image ? (
-                  <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 bg-[#150305] aspect-video flex items-center justify-center shadow-inner">
-                    <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+                  <div className="space-y-2">
+                    <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 bg-[#150305] aspect-video flex items-center justify-center shadow-inner">
+                      <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end justify-between p-2.5">
-                      {addCompressInfo ? (
-                        <span className="text-[10px] font-bold bg-amber-500 text-stone-950 px-2 py-0.5 rounded-md shadow-md flex items-center gap-1">
-                          <Sparkles size={11} />
-                          <span>{addCompressInfo}</span>
-                        </span>
-                      ) : (
-                        <span className="text-[10px] text-stone-300 bg-black/60 px-2 py-0.5 rounded-md">
-                          Tanlangan rasm
-                        </span>
-                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end justify-between p-2.5">
+                        {addCompressInfo ? (
+                          <span className="text-[10px] font-bold bg-amber-500 text-stone-950 px-2 py-0.5 rounded-md shadow-md flex items-center gap-1">
+                            <Sparkles size={11} />
+                            <span>{addCompressInfo}</span>
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-stone-300 bg-black/60 px-2 py-0.5 rounded-md">
+                            Tanlangan rasm
+                          </span>
+                        )}
 
-                      <label className="cursor-pointer text-xs font-bold bg-stone-900/90 hover:bg-stone-900 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-xl shadow-md flex items-center gap-1.5 active:scale-95 transition">
-                        <Camera size={13} />
-                        <span>Boshqa rasm</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleImageFileSelect(e, false)}
-                          className="hidden"
-                        />
-                      </label>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleReopenCropper(formData.image, false)}
+                            className="text-xs font-bold bg-amber-500 hover:bg-amber-400 text-stone-950 px-2.5 py-1.5 rounded-xl shadow-md flex items-center gap-1 active:scale-95 transition"
+                            title="Barmog'ingiz bilan surish va yaqinlashtirish"
+                          >
+                            <Crop size={13} />
+                            <span>Moslash</span>
+                          </button>
+
+                          <label className="cursor-pointer text-xs font-bold bg-stone-900/90 hover:bg-stone-900 text-amber-300 border border-amber-500/30 px-2.5 py-1.5 rounded-xl shadow-md flex items-center gap-1 active:scale-95 transition">
+                            <Camera size={13} />
+                            <span>Boshqa rasm</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageFileSelect(e, false)}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
+                      </div>
                     </div>
+
+                    <p className="text-[10px] text-amber-400/80 flex items-center gap-1 px-1">
+                      <span>💡 <b>«Moslash»</b> tugmasi orqali rasmni qo'lda surib, yaqinlashtirib to'g'rilashingiz mumkin</span>
+                    </p>
                   </div>
                 ) : (
                   <label className="cursor-pointer flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 border-dashed border-amber-500/30 hover:border-amber-400 bg-[#150305]/60 hover:bg-[#150305] transition active:scale-98">
@@ -716,7 +740,7 @@ export default function AdminPage() {
                         📷 Telefon galereyasidan rasm tanlang
                       </span>
                       <span className="text-[10px] text-stone-400 block mt-0.5">
-                        Avtomatik ravishda sifatini yo'qotmasdan siqiladi
+                        Tanlangandan so'ng barmog'ingiz bilan surib, to'g'rilashingiz mumkin
                       </span>
                     </div>
                     <input
@@ -728,7 +752,7 @@ export default function AdminPage() {
                   </label>
                 )}
 
-                {/* Yoki Galereyadan yangi rasm tanlash tugmasi */}
+                {/* Galereyadan yangi rasm tanlash tugmasi */}
                 <label className="w-full py-2.5 px-3 bg-[#150305] hover:bg-[#1c0507] border border-amber-500/30 rounded-xl text-xs font-bold text-amber-300 flex items-center justify-center gap-2 cursor-pointer transition active:scale-98 shadow-sm">
                   <Camera size={15} />
                   <span>Galereyadan yangi rasm yuklash</span>
@@ -739,35 +763,6 @@ export default function AdminPage() {
                     className="hidden"
                   />
                 </label>
-
-                {/* Tayyor shablon rasmlari */}
-                <div className="pt-1">
-                  <span className="text-[11px] text-stone-400 block mb-1">
-                    Yoki tayyor rasmlardan birini tanlang:
-                  </span>
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {PRESET_IMAGES.map((img, i) => (
-                      <button
-                        type="button"
-                        key={i}
-                        onClick={() => {
-                          setFormData({ ...formData, image: img.url });
-                          setAddCompressInfo(null);
-                        }}
-                        className={`relative rounded-xl overflow-hidden border-2 aspect-square transition ${
-                          formData.image === img.url
-                            ? 'border-amber-400 ring-2 ring-amber-400/50 scale-95'
-                            : 'border-transparent opacity-60 hover:opacity-100'
-                        }`}
-                      >
-                        <img src={img.url} alt={img.label} className="w-full h-full object-cover" />
-                        <span className="absolute bottom-0 inset-x-0 bg-black/75 text-[8px] text-center truncate px-0.5 font-semibold">
-                          {img.label}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               <div>
@@ -919,16 +914,28 @@ export default function AdminPage() {
                         </span>
                       )}
 
-                      <label className="cursor-pointer ml-auto text-xs font-bold bg-stone-900/90 hover:bg-stone-900 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-xl shadow-md flex items-center gap-1.5 active:scale-95 transition">
-                        <Camera size={13} />
-                        <span>Galereyadan almashtirish</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleImageFileSelect(e, true)}
-                          className="hidden"
-                        />
-                      </label>
+                      <div className="flex items-center gap-1.5 ml-auto">
+                        <button
+                          type="button"
+                          onClick={() => handleReopenCropper(editingProduct.image, true)}
+                          className="text-xs font-bold bg-amber-500 hover:bg-amber-400 text-stone-950 px-2.5 py-1.5 rounded-xl shadow-md flex items-center gap-1 active:scale-95 transition"
+                          title="Barmog'ingiz bilan surish va yaqinlashtirish"
+                        >
+                          <Crop size={13} />
+                          <span>Moslash</span>
+                        </button>
+
+                        <label className="cursor-pointer text-xs font-bold bg-stone-900/90 hover:bg-stone-900 text-amber-300 border border-amber-500/30 px-2.5 py-1.5 rounded-xl shadow-md flex items-center gap-1.5 active:scale-95 transition">
+                          <Camera size={13} />
+                          <span>Almashtirish</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageFileSelect(e, true)}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -965,6 +972,15 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+
+      {/* Interaktiv rasm qirqish, surish va yaqinlashtirish oynasi (Cropper Modal) */}
+      <ImageCropperModal
+        isOpen={cropperState.isOpen}
+        imageSrc={cropperState.imageSrc}
+        onApply={handleCropperApply}
+        onCancel={() => setCropperState({ isOpen: false, imageSrc: '', isEditing: false })}
+        aspectRatio={16 / 9}
+      />
     </div>
   );
 }
