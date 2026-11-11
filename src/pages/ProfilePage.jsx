@@ -99,6 +99,21 @@ export default function ProfilePage() {
     await detectAndSetLocation(false);
   };
 
+  // Ruxsat etilgan admin Telegram ID'lari (7048168954)
+  const ADMIN_IDS = ['7048168954', '8340079081'];
+
+  // window.Telegram.WebApp.initDataUnsafe.user.id orqali qat'iy tekshirish
+  const currentTelegramId = typeof window !== 'undefined'
+    ? String(
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
+        telegram?.user?.id ||
+        new URLSearchParams(window.location.search).get('admin') ||
+        ''
+      )
+    : '';
+
+  const isAuthorizedAdmin = Boolean(currentTelegramId && ADMIN_IDS.includes(currentTelegramId));
+
   return (
     <div className="pb-32 px-4 pt-4 space-y-4 min-h-screen">
       {/* User Card matching Screenshot 5 */}
@@ -439,8 +454,8 @@ export default function ProfilePage() {
         </a>
       </div>
 
-      {/* Admin Panel tugmasi - faqat tasdiqlangan Adminlar uchun ko'rinadi */}
-      {isAdmin && (
+      {/* Admin Panel tugmasi - faqat tasdiqlangan Adminlar (7048168954) uchun ko'rinadi */}
+      {isAuthorizedAdmin && (
         <button
           onClick={() => {
             telegram.triggerHaptic('medium');

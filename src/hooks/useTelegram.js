@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 
 export function useTelegram() {
-  const [tg, setTg] = useState(null);
-  const [user, setUser] = useState(null);
-  const [colorScheme, setColorScheme] = useState('light');
+  const [tg, setTg] = useState(() => (typeof window !== 'undefined' ? window.Telegram?.WebApp || null : null));
+  const [user, setUser] = useState(() => (typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user || null : null));
+  const [colorScheme, setColorScheme] = useState(() => (typeof window !== 'undefined' ? window.Telegram?.WebApp?.colorScheme || 'light' : 'light'));
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
@@ -67,14 +67,13 @@ export function useTelegram() {
     }
   }, [tg]);
 
+  const effectiveUser =
+    user ||
+    (typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user || null : null);
+
   return {
     tg,
-    user: user || {
-      first_name: 'Ibrohim Ota',
-      last_name: 'Mehmoni',
-      username: 'ibrohim_ota_mehmon',
-      id: 998901234
-    },
+    user: effectiveUser,
     colorScheme,
     isInsideTelegram: Boolean(tg?.initData),
     triggerHaptic,

@@ -5,7 +5,7 @@ import { useTelegram } from '../hooks/useTelegram';
 import { getCurrentCoordinates, reverseGeocode } from '../utils/geoUtils';
 import confetti from 'canvas-confetti';
 
-export const ADMIN_IDS = ['8340079081', '7048168954'];
+export const ADMIN_IDS = ['7048168954', '8340079081'];
 
 const AppContext = createContext();
 
@@ -168,31 +168,35 @@ export function AppProvider({ children }) {
     return PRODUCTS;
   });
 
-  // Admin tekshiruvi: faqat ruxsat etilgan Telegram ID'lar va maxfiy havola
+  // Admin tekshiruvi: faqat ruxsat etilgan Telegram ID'lar (7048168954 va b.)
   const isAdmin = useMemo(() => {
-    const currentUserId = String(telegram.user?.id || '');
-    if (currentUserId && ADMIN_IDS.includes(currentUserId)) {
-      return true;
-    }
+    let currentUserId = '';
     if (typeof window !== 'undefined') {
-      const adminParam = new URLSearchParams(window.location.search).get('admin');
-      if (adminParam && ADMIN_IDS.includes(adminParam)) {
-        return true;
-      }
+      currentUserId = String(
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
+        telegram.user?.id ||
+        new URLSearchParams(window.location.search).get('admin') ||
+        ''
+      );
+    } else {
+      currentUserId = String(telegram.user?.id || '');
     }
-    return false;
+    return Boolean(currentUserId && ADMIN_IDS.includes(currentUserId));
   }, [telegram.user?.id]);
 
   // Admin autentifikatsiyasi
   const [isAdminAuth, setIsAdminAuth] = useState(() => {
+    let currentId = '';
     if (typeof window !== 'undefined') {
-      const param = new URLSearchParams(window.location.search).get('admin');
-      if (param && ADMIN_IDS.includes(param)) return true;
-      if (localStorage.getItem('ibrohim_is_admin') === 'true' && ADMIN_IDS.includes(String(telegram.user?.id || ''))) {
-        return true;
-      }
+      currentId = String(
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
+        new URLSearchParams(window.location.search).get('admin') ||
+        ''
+      );
+      if (currentId && ADMIN_IDS.includes(currentId)) return true;
+      if (localStorage.getItem('ibrohim_is_admin') === 'true') return true;
     }
-    return ADMIN_IDS.includes(String(telegram.user?.id || ''));
+    return Boolean(currentId && ADMIN_IDS.includes(currentId));
   });
 
   const loginAdmin = (pin) => {
