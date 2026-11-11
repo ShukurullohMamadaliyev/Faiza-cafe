@@ -247,7 +247,8 @@ export default function AdminPage() {
       price: Number(editingProduct.price),
       description: (editingProduct.description || '').trim(),
       image: (editingProduct.image || '').trim(),
-      badge: editingProduct.badge
+      badge: editingProduct.badge,
+      isOutOfStock: Boolean(editingProduct.isOutOfStock)
     });
 
     setEditingProduct(null);
@@ -397,6 +398,17 @@ export default function AdminPage() {
               ))}
             </div>
 
+            {/* Quick Status Bar */}
+            <div className="flex items-center justify-between text-[11px] text-stone-400 px-1">
+              <span>Jami: <b className="text-amber-300">{filteredMenu.length}</b> ta taom</span>
+              {productList.some((p) => p.isOutOfStock) && (
+                <span className="text-red-400 font-bold flex items-center gap-1 bg-red-500/10 border border-red-500/25 px-2 py-0.5 rounded-lg">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span>
+                  <span>{productList.filter((p) => p.isOutOfStock).length} ta taom tugagan</span>
+                </span>
+              )}
+            </div>
+
             {/* Dish Cards List */}
             <div className="space-y-2.5">
               {filteredMenu.length === 0 ? (
@@ -407,20 +419,39 @@ export default function AdminPage() {
                 filteredMenu.map((product) => (
                   <div
                     key={product.id}
-                    className={`bg-[#28080b]/90 border rounded-2xl p-3 space-y-2.5 shadow-md transition ${
-                      product.isOutOfStock ? 'border-red-500/30 opacity-75' : 'border-amber-500/20'
+                    className={`border rounded-2xl p-3 space-y-2.5 shadow-md transition ${
+                      product.isOutOfStock
+                        ? 'bg-[#220609] border-red-500/50 shadow-red-950/20'
+                        : 'bg-[#28080b]/90 border-amber-500/20'
                     }`}
                   >
+                    {/* Buguncha tugagan ogohlantirish banneri */}
+                    {product.isOutOfStock && (
+                      <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-red-500/20 border border-red-500/40 text-red-300 text-[11px] font-bold">
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                          <span>Buguncha bu taomimiz tugadi</span>
+                        </span>
+                        <span className="text-[9px] bg-red-600 text-white px-2 py-0.5 rounded-md font-black uppercase tracking-wider shadow-sm">
+                          Tugagan
+                        </span>
+                      </div>
+                    )}
+
                     <div className="flex items-start gap-3">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-16 h-16 rounded-xl object-cover border border-amber-500/20 shrink-0"
+                        className={`w-16 h-16 rounded-xl object-cover border shrink-0 transition ${
+                          product.isOutOfStock
+                            ? 'border-red-500/30 grayscale brightness-75'
+                            : 'border-amber-500/20'
+                        }`}
                       />
 
                       <div className="flex-1 min-w-0 space-y-1">
                         <div className="flex items-center justify-between gap-1">
-                          <h4 className="text-xs font-bold text-amber-200 truncate">
+                          <h4 className={`text-xs font-bold truncate ${product.isOutOfStock ? 'text-stone-400 line-through decoration-red-500/60' : 'text-amber-200'}`}>
                             {product.name}
                           </h4>
                           {product.badge && (
@@ -484,19 +515,28 @@ export default function AdminPage() {
 
                     {/* Bottom Action Buttons */}
                     <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-2">
-                      {/* Stock Button */}
+                      {/* Tugadi / Sotuvda bor qilish Button */}
                       <button
+                        type="button"
                         onClick={() => toggleProductStock(product.id)}
-                        className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition flex items-center gap-1 ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 active:scale-95 shadow-sm ${
                           product.isOutOfStock
-                            ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                            : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25'
+                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400/50 ring-2 ring-emerald-500/20'
+                            : 'bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/35 hover:border-red-500/50'
                         }`}
+                        title={product.isOutOfStock ? "Sotuvda mavjud deb belgilash" : "Ushbu taomni buguncha tugadi deb belgilash"}
                       >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${product.isOutOfStock ? 'bg-red-400' : 'bg-emerald-400'}`}
-                        ></span>
-                        <span>{product.isOutOfStock ? 'Tugagan (Stop-list)' : 'Sotuvda mavjud'}</span>
+                        {product.isOutOfStock ? (
+                          <>
+                            <Check size={13} strokeWidth={3} className="text-white" />
+                            <span>Sotuvda bor qilish</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                            <span>Tugadi</span>
+                          </>
+                        )}
                       </button>
 
                       <div className="flex items-center gap-1.5">
@@ -884,6 +924,40 @@ export default function AdminPage() {
                   }
                   className="w-full px-3 py-2 bg-[#150305] border border-amber-500/20 rounded-xl text-xs text-stone-100 focus:outline-none focus:border-amber-400"
                 />
+              </div>
+
+              {/* Taom holati: Sotuvda mavjud yoki Buguncha tugagan */}
+              <div className="pt-1">
+                <label className="text-xs font-semibold text-stone-300 block mb-1.5">
+                  Taom holati
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingProduct({ ...editingProduct, isOutOfStock: false })}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${
+                      !editingProduct.isOutOfStock
+                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 shadow-sm'
+                        : 'bg-[#150305] border-white/10 text-stone-400 hover:text-white'
+                    }`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span>Sotuvda mavjud</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditingProduct({ ...editingProduct, isOutOfStock: true })}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1.5 ${
+                      editingProduct.isOutOfStock
+                        ? 'bg-red-500/25 border-red-500/60 text-red-300 shadow-sm'
+                        : 'bg-[#150305] border-white/10 text-stone-400 hover:text-white'
+                    }`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                    <span>Buguncha tugadi</span>
+                  </button>
+                </div>
               </div>
 
               {/* Rasm tahrirlash: Galereyadan yuklash */}

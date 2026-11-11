@@ -11,6 +11,7 @@ export default function CartPage() {
     updateCartItemQuantity,
     removeCartItem,
     clearCart,
+    productList,
     appliedPromo,
     applyPromoCode,
     setIsCheckoutOpen,
@@ -126,6 +127,11 @@ export default function CartPage() {
                     <h4 className="text-xs font-bold text-stone-100 truncate">
                       {item.product.name}
                     </h4>
+                    {productList?.find((p) => p.id === item.product.id)?.isOutOfStock && (
+                      <span className="text-[10px] text-red-400 font-bold block leading-tight mt-0.5">
+                        Buguncha bu taomimiz tugadi 🚫
+                      </span>
+                    )}
                     <p className="text-[12px] font-extrabold text-amber-400 mt-0.5">
                       {item.totalPrice.toLocaleString('uz-UZ')} so‘m
                     </p>

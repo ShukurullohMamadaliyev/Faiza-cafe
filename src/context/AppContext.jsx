@@ -416,6 +416,11 @@ export function AppProvider({ children }) {
 
   // Cart Actions
   const addToCart = (product, selectedModifiers = [], quantity = 1) => {
+    if (product.isOutOfStock) {
+      telegram.triggerHaptic('warning');
+      showToast(`Kechirasiz, "${product.name}" buguncha tugadi! 😔`);
+      return;
+    }
     telegram.triggerHaptic('medium');
     const modifiersTotal = selectedModifiers.reduce((acc, m) => acc + m.price, 0);
     const unitPrice = product.price + modifiersTotal;
@@ -489,6 +494,11 @@ export function AppProvider({ children }) {
   };
 
   const quickAddToCart = (product) => {
+    if (product.isOutOfStock) {
+      telegram.triggerHaptic('warning');
+      showToast(`Kechirasiz, "${product.name}" buguncha tugadi! 😔`);
+      return;
+    }
     if (product.modifiers && product.modifiers.length > 0) {
       setSelectedProduct(product);
     } else {
@@ -547,6 +557,18 @@ export function AppProvider({ children }) {
   };
 
   const submitOrder = (customerDetails) => {
+    // Tugagan taomlar savatda qolib ketgan bo'lsa tekshirish
+    const outOfStockItem = cart.find((item) => {
+      const live = productList.find((p) => p.id === item.product.id);
+      return (live && live.isOutOfStock) || item.product.isOutOfStock;
+    });
+
+    if (outOfStockItem) {
+      telegram.triggerHaptic('warning');
+      showToast(`Kechirasiz, "${outOfStockItem.product.name}" tugab qolgan! Iltimos, savatdan o'chiring.`);
+      return false;
+    }
+
     telegram.triggerHaptic('success');
 
     let nextNum = 1;
@@ -752,16 +774,31 @@ export function AppProvider({ children }) {
   };
 
   const toggleProductStock = (productId) => {
+    telegram.triggerHaptic('medium');
     setProductList(prev => {
+      let targetName = '';
+      let nextState = false;
       const updated = prev.map(p => {
         if (p.id === productId) {
-          const nextState = !p.isOutOfStock;
-          showToast(nextState ? `"${p.name}" tugagan deb belgilandi` : `"${p.name}" mavjud deb belgilandi`);
+          nextState = !p.isOutOfStock;
+          targetName = p.name;
           return { ...p, isOutOfStock: nextState };
         }
         return p;
       });
-      syncMenuToServer(updated, `🔄 *Taom mavjudligi o'zgartirildi*`);
+
+      if (nextState) {
+        showToast(`🚫 "${targetName}" buguncha tugadi deb belgilandi!`);
+      } else {
+        showToast(`✅ "${targetName}" yana sotuvga chiqarildi!`);
+      }
+
+      syncMenuToServer(
+        updated,
+        nextState
+          ? `🚫 *Taom tugadi:* "${targetName}" (Buguncha sotuvdan to'xtatildi)`
+          : `✅ *Taom qayta sotuvda:* "${targetName}"`
+      );
       return updated;
     });
   };

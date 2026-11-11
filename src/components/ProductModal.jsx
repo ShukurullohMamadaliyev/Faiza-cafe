@@ -68,8 +68,28 @@ export default function ProductModal() {
             <img
               src={selectedProduct.image}
               alt={selectedProduct.name}
-              className="w-full h-full object-cover"
+              className={`w-full h-full object-cover ${
+                selectedProduct.isOutOfStock ? 'grayscale contrast-75 brightness-75' : ''
+              }`}
             />
+
+            {/* Tugadi - Buguncha bu taomimiz tugadi overlay */}
+            {selectedProduct.isOutOfStock && (
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-4 z-10 select-none">
+                <div className="w-12 h-12 rounded-2xl bg-red-600/90 text-white flex items-center justify-center text-xl shadow-lg mb-2">
+                  🚫
+                </div>
+                <h3 className="text-base font-black text-red-300 uppercase tracking-wider">
+                  Tugadi
+                </h3>
+                <p className="text-sm font-bold text-amber-200 mt-1 max-w-xs leading-snug">
+                  Buguncha bu taomimiz tugadi!
+                </p>
+                <p className="text-[11px] text-stone-400 mt-1">
+                  Ertaga yana xizmatimizda bo‘ladi
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="p-4.5 space-y-3.5">
@@ -78,10 +98,16 @@ export default function ProductModal() {
                 <h2 className="text-lg font-serif font-black text-amber-300">
                   {selectedProduct.name}
                 </h2>
-                {selectedProduct.badge && (
-                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                    {selectedProduct.badge}
+                {selectedProduct.isOutOfStock ? (
+                  <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-lg bg-red-600 text-white border border-red-400/40 shadow-sm">
+                    Buguncha tugadi
                   </span>
+                ) : (
+                  selectedProduct.badge && (
+                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                      {selectedProduct.badge}
+                    </span>
+                  )
                 )}
               </div>
 
@@ -138,39 +164,47 @@ export default function ProductModal() {
 
         {/* Bottom CTA Bar */}
         <div className="absolute bottom-0 inset-x-0 p-3.5 bg-[#1a0507]/95 backdrop-blur-md border-t border-white/10 flex items-center gap-3">
-          {/* Quantity Counter */}
-          <div className="flex items-center gap-2 bg-[#150305] px-2.5 py-2 rounded-xl border border-amber-500/20">
-            <button
-              onClick={() => {
-                telegram.triggerHaptic('light');
-                setQuantity((q) => Math.max(1, q - 1));
-              }}
-              className="w-6 h-6 flex items-center justify-center text-stone-300 hover:text-white"
-            >
-              <Minus size={15} />
-            </button>
-            <span className="text-xs font-black text-amber-300 w-4 text-center">
-              {quantity}
-            </span>
-            <button
-              onClick={() => {
-                telegram.triggerHaptic('light');
-                setQuantity((q) => q + 1);
-              }}
-              className="w-6 h-6 flex items-center justify-center text-amber-400 hover:text-amber-300"
-            >
-              <Plus size={15} />
-            </button>
-          </div>
+          {selectedProduct.isOutOfStock ? (
+            <div className="w-full py-3.5 bg-red-950/80 border border-red-500/40 text-red-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 shadow-lg text-center select-none">
+              <span>🚫 Buguncha bu taomimiz tugadi</span>
+            </div>
+          ) : (
+            <>
+              {/* Quantity Counter */}
+              <div className="flex items-center gap-2 bg-[#150305] px-2.5 py-2 rounded-xl border border-amber-500/20">
+                <button
+                  onClick={() => {
+                    telegram.triggerHaptic('light');
+                    setQuantity((q) => Math.max(1, q - 1));
+                  }}
+                  className="w-6 h-6 flex items-center justify-center text-stone-300 hover:text-white"
+                >
+                  <Minus size={15} />
+                </button>
+                <span className="text-xs font-black text-amber-300 w-4 text-center">
+                  {quantity}
+                </span>
+                <button
+                  onClick={() => {
+                    telegram.triggerHaptic('light');
+                    setQuantity((q) => q + 1);
+                  }}
+                  className="w-6 h-6 flex items-center justify-center text-amber-400 hover:text-amber-300"
+                >
+                  <Plus size={15} />
+                </button>
+              </div>
 
-          {/* Add Button */}
-          <button
-            onClick={handleAdd}
-            className="flex-1 py-3 bg-amber-500 hover:bg-amber-400 active:scale-98 text-stone-950 font-black text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-between px-4"
-          >
-            <span>Savatga qo‘shish</span>
-            <span>{totalPrice.toLocaleString('uz-UZ')} so‘m</span>
-          </button>
+              {/* Add Button */}
+              <button
+                onClick={handleAdd}
+                className="flex-1 py-3 bg-amber-500 hover:bg-amber-400 active:scale-98 text-stone-950 font-black text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-between px-4"
+              >
+                <span>Savatga qo‘shish</span>
+                <span>{totalPrice.toLocaleString('uz-UZ')} so‘m</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
