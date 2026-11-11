@@ -255,7 +255,7 @@ export function AppProvider({ children }) {
       return false;
     }
     const cleanPin = (pin || '').trim();
-    if (cleanPin === '7777' || cleanPin === '1234' || ADMIN_IDS.includes(cleanPin)) {
+    if (cleanPin === '2020' || cleanPin === '7777' || cleanPin === '1234' || ADMIN_IDS.includes(cleanPin)) {
       setIsAdminAuth(true);
       if (typeof window !== 'undefined') {
         localStorage.setItem('ibrohim_is_admin', 'true');
@@ -265,7 +265,7 @@ export function AppProvider({ children }) {
       return true;
     }
     telegram.triggerHaptic('warning');
-    showToast("Noto‘g‘ri PIN-kod! (Standart PIN: 7777)");
+    showToast("Noto‘g‘ri PIN-kod! (PIN: 2020)");
     return false;
   };
 

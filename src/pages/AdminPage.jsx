@@ -138,7 +138,7 @@ export default function AdminPage() {
               pattern="[0-9]*"
               value={pinInput}
               onChange={(e) => setPinInput(e.target.value)}
-              placeholder="PIN-kod (Masalan: 7777)"
+              placeholder="PIN-kod (Masalan: 2020)"
               className="w-full text-center text-lg tracking-widest font-black py-3 px-4 rounded-xl bg-[#150305] border border-amber-500/30 text-amber-300 placeholder-stone-600 focus:outline-none focus:border-amber-400"
               autoFocus
             />
